@@ -761,11 +761,20 @@ export async function registerRoutes(
       const txt = `# EXHIBIT — UI Component Library for AI Assistants
 
 > EXHIBIT is a proof-first UI component library with ${allExhibits.length} production-ready React components across ${categories.length} categories.
-> All components include full source code (React/TypeScript/Tailwind CSS).
+> All components are self-contained React + TypeScript + Tailwind CSS. No external UI library required.
 
-## How to use this library
+## Fastest access (no server needed — static GitHub files)
 
-Fetch any component by category or name and paste the code directly into your project.
+Fetch the full index with all component code:
+  https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components.json
+
+Fetch a single component by slug:
+  https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/{slug}.tsx
+
+List categories with slugs:
+  https://raw.githubusercontent.com/gkstrmtm/exhibit/main/categories.json
+
+## Live API (requires server)
 
 ### Get all components in a category
 GET /api/llm/components?category=<CategoryName>
@@ -779,35 +788,30 @@ GET /api/llm/components/<slug>
 ### List all categories with component counts
 GET /api/llm/categories
 
-### Get all components (full library)
-GET /api/llm/components
-
 ## Component Categories (${categories.length} total)
 
 ${categorySummary}
 
-## Response Format
+## Response Format (components.json)
 
-Each component includes:
-- slug: unique identifier
+Each entry includes:
+- slug: unique identifier  e.g. "command-palette-shell"
 - title: component name
 - description: what it does
 - category: which category it belongs to
 - tags: relevant keywords
-- code: full React/TypeScript source code
-- techStack: dependencies used (e.g. ["react", "tailwind", "framer-motion"])
-- licenseType: "free" or "premium"
+- code: full React/TypeScript source code ready to paste
+- sourceUrl: raw GitHub URL for this component's .tsx file
 
-## Example Usage in an AI Assistant
+## Example prompts for AI assistants
 
-"Fetch /api/llm/components?category=Loading and give me the skeleton loader"
-"Get /api/llm/components/stat-cards-with-trends and use it in my dashboard"
-"Search /api/llm/components?q=button and show me the variants"
+"Fetch https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components.json and find me a kanban board component"
+"Get https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/command-palette-shell.tsx and use it in my app"
+"Fetch https://raw.githubusercontent.com/gkstrmtm/exhibit/main/categories.json and show me what App Shell patterns are available"
 
-## Source
+## GitHub
 
-Full component browser: https://exhibit.replit.app
-API base: /api/llm/
+Source: https://github.com/gkstrmtm/exhibit
 `;
 
       res.setHeader("Content-Type", "text/plain; charset=utf-8");

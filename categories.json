@@ -1,0 +1,227 @@
+[
+  {
+    "name": "Account",
+    "count": 2,
+    "slugs": [
+      "account-settings-layout",
+      "team-members-list"
+    ]
+  },
+  {
+    "name": "Admin",
+    "count": 4,
+    "slugs": [
+      "report-detail-page",
+      "review-queue-list",
+      "role-permissions-editor",
+      "user-admin-profile"
+    ]
+  },
+  {
+    "name": "App Shells",
+    "count": 15,
+    "slugs": [
+      "analytics-dashboard-shell",
+      "chat-messaging-shell",
+      "command-palette-shell",
+      "dark-vscode-shell",
+      "docs-writing-shell",
+      "ecommerce-storefront-shell",
+      "ide-three-panel-shell",
+      "kanban-board-shell",
+      "marketing-hero-shell",
+      "master-detail-shell",
+      "mobile-bottom-tab-shell",
+      "settings-preferences-shell",
+      "sidebar-app-shell",
+      "split-nav-shell",
+      "top-nav-app-shell"
+    ]
+  },
+  {
+    "name": "Authentication",
+    "count": 3,
+    "slugs": [
+      "two-factor-setup",
+      "magic-link-flow",
+      "sign-in-form-clean"
+    ]
+  },
+  {
+    "name": "Billing",
+    "count": 2,
+    "slugs": [
+      "invoice-list-pattern",
+      "usage-meter-pattern"
+    ]
+  },
+  {
+    "name": "Buttons",
+    "count": 2,
+    "slugs": [
+      "apple-pill-toggle",
+      "neo-brutalist-buttons"
+    ]
+  },
+  {
+    "name": "Cards",
+    "count": 4,
+    "slugs": [
+      "dark-pricing-card",
+      "glassmorphism-card",
+      "gradient-border-card",
+      "testimonial-card"
+    ]
+  },
+  {
+    "name": "Commerce",
+    "count": 2,
+    "slugs": [
+      "checkout-summary-card",
+      "upgrade-modal-pattern"
+    ]
+  },
+  {
+    "name": "Communication",
+    "count": 2,
+    "slugs": [
+      "inbox-thread-layout",
+      "structured-proposal-card"
+    ]
+  },
+  {
+    "name": "Dashboard",
+    "count": 2,
+    "slugs": [
+      "dashboard-header-pattern",
+      "stat-cards-with-trends"
+    ]
+  },
+  {
+    "name": "Data Density",
+    "count": 4,
+    "slugs": [
+      "activity-log-timeline",
+      "export-pattern-ui",
+      "filter-bar-chips",
+      "kpi-grid-tabular"
+    ]
+  },
+  {
+    "name": "Data Display",
+    "count": 3,
+    "slugs": [
+      "minimal-stats-grid",
+      "modern-table",
+      "minimal-avatar-stack"
+    ]
+  },
+  {
+    "name": "Empty States",
+    "count": 1,
+    "slugs": [
+      "empty-state-first-run"
+    ]
+  },
+  {
+    "name": "Feedback",
+    "count": 8,
+    "slugs": [
+      "empty-state-illustration",
+      "error-pages-set",
+      "inline-validation-patterns",
+      "notification-toast-stack",
+      "permission-gated-states",
+      "retry-pattern-ui",
+      "skeleton-loading",
+      "toast-system-variants"
+    ]
+  },
+  {
+    "name": "Gamification",
+    "count": 3,
+    "slugs": [
+      "challenge-submission-card",
+      "leaderboard-weekly",
+      "profile-credibility-badges"
+    ]
+  },
+  {
+    "name": "Inputs",
+    "count": 2,
+    "slugs": [
+      "command-palette",
+      "swiss-inputs"
+    ]
+  },
+  {
+    "name": "Layout",
+    "count": 2,
+    "slugs": [
+      "bento-grid",
+      "typographic-hero"
+    ]
+  },
+  {
+    "name": "Loading",
+    "count": 1,
+    "slugs": [
+      "skeleton-loading-cards"
+    ]
+  },
+  {
+    "name": "Marketplace",
+    "count": 4,
+    "slugs": [
+      "creator-storefront-profile",
+      "product-detail-page",
+      "product-listing-grid",
+      "purchase-success-page"
+    ]
+  },
+  {
+    "name": "Navigation",
+    "count": 3,
+    "slugs": [
+      "brutalist-navigation",
+      "floating-action-menu",
+      "minimal-sidebar"
+    ]
+  },
+  {
+    "name": "Onboarding",
+    "count": 3,
+    "slugs": [
+      "connect-tools-screen",
+      "multi-step-wizard",
+      "stepper-onboarding-flow"
+    ]
+  },
+  {
+    "name": "Pricing",
+    "count": 3,
+    "slugs": [
+      "pricing-comparison-grid",
+      "three-tier-pricing",
+      "usage-based-pricing"
+    ]
+  },
+  {
+    "name": "Style Families",
+    "count": 5,
+    "slugs": [
+      "style-bold-editorial",
+      "style-clean-minimal",
+      "style-dark-premium",
+      "style-dense-pro-ui",
+      "style-glass-frost"
+    ]
+  },
+  {
+    "name": "Tables",
+    "count": 1,
+    "slugs": [
+      "data-table-with-actions"
+    ]
+  }
+]
