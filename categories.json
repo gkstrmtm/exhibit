@@ -57,10 +57,24 @@
   },
   {
     "name": "Buttons",
-    "count": 2,
+    "count": 16,
     "slugs": [
+      "60-30-10-button-system",
       "apple-pill-toggle",
-      "neo-brutalist-buttons"
+      "button-size-spectrum",
+      "destructive-danger-buttons",
+      "ghost-button-collection",
+      "gradient-glow-buttons",
+      "hero-cta-buttons",
+      "icon-label-buttons",
+      "icon-only-buttons",
+      "loading-state-buttons",
+      "minimal-text-buttons",
+      "neo-brutalist-buttons",
+      "segmented-button-controls",
+      "social-auth-buttons",
+      "soft-tinted-buttons",
+      "split-action-button"
     ]
   },
   {
