@@ -10,6 +10,7 @@
       "fullDashboard": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/full-reference-dashboard.tsx",
       "tokenReference": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/design-token-reference.tsx",
       "typographySystem": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/typography-system.tsx",
+      "densityAndLayoutGuide": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/density-and-layout-guide.tsx",
       "antiPatternContrast": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/anti-pattern-contrast.tsx"
     }
   },
@@ -366,7 +367,7 @@
   },
 
   "targetReference": {
-    "_description": "This is what 'done right' looks like. Use these components as anchors.",
+    "_description": "This is what 'done right' looks like. Use these components as anchors. All 5 are in the 'Foundations' category.",
     "fullDashboard": {
       "slug": "full-reference-dashboard",
       "description": "The canonical example of a complete, polished admin dashboard. Every element follows these foundations. Use it as the visual target.",
@@ -374,12 +375,22 @@
     },
     "tokenReference": {
       "slug": "design-token-reference",
-      "description": "Visual showcase of every color, type size, spacing value, and elevation level from this system.",
+      "description": "Visual showcase of every color, type size, spacing value, elevation level, and border radius step from this system.",
       "url": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/design-token-reference.tsx"
+    },
+    "typographySystem": {
+      "slug": "typography-system",
+      "description": "Every text style shown in context with annotations: heading hierarchy, body sizes, labels, captions, monospace, and link states. Each sample shows the exact Tailwind classes to use.",
+      "url": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/typography-system.tsx"
+    },
+    "densityAndLayoutGuide": {
+      "slug": "density-and-layout-guide",
+      "description": "Side-by-side comparison of compact, default, and comfortable density modes applied to the same table. Use before building to pick the right density for the context.",
+      "url": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/density-and-layout-guide.tsx"
     },
     "antiPatternContrast": {
       "slug": "anti-pattern-contrast",
-      "description": "Side-by-side showing common raw/broken UI vs the corrected version. Useful for understanding what NOT to do.",
+      "description": "Side-by-side showing common raw/broken UI (wrong font, unstyled inputs, raw borders, color-only status) vs the corrected version. Essential for identifying and fixing low-quality AI output.",
       "url": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/anti-pattern-contrast.tsx"
     }
   }
