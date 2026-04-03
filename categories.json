@@ -138,6 +138,17 @@
     ]
   },
   {
+    "name": "Foundations",
+    "count": 5,
+    "slugs": [
+      "anti-pattern-contrast",
+      "density-and-layout-guide",
+      "design-token-reference",
+      "full-reference-dashboard",
+      "typography-system"
+    ]
+  },
+  {
     "name": "Gamification",
     "count": 3,
     "slugs": [

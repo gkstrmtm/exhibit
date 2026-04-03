@@ -2924,4 +2924,996 @@ export default function MasterDetailShell() {
     techStack: ["react", "tailwind"],
     licenseType: "free",
   },
+
+  // ── Foundations ──────────────────────────────────────────────────────────────
+  {
+    slug: "design-token-reference",
+    title: "Design Token Reference",
+    description: "Visual showcase of every design token in the system: color palette (neutral, semantic, interactive), typography scale (all sizes and weights), spacing ramp, border-radius steps, and elevation levels. Use as a quick-look reference when building any component.",
+    category: "Foundations",
+    tags: ["foundations", "tokens", "colors", "typography", "spacing", "reference", "design-system"],
+    style: "",
+    code: `export default function DesignTokenReference() {
+  const neutrals = [
+    { name: "950", hex: "#0a0a0a" }, { name: "900", hex: "#171717" },
+    { name: "800", hex: "#262626" }, { name: "700", hex: "#404040" },
+    { name: "600", hex: "#525252" }, { name: "500", hex: "#737373" },
+    { name: "400", hex: "#a3a3a3" }, { name: "300", hex: "#d4d4d4" },
+    { name: "200", hex: "#e5e5e5" }, { name: "100", hex: "#f5f5f5" },
+    { name: "50",  hex: "#fafafa" },
+  ];
+  const semantics = [
+    { name: "Success", bg: "#ecfdf5", text: "#047857", border: "#a7f3d0" },
+    { name: "Warning", bg: "#fffbeb", text: "#b45309", border: "#fde68a" },
+    { name: "Error",   bg: "#fef2f2", text: "#b91c1c", border: "#fecaca" },
+    { name: "Info",    bg: "#eff6ff", text: "#1d4ed8", border: "#bfdbfe" },
+    { name: "Neutral", bg: "#f5f5f5", text: "#525252", border: "#e5e5e5" },
+  ];
+  const typeScale = [
+    { name: "xs",  px: 11, weight: 500, sample: "Table header / badge" },
+    { name: "sm",  px: 13, weight: 400, sample: "Body text / nav links" },
+    { name: "base",px: 14, weight: 400, sample: "Primary body / inputs" },
+    { name: "lg",  px: 18, weight: 600, sample: "Card title / dialog heading" },
+    { name: "xl",  px: 20, weight: 700, sample: "Section heading / KPI value" },
+    { name: "2xl", px: 24, weight: 700, sample: "Page H2 / large KPI" },
+    { name: "3xl", px: 30, weight: 700, sample: "Page title H1" },
+  ];
+  const radii = [
+    { name: "rounded",    px: 4  },
+    { name: "rounded-md", px: 6  },
+    { name: "rounded-lg", px: 8  },
+    { name: "rounded-xl", px: 12 },
+    { name: "rounded-2xl",px: 16 },
+    { name: "rounded-full",px: 99 },
+  ];
+  const shadows = [
+    { name: "none",      css: "none" },
+    { name: "shadow-sm", css: "0 1px 3px rgba(0,0,0,0.08)" },
+    { name: "shadow-md", css: "0 4px 12px rgba(0,0,0,0.10)" },
+    { name: "shadow-lg", css: "0 10px 30px rgba(0,0,0,0.12)" },
+    { name: "shadow-2xl",css: "0 20px 60px rgba(0,0,0,0.18)" },
+  ];
+
+  return (
+    <div className="p-8 bg-neutral-50 min-h-[600px] space-y-10 font-sans text-neutral-900">
+      {/* Neutral palette */}
+      <section>
+        <h2 className="text-xs font-semibold uppercase tracking-widest text-neutral-400 mb-3">Neutral Palette</h2>
+        <div className="flex gap-2 flex-wrap">
+          {neutrals.map(c => (
+            <div key={c.name} className="flex flex-col items-center gap-1">
+              <div className="w-10 h-10 rounded-lg border border-neutral-200" style={{ background: c.hex }} />
+              <span className="text-[10px] text-neutral-500 font-mono">{c.name}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Semantic colors */}
+      <section>
+        <h2 className="text-xs font-semibold uppercase tracking-widest text-neutral-400 mb-3">Semantic States</h2>
+        <div className="flex gap-3 flex-wrap">
+          {semantics.map(s => (
+            <div key={s.name} className="px-4 py-2.5 rounded-lg border text-sm font-medium"
+              style={{ background: s.bg, color: s.text, borderColor: s.border }}>
+              {s.name}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Type scale */}
+      <section>
+        <h2 className="text-xs font-semibold uppercase tracking-widest text-neutral-400 mb-3">Type Scale</h2>
+        <div className="bg-white rounded-xl border border-neutral-200 overflow-hidden">
+          {typeScale.map((t, i) => (
+            <div key={t.name} className={\`flex items-center gap-4 px-5 py-3 \${i < typeScale.length - 1 ? "border-b border-neutral-100" : ""}\`}>
+              <span className="text-xs text-neutral-400 font-mono w-10">{t.name}</span>
+              <span className="text-xs text-neutral-300 font-mono w-10">{t.px}px</span>
+              <span style={{ fontSize: t.px, fontWeight: t.weight }} className="text-neutral-900 flex-1">{t.sample}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Border radius */}
+      <section>
+        <h2 className="text-xs font-semibold uppercase tracking-widest text-neutral-400 mb-3">Border Radius</h2>
+        <div className="flex gap-4 flex-wrap items-end">
+          {radii.map(r => (
+            <div key={r.name} className="flex flex-col items-center gap-2">
+              <div className="w-12 h-12 bg-neutral-200 border border-neutral-300"
+                style={{ borderRadius: r.px >= 99 ? "9999px" : r.px }} />
+              <span className="text-[10px] text-neutral-500 font-mono whitespace-nowrap">{r.name}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Elevation */}
+      <section>
+        <h2 className="text-xs font-semibold uppercase tracking-widest text-neutral-400 mb-3">Elevation</h2>
+        <div className="flex gap-4 flex-wrap">
+          {shadows.map(s => (
+            <div key={s.name} className="flex flex-col items-center gap-2">
+              <div className="w-16 h-16 rounded-xl bg-white border border-neutral-100"
+                style={{ boxShadow: s.css }} />
+              <span className="text-[10px] text-neutral-500 font-mono">{s.name}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Spacing */}
+      <section>
+        <h2 className="text-xs font-semibold uppercase tracking-widest text-neutral-400 mb-3">Spacing Scale (4px grid)</h2>
+        <div className="flex gap-2 flex-wrap items-end">
+          {[1,2,3,4,5,6,8,10,12].map(s => (
+            <div key={s} className="flex flex-col items-center gap-1">
+              <div className="bg-blue-200 rounded" style={{ width: s * 4, height: s * 4 }} />
+              <span className="text-[10px] text-neutral-500 font-mono">{s * 4}px</span>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+}`,
+    htmlPreview: `<div style="padding:32px;background:#fafafa;min-height:600px;font-family:system-ui,-apple-system,sans-serif;color:#171717">
+
+  <section style="margin-bottom:40px">
+    <div style="font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#a3a3a3;margin-bottom:12px">Neutral Palette</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      ${["#0a0a0a","#171717","#262626","#404040","#525252","#737373","#a3a3a3","#d4d4d4","#e5e5e5","#f5f5f5","#fafafa"].map((hex,i) => `<div style="display:flex;flex-direction:column;align-items:center;gap:4px"><div style="width:40px;height:40px;border-radius:8px;border:1px solid #e5e5e5;background:${hex}"></div><span style="font-size:10px;color:#a3a3a3;font-family:monospace">${["950","900","800","700","600","500","400","300","200","100","50"][i]}</span></div>`).join("")}
+    </div>
+  </section>
+
+  <section style="margin-bottom:40px">
+    <div style="font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#a3a3a3;margin-bottom:12px">Semantic States</div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <div style="padding:8px 16px;border-radius:8px;border:1px solid #a7f3d0;background:#ecfdf5;color:#047857;font-size:13px;font-weight:500">Success</div>
+      <div style="padding:8px 16px;border-radius:8px;border:1px solid #fde68a;background:#fffbeb;color:#b45309;font-size:13px;font-weight:500">Warning</div>
+      <div style="padding:8px 16px;border-radius:8px;border:1px solid #fecaca;background:#fef2f2;color:#b91c1c;font-size:13px;font-weight:500">Error</div>
+      <div style="padding:8px 16px;border-radius:8px;border:1px solid #bfdbfe;background:#eff6ff;color:#1d4ed8;font-size:13px;font-weight:500">Info</div>
+      <div style="padding:8px 16px;border-radius:8px;border:1px solid #e5e5e5;background:#f5f5f5;color:#525252;font-size:13px;font-weight:500">Neutral</div>
+    </div>
+  </section>
+
+  <section style="margin-bottom:40px">
+    <div style="font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#a3a3a3;margin-bottom:12px">Type Scale</div>
+    <div style="background:white;border-radius:12px;border:1px solid #e5e5e5;overflow:hidden">
+      <div style="display:flex;align-items:center;gap:16px;padding:10px 20px;border-bottom:1px solid #f5f5f5"><span style="font-size:10px;color:#a3a3a3;font-family:monospace;width:40px">xs</span><span style="font-size:10px;color:#d4d4d4;font-family:monospace;width:40px">11px</span><span style="font-size:11px;font-weight:500;color:#171717">Table header / badge</span></div>
+      <div style="display:flex;align-items:center;gap:16px;padding:10px 20px;border-bottom:1px solid #f5f5f5"><span style="font-size:10px;color:#a3a3a3;font-family:monospace;width:40px">sm</span><span style="font-size:10px;color:#d4d4d4;font-family:monospace;width:40px">13px</span><span style="font-size:13px;font-weight:400;color:#171717">Body text / nav links</span></div>
+      <div style="display:flex;align-items:center;gap:16px;padding:10px 20px;border-bottom:1px solid #f5f5f5"><span style="font-size:10px;color:#a3a3a3;font-family:monospace;width:40px">base</span><span style="font-size:10px;color:#d4d4d4;font-family:monospace;width:40px">14px</span><span style="font-size:14px;font-weight:400;color:#171717">Primary body / inputs</span></div>
+      <div style="display:flex;align-items:center;gap:16px;padding:10px 20px;border-bottom:1px solid #f5f5f5"><span style="font-size:10px;color:#a3a3a3;font-family:monospace;width:40px">lg</span><span style="font-size:10px;color:#d4d4d4;font-family:monospace;width:40px">18px</span><span style="font-size:18px;font-weight:600;color:#171717">Card title / dialog heading</span></div>
+      <div style="display:flex;align-items:center;gap:16px;padding:10px 20px;border-bottom:1px solid #f5f5f5"><span style="font-size:10px;color:#a3a3a3;font-family:monospace;width:40px">2xl</span><span style="font-size:10px;color:#d4d4d4;font-family:monospace;width:40px">24px</span><span style="font-size:24px;font-weight:700;color:#171717">Page H2 / large KPI</span></div>
+      <div style="display:flex;align-items:center;gap:16px;padding:10px 20px"><span style="font-size:10px;color:#a3a3a3;font-family:monospace;width:40px">3xl</span><span style="font-size:10px;color:#d4d4d4;font-family:monospace;width:40px">30px</span><span style="font-size:30px;font-weight:700;color:#171717">Page title H1</span></div>
+    </div>
+  </section>
+
+  <section style="margin-bottom:40px">
+    <div style="font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#a3a3a3;margin-bottom:12px">Elevation</div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px"><div style="width:64px;height:64px;border-radius:12px;background:white;border:1px solid #e5e5e5;box-shadow:none"></div><span style="font-size:10px;color:#a3a3a3;font-family:monospace">none</span></div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px"><div style="width:64px;height:64px;border-radius:12px;background:white;box-shadow:0 1px 3px rgba(0,0,0,0.08)"></div><span style="font-size:10px;color:#a3a3a3;font-family:monospace">sm</span></div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px"><div style="width:64px;height:64px;border-radius:12px;background:white;box-shadow:0 4px 12px rgba(0,0,0,0.10)"></div><span style="font-size:10px;color:#a3a3a3;font-family:monospace">md</span></div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px"><div style="width:64px;height:64px;border-radius:12px;background:white;box-shadow:0 10px 30px rgba(0,0,0,0.12)"></div><span style="font-size:10px;color:#a3a3a3;font-family:monospace">lg</span></div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px"><div style="width:64px;height:64px;border-radius:12px;background:white;box-shadow:0 20px 60px rgba(0,0,0,0.18)"></div><span style="font-size:10px;color:#a3a3a3;font-family:monospace">2xl</span></div>
+    </div>
+  </section>
+
+</div>`,
+    techStack: ["react", "tailwind"],
+    licenseType: "free",
+  },
+
+  {
+    slug: "full-reference-dashboard",
+    title: "Full Reference Dashboard",
+    description: "The canonical polished admin dashboard — the visual target for any AI-generated UI. Complete layout with sidebar nav, KPI metric cards with sparklines, a data table with status badges, a chart area, and breadcrumb header. Every element follows the design foundations: correct typography, color, spacing, and component sizing.",
+    category: "Foundations",
+    tags: ["foundations", "reference", "dashboard", "admin", "target", "polished", "canonical"],
+    style: "",
+    code: `export default function FullReferenceDashboard() {
+  const navItems = [
+    { icon: "◆", label: "Dashboard", active: true },
+    { icon: "◎", label: "Analytics" },
+    { icon: "▤", label: "Users" },
+    { icon: "◈", label: "Revenue" },
+    { icon: "▣", label: "Settings" },
+  ];
+  const kpis = [
+    { label: "Total Revenue", value: "$48,291", change: "+12.5%", up: true, bars: [40,55,35,60,45,70,65,80] },
+    { label: "Active Users", value: "9,842", change: "+8.1%", up: true, bars: [30,45,50,40,60,55,70,75] },
+    { label: "Conversion", value: "3.24%", change: "-0.3%", up: false, bars: [70,60,65,50,55,40,45,35] },
+    { label: "Avg Session", value: "4m 12s", change: "+18s", up: true, bars: [35,40,50,45,55,60,58,65] },
+  ];
+  const rows = [
+    { name: "Sarah Chen", email: "sarah@acme.co", plan: "Pro", revenue: "$1,240", status: "Active" },
+    { name: "Marcus Rivera", email: "m.rivera@acme.co", plan: "Team", revenue: "$3,800", status: "Active" },
+    { name: "Emily Park", email: "e.park@acme.co", plan: "Starter", revenue: "$240", status: "Trial" },
+    { name: "David Kim", email: "d.kim@acme.co", plan: "Pro", revenue: "$1,240", status: "Churned" },
+  ];
+  const statusStyles: Record<string, string> = {
+    Active:  "bg-emerald-50 text-emerald-700",
+    Trial:   "bg-blue-50 text-blue-700",
+    Churned: "bg-neutral-100 text-neutral-500",
+  };
+  const chartBars = [65,80,55,90,70,95,85,100,78,88,72,110];
+  const maxBar = Math.max(...chartBars);
+
+  return (
+    <div className="flex min-h-[600px] bg-neutral-50 font-sans text-neutral-900 rounded-xl border border-neutral-200 overflow-hidden">
+      {/* Sidebar */}
+      <aside className="w-52 bg-white border-r border-neutral-200 flex flex-col flex-shrink-0">
+        <div className="px-5 py-4 border-b border-neutral-100 flex items-center gap-2">
+          <div className="w-7 h-7 rounded-lg bg-neutral-900 flex items-center justify-center text-white font-bold text-xs">A</div>
+          <span className="font-semibold text-sm">Acme Studio</span>
+        </div>
+        <nav className="flex-1 p-3 flex flex-col gap-0.5">
+          {navItems.map(item => (
+            <div key={item.label} className={\`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors cursor-pointer \${
+              item.active ? "bg-neutral-900 text-white font-medium" : "text-neutral-600 hover:bg-neutral-50"
+            }\`}>
+              <span className="text-sm">{item.icon}</span>
+              {item.label}
+            </div>
+          ))}
+        </nav>
+        <div className="p-4 border-t border-neutral-100 flex items-center gap-3">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-400 to-purple-600 flex items-center justify-center text-white text-xs font-bold">JD</div>
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-medium truncate">Jane Doe</div>
+            <div className="text-xs text-neutral-400 truncate">Admin</div>
+          </div>
+        </div>
+      </aside>
+
+      {/* Main */}
+      <main className="flex-1 flex flex-col overflow-hidden">
+        {/* Header */}
+        <header className="bg-white border-b border-neutral-200 px-8 py-4 flex items-center justify-between flex-shrink-0">
+          <div>
+            <div className="flex items-center gap-2 text-xs text-neutral-400 mb-1">
+              <span>Home</span><span>›</span><span className="text-neutral-700 font-medium">Dashboard</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <h1 className="text-xl font-bold">Dashboard</h1>
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />Live
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <button className="h-9 px-4 text-sm font-medium text-neutral-700 bg-white border border-neutral-200 rounded-lg hover:bg-neutral-50">Export</button>
+            <button className="h-9 px-4 text-sm font-medium text-white bg-neutral-900 rounded-lg hover:bg-neutral-700">New Report</button>
+          </div>
+        </header>
+
+        <div className="flex-1 p-8 overflow-auto space-y-6">
+          {/* KPI cards */}
+          <div className="grid grid-cols-4 gap-4">
+            {kpis.map(k => (
+              <div key={k.label} className="bg-white rounded-xl border border-neutral-200 p-5 shadow-sm">
+                <div className="text-xs text-neutral-500 font-medium mb-1">{k.label}</div>
+                <div className="text-2xl font-bold mb-1">{k.value}</div>
+                <div className={\`text-xs font-semibold mb-3 \${k.up ? "text-emerald-600" : "text-rose-500"}\`}>{k.change}</div>
+                <div className="flex items-end gap-0.5 h-8">
+                  {k.bars.map((h, i) => (
+                    <div key={i} className={\`flex-1 rounded-sm \${k.up ? "bg-emerald-200" : "bg-rose-200"}\`} style={{ height: \`\${h}%\` }} />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Chart */}
+          <div className="bg-white rounded-xl border border-neutral-200 p-6 shadow-sm">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-base font-semibold">Revenue Overview</h2>
+                <p className="text-xs text-neutral-400 mt-0.5">Last 12 months</p>
+              </div>
+              <div className="flex gap-1">
+                {["7d","30d","90d","1y"].map((r, i) => (
+                  <button key={r} className={\`px-3 py-1.5 text-xs rounded-md font-medium \${
+                    i === 3 ? "bg-neutral-900 text-white" : "text-neutral-500 hover:bg-neutral-50"
+                  }\`}>{r}</button>
+                ))}
+              </div>
+            </div>
+            <div className="flex items-end gap-2 h-28">
+              {chartBars.map((h, i) => (
+                <div key={i} className="flex-1 flex flex-col items-center gap-1">
+                  <div className="w-full rounded-t-sm bg-neutral-900 opacity-80 transition-all"
+                    style={{ height: \`\${(h / maxBar) * 100}%\` }} />
+                </div>
+              ))}
+            </div>
+            <div className="flex justify-between mt-2 text-xs text-neutral-400 font-mono">
+              {["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].map(m => (
+                <span key={m}>{m}</span>
+              ))}
+            </div>
+          </div>
+
+          {/* Table */}
+          <div className="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
+            <div className="px-6 py-4 border-b border-neutral-100 flex items-center justify-between">
+              <h2 className="text-sm font-semibold">Recent Customers</h2>
+              <button className="text-xs text-blue-600 font-medium hover:text-blue-700">View all</button>
+            </div>
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-neutral-100 bg-neutral-50">
+                  <th className="text-left px-6 py-3 text-xs font-semibold uppercase tracking-wider text-neutral-500">Customer</th>
+                  <th className="text-left px-6 py-3 text-xs font-semibold uppercase tracking-wider text-neutral-500">Plan</th>
+                  <th className="text-right px-6 py-3 text-xs font-semibold uppercase tracking-wider text-neutral-500">Revenue</th>
+                  <th className="text-left px-6 py-3 text-xs font-semibold uppercase tracking-wider text-neutral-500">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((row, i) => (
+                  <tr key={i} className="border-b border-neutral-100 last:border-0 hover:bg-neutral-50 transition-colors">
+                    <td className="px-6 py-3">
+                      <div className="font-medium text-neutral-900">{row.name}</div>
+                      <div className="text-xs text-neutral-400">{row.email}</div>
+                    </td>
+                    <td className="px-6 py-3 text-neutral-600">{row.plan}</td>
+                    <td className="px-6 py-3 text-right font-mono font-medium text-neutral-900">{row.revenue}</td>
+                    <td className="px-6 py-3">
+                      <span className={\`px-2.5 py-0.5 rounded-full text-xs font-medium \${statusStyles[row.status]}\`}>{row.status}</span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}`,
+    htmlPreview: `<div style="display:flex;min-height:600px;background:#fafafa;font-family:system-ui,-apple-system,sans-serif;color:#171717;border-radius:12px;border:1px solid #e5e5e5;overflow:hidden">
+  <aside style="width:208px;background:white;border-right:1px solid #e5e5e5;display:flex;flex-direction:column;flex-shrink:0">
+    <div style="padding:16px 20px;border-bottom:1px solid #f5f5f5;display:flex;align-items:center;gap:8px">
+      <div style="width:28px;height:28px;border-radius:8px;background:#171717;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:11px">A</div>
+      <span style="font-weight:600;font-size:14px">Acme Studio</span>
+    </div>
+    <nav style="flex:1;padding:12px;display:flex;flex-direction:column;gap:2px">
+      <div style="display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:8px;background:#171717;color:white;font-size:13px;font-weight:500;cursor:pointer"><span>◆</span>Dashboard</div>
+      <div style="display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:8px;color:#525252;font-size:13px;cursor:pointer"><span>◎</span>Analytics</div>
+      <div style="display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:8px;color:#525252;font-size:13px;cursor:pointer"><span>▤</span>Users</div>
+      <div style="display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:8px;color:#525252;font-size:13px;cursor:pointer"><span>◈</span>Revenue</div>
+      <div style="display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:8px;color:#525252;font-size:13px;cursor:pointer"><span>▣</span>Settings</div>
+    </nav>
+    <div style="padding:16px;border-top:1px solid #f5f5f5;display:flex;align-items:center;gap:10px">
+      <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#a78bfa,#7c3aed);display:flex;align-items:center;justify-content:center;color:white;font-size:11px;font-weight:700">JD</div>
+      <div><div style="font-size:12px;font-weight:500">Jane Doe</div><div style="font-size:11px;color:#a3a3a3">Admin</div></div>
+    </div>
+  </aside>
+  <main style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+    <header style="background:white;border-bottom:1px solid #e5e5e5;padding:16px 32px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+      <div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#a3a3a3;margin-bottom:4px"><span>Home</span><span>›</span><span style="color:#404040;font-weight:500">Dashboard</span></div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <h1 style="font-size:20px;font-weight:700;margin:0">Dashboard</h1>
+          <span style="display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:9999px;font-size:11px;font-weight:500;background:#ecfdf5;color:#047857;border:1px solid #a7f3d0"><span style="width:5px;height:5px;border-radius:50%;background:#10b981"></span>Live</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button style="height:36px;padding:0 16px;font-size:13px;font-weight:500;color:#404040;background:white;border:1px solid #e5e5e5;border-radius:8px;cursor:pointer;font-family:inherit">Export</button>
+        <button style="height:36px;padding:0 16px;font-size:13px;font-weight:500;color:white;background:#171717;border:none;border-radius:8px;cursor:pointer;font-family:inherit">New Report</button>
+      </div>
+    </header>
+    <div style="flex:1;padding:32px;overflow:auto">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px">
+        <div style="background:white;border-radius:12px;border:1px solid #e5e5e5;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.06)"><div style="font-size:11px;color:#737373;font-weight:500;margin-bottom:4px">Total Revenue</div><div style="font-size:22px;font-weight:700;margin-bottom:4px">$48,291</div><div style="font-size:11px;font-weight:600;color:#059669;margin-bottom:10px">+12.5%</div><div style="display:flex;align-items:flex-end;gap:2px;height:28px"><div style="flex:1;border-radius:2px;background:#a7f3d0;height:40%"></div><div style="flex:1;border-radius:2px;background:#a7f3d0;height:55%"></div><div style="flex:1;border-radius:2px;background:#a7f3d0;height:35%"></div><div style="flex:1;border-radius:2px;background:#a7f3d0;height:60%"></div><div style="flex:1;border-radius:2px;background:#a7f3d0;height:45%"></div><div style="flex:1;border-radius:2px;background:#a7f3d0;height:70%"></div><div style="flex:1;border-radius:2px;background:#a7f3d0;height:65%"></div><div style="flex:1;border-radius:2px;background:#a7f3d0;height:80%"></div></div></div>
+        <div style="background:white;border-radius:12px;border:1px solid #e5e5e5;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.06)"><div style="font-size:11px;color:#737373;font-weight:500;margin-bottom:4px">Active Users</div><div style="font-size:22px;font-weight:700;margin-bottom:4px">9,842</div><div style="font-size:11px;font-weight:600;color:#059669;margin-bottom:10px">+8.1%</div><div style="display:flex;align-items:flex-end;gap:2px;height:28px"><div style="flex:1;border-radius:2px;background:#a7f3d0;height:30%"></div><div style="flex:1;border-radius:2px;background:#a7f3d0;height:45%"></div><div style="flex:1;border-radius:2px;background:#a7f3d0;height:50%"></div><div style="flex:1;border-radius:2px;background:#a7f3d0;height:40%"></div><div style="flex:1;border-radius:2px;background:#a7f3d0;height:60%"></div><div style="flex:1;border-radius:2px;background:#a7f3d0;height:55%"></div><div style="flex:1;border-radius:2px;background:#a7f3d0;height:70%"></div><div style="flex:1;border-radius:2px;background:#a7f3d0;height:75%"></div></div></div>
+        <div style="background:white;border-radius:12px;border:1px solid #e5e5e5;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.06)"><div style="font-size:11px;color:#737373;font-weight:500;margin-bottom:4px">Conversion</div><div style="font-size:22px;font-weight:700;margin-bottom:4px">3.24%</div><div style="font-size:11px;font-weight:600;color:#e11d48;margin-bottom:10px">-0.3%</div><div style="display:flex;align-items:flex-end;gap:2px;height:28px"><div style="flex:1;border-radius:2px;background:#fecdd3;height:70%"></div><div style="flex:1;border-radius:2px;background:#fecdd3;height:60%"></div><div style="flex:1;border-radius:2px;background:#fecdd3;height:65%"></div><div style="flex:1;border-radius:2px;background:#fecdd3;height:50%"></div><div style="flex:1;border-radius:2px;background:#fecdd3;height:55%"></div><div style="flex:1;border-radius:2px;background:#fecdd3;height:40%"></div><div style="flex:1;border-radius:2px;background:#fecdd3;height:45%"></div><div style="flex:1;border-radius:2px;background:#fecdd3;height:35%"></div></div></div>
+        <div style="background:white;border-radius:12px;border:1px solid #e5e5e5;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.06)"><div style="font-size:11px;color:#737373;font-weight:500;margin-bottom:4px">Avg Session</div><div style="font-size:22px;font-weight:700;margin-bottom:4px">4m 12s</div><div style="font-size:11px;font-weight:600;color:#059669;margin-bottom:10px">+18s</div><div style="display:flex;align-items:flex-end;gap:2px;height:28px"><div style="flex:1;border-radius:2px;background:#a7f3d0;height:35%"></div><div style="flex:1;border-radius:2px;background:#a7f3d0;height:40%"></div><div style="flex:1;border-radius:2px;background:#a7f3d0;height:50%"></div><div style="flex:1;border-radius:2px;background:#a7f3d0;height:45%"></div><div style="flex:1;border-radius:2px;background:#a7f3d0;height:55%"></div><div style="flex:1;border-radius:2px;background:#a7f3d0;height:60%"></div><div style="flex:1;border-radius:2px;background:#a7f3d0;height:58%"></div><div style="flex:1;border-radius:2px;background:#a7f3d0;height:65%"></div></div></div>
+      </div>
+      <div style="background:white;border-radius:12px;border:1px solid #e5e5e5;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,0.06);margin-bottom:24px">
+        <div style="font-size:14px;font-weight:600;margin-bottom:4px">Revenue Overview</div>
+        <div style="font-size:11px;color:#a3a3a3;margin-bottom:20px">Last 12 months</div>
+        <div style="display:flex;align-items:flex-end;gap:6px;height:80px;margin-bottom:8px">
+          ${[65,80,55,90,70,95,85,100,78,88,72,110].map(h => `<div style="flex:1;border-radius:3px 3px 0 0;background:#171717;opacity:0.8;height:${Math.round(h/110*100)}%"></div>`).join("")}
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:#a3a3a3;font-family:monospace">
+          ${["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].map(m => `<span>${m}</span>`).join("")}
+        </div>
+      </div>
+      <div style="background:white;border-radius:12px;border:1px solid #e5e5e5;box-shadow:0 1px 3px rgba(0,0,0,0.06);overflow:hidden">
+        <div style="padding:16px 24px;border-bottom:1px solid #f5f5f5;display:flex;align-items:center;justify-content:space-between">
+          <div style="font-size:13px;font-weight:600">Recent Customers</div>
+          <div style="font-size:12px;color:#2563eb;font-weight:500;cursor:pointer">View all</div>
+        </div>
+        <table style="width:100%;border-collapse:collapse;font-size:13px">
+          <thead><tr style="border-bottom:1px solid #f5f5f5;background:#fafafa">
+            <th style="text-align:left;padding:10px 24px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:#737373">Customer</th>
+            <th style="text-align:left;padding:10px 24px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:#737373">Plan</th>
+            <th style="text-align:right;padding:10px 24px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:#737373">Revenue</th>
+            <th style="text-align:left;padding:10px 24px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:#737373">Status</th>
+          </tr></thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #f5f5f5"><td style="padding:12px 24px"><div style="font-weight:500;color:#171717">Sarah Chen</div><div style="font-size:11px;color:#a3a3a3">sarah@acme.co</div></td><td style="padding:12px 24px;color:#525252">Pro</td><td style="padding:12px 24px;text-align:right;font-family:monospace;font-weight:500">$1,240</td><td style="padding:12px 24px"><span style="padding:2px 8px;border-radius:9999px;font-size:11px;font-weight:500;background:#ecfdf5;color:#047857">Active</span></td></tr>
+            <tr style="border-bottom:1px solid #f5f5f5"><td style="padding:12px 24px"><div style="font-weight:500;color:#171717">Marcus Rivera</div><div style="font-size:11px;color:#a3a3a3">m.rivera@acme.co</div></td><td style="padding:12px 24px;color:#525252">Team</td><td style="padding:12px 24px;text-align:right;font-family:monospace;font-weight:500">$3,800</td><td style="padding:12px 24px"><span style="padding:2px 8px;border-radius:9999px;font-size:11px;font-weight:500;background:#ecfdf5;color:#047857">Active</span></td></tr>
+            <tr style="border-bottom:1px solid #f5f5f5"><td style="padding:12px 24px"><div style="font-weight:500;color:#171717">Emily Park</div><div style="font-size:11px;color:#a3a3a3">e.park@acme.co</div></td><td style="padding:12px 24px;color:#525252">Starter</td><td style="padding:12px 24px;text-align:right;font-family:monospace;font-weight:500">$240</td><td style="padding:12px 24px"><span style="padding:2px 8px;border-radius:9999px;font-size:11px;font-weight:500;background:#eff6ff;color:#1d4ed8">Trial</span></td></tr>
+            <tr><td style="padding:12px 24px"><div style="font-weight:500;color:#171717">David Kim</div><div style="font-size:11px;color:#a3a3a3">d.kim@acme.co</div></td><td style="padding:12px 24px;color:#525252">Pro</td><td style="padding:12px 24px;text-align:right;font-family:monospace;font-weight:500">$1,240</td><td style="padding:12px 24px"><span style="padding:2px 8px;border-radius:9999px;font-size:11px;font-weight:500;background:#f5f5f5;color:#525252">Churned</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>`,
+    techStack: ["react", "tailwind"],
+    licenseType: "free",
+  },
+
+  {
+    slug: "typography-system",
+    title: "Typography System",
+    description: "Every text style in the design system shown in context with annotations: heading hierarchy (H1–H4), body sizes (base, sm, xs), label and caption variants, monospace code style, uppercase table headers, and link states. Each sample is annotated with the exact size, weight, and Tailwind class to use.",
+    category: "Foundations",
+    tags: ["foundations", "typography", "type-scale", "reference", "headings", "body-text"],
+    style: "",
+    code: `export default function TypographySystem() {
+  const sections = [
+    {
+      label: "Display / Headings",
+      items: [
+        { name: "H1 — Page Title", size: "30px", weight: 700, class: "text-3xl font-bold", sample: "Analytics Dashboard" },
+        { name: "H2 — Section Heading", size: "24px", weight: 700, class: "text-2xl font-bold", sample: "Revenue Overview" },
+        { name: "H3 — Card Title / Dialog", size: "18px", weight: 600, class: "text-lg font-semibold", sample: "Recent Transactions" },
+        { name: "H4 — Sub-section", size: "16px", weight: 600, class: "text-base font-semibold", sample: "Filter by Status" },
+      ],
+    },
+    {
+      label: "Body",
+      items: [
+        { name: "Body — Primary", size: "14px", weight: 400, class: "text-sm", sample: "The dashboard provides an overview of your key metrics and recent activity. Use the filters above to narrow the results." },
+        { name: "Body — Secondary", size: "13px", weight: 400, class: "text-sm text-neutral-500", sample: "Last updated 2 minutes ago · Synced from Stripe and Mixpanel" },
+        { name: "Label — Strong", size: "14px", weight: 500, class: "text-sm font-medium", sample: "Display Name" },
+        { name: "Caption / Meta", size: "12px", weight: 400, class: "text-xs text-neutral-400", sample: "Created Jan 15, 2024 · Modified by Sarah Chen" },
+      ],
+    },
+    {
+      label: "Functional",
+      items: [
+        { name: "Table Column Header", size: "11px", weight: 600, class: "text-xs font-semibold uppercase tracking-wider text-neutral-500", sample: "CUSTOMER NAME" },
+        { name: "Badge / Tag", size: "11px", weight: 500, class: "text-xs font-medium", sample: "Pro Plan" },
+        { name: "Button — Medium", size: "13px", weight: 500, class: "text-sm font-medium", sample: "Save Changes" },
+        { name: "Monospace / Code", size: "13px", weight: 400, class: "text-sm font-mono", sample: "user_id: usr_01j9a4f5k2..." },
+        { name: "Link", size: "13px", weight: 500, class: "text-sm font-medium text-blue-600 underline", sample: "View full report →" },
+      ],
+    },
+  ];
+
+  return (
+    <div className="p-8 bg-neutral-50 min-h-[600px] space-y-10 font-sans">
+      {sections.map(section => (
+        <section key={section.label}>
+          <h2 className="text-xs font-semibold uppercase tracking-widest text-neutral-400 mb-4">{section.label}</h2>
+          <div className="bg-white rounded-xl border border-neutral-200 overflow-hidden">
+            {section.items.map((item, i) => (
+              <div key={item.name}
+                className={\`flex items-start gap-0 \${i < section.items.length - 1 ? "border-b border-neutral-100" : ""}\`}>
+                {/* Annotation */}
+                <div className="w-52 flex-shrink-0 px-5 py-4 border-r border-neutral-100 bg-neutral-50/50">
+                  <div className="text-xs font-medium text-neutral-700 mb-1">{item.name}</div>
+                  <div className="flex gap-2">
+                    <span className="text-[10px] font-mono text-neutral-400 bg-neutral-100 px-1.5 py-0.5 rounded">{item.size}</span>
+                    <span className="text-[10px] font-mono text-neutral-400 bg-neutral-100 px-1.5 py-0.5 rounded">{item.weight}</span>
+                  </div>
+                  <div className="mt-1 text-[10px] font-mono text-blue-400 break-all">{item.class}</div>
+                </div>
+                {/* Live sample */}
+                <div className="flex-1 px-6 py-4 flex items-center">
+                  <span className={item.class}>{item.sample}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      ))}
+
+      {/* Pairing rules */}
+      <section>
+        <h2 className="text-xs font-semibold uppercase tracking-widest text-neutral-400 mb-4">Font Pairing Rules</h2>
+        <div className="bg-white rounded-xl border border-neutral-200 p-6 grid grid-cols-3 gap-6">
+          <div>
+            <div className="text-xs text-neutral-400 font-medium uppercase tracking-wide mb-2">Display</div>
+            <div className="text-2xl font-bold" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Space Grotesk</div>
+            <div className="text-xs text-neutral-400 mt-1 font-mono">H1, H2, hero headlines</div>
+          </div>
+          <div>
+            <div className="text-xs text-neutral-400 font-medium uppercase tracking-wide mb-2">Body</div>
+            <div className="text-2xl font-bold">Inter</div>
+            <div className="text-xs text-neutral-400 mt-1 font-mono">All UI text, labels, prose</div>
+          </div>
+          <div>
+            <div className="text-xs text-neutral-400 font-medium uppercase tracking-wide mb-2">Code / Data</div>
+            <div className="text-2xl font-bold font-mono">JetBrains Mono</div>
+            <div className="text-xs text-neutral-400 mt-1 font-mono">Code, IDs, timestamps</div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}`,
+    htmlPreview: `<div style="padding:32px;background:#fafafa;min-height:600px;font-family:system-ui,-apple-system,sans-serif">
+
+  <div style="font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#a3a3a3;margin-bottom:16px">Display / Headings</div>
+  <div style="background:white;border-radius:12px;border:1px solid #e5e5e5;overflow:hidden;margin-bottom:32px">
+    <div style="display:flex;align-items:center;border-bottom:1px solid #f5f5f5">
+      <div style="width:200px;flex-shrink:0;padding:16px 20px;border-right:1px solid #f5f5f5;background:#fafafa"><div style="font-size:11px;font-weight:500;color:#404040;margin-bottom:4px">H1 — Page Title</div><div style="display:flex;gap:6px"><span style="font-size:10px;font-family:monospace;color:#a3a3a3;background:#f5f5f5;padding:2px 6px;border-radius:3px">30px</span><span style="font-size:10px;font-family:monospace;color:#a3a3a3;background:#f5f5f5;padding:2px 6px;border-radius:3px">700</span></div></div>
+      <div style="flex:1;padding:16px 24px"><span style="font-size:30px;font-weight:700;color:#171717">Analytics Dashboard</span></div>
+    </div>
+    <div style="display:flex;align-items:center;border-bottom:1px solid #f5f5f5">
+      <div style="width:200px;flex-shrink:0;padding:16px 20px;border-right:1px solid #f5f5f5;background:#fafafa"><div style="font-size:11px;font-weight:500;color:#404040;margin-bottom:4px">H2 — Section Heading</div><div style="display:flex;gap:6px"><span style="font-size:10px;font-family:monospace;color:#a3a3a3;background:#f5f5f5;padding:2px 6px;border-radius:3px">24px</span><span style="font-size:10px;font-family:monospace;color:#a3a3a3;background:#f5f5f5;padding:2px 6px;border-radius:3px">700</span></div></div>
+      <div style="flex:1;padding:16px 24px"><span style="font-size:24px;font-weight:700;color:#171717">Revenue Overview</span></div>
+    </div>
+    <div style="display:flex;align-items:center;border-bottom:1px solid #f5f5f5">
+      <div style="width:200px;flex-shrink:0;padding:16px 20px;border-right:1px solid #f5f5f5;background:#fafafa"><div style="font-size:11px;font-weight:500;color:#404040;margin-bottom:4px">H3 — Card Title</div><div style="display:flex;gap:6px"><span style="font-size:10px;font-family:monospace;color:#a3a3a3;background:#f5f5f5;padding:2px 6px;border-radius:3px">18px</span><span style="font-size:10px;font-family:monospace;color:#a3a3a3;background:#f5f5f5;padding:2px 6px;border-radius:3px">600</span></div></div>
+      <div style="flex:1;padding:16px 24px"><span style="font-size:18px;font-weight:600;color:#171717">Recent Transactions</span></div>
+    </div>
+    <div style="display:flex;align-items:center">
+      <div style="width:200px;flex-shrink:0;padding:16px 20px;border-right:1px solid #f5f5f5;background:#fafafa"><div style="font-size:11px;font-weight:500;color:#404040;margin-bottom:4px">H4 — Sub-section</div><div style="display:flex;gap:6px"><span style="font-size:10px;font-family:monospace;color:#a3a3a3;background:#f5f5f5;padding:2px 6px;border-radius:3px">16px</span><span style="font-size:10px;font-family:monospace;color:#a3a3a3;background:#f5f5f5;padding:2px 6px;border-radius:3px">600</span></div></div>
+      <div style="flex:1;padding:16px 24px"><span style="font-size:16px;font-weight:600;color:#171717">Filter by Status</span></div>
+    </div>
+  </div>
+
+  <div style="font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#a3a3a3;margin-bottom:16px">Body & Functional</div>
+  <div style="background:white;border-radius:12px;border:1px solid #e5e5e5;overflow:hidden;margin-bottom:32px">
+    <div style="display:flex;align-items:flex-start;border-bottom:1px solid #f5f5f5">
+      <div style="width:200px;flex-shrink:0;padding:16px 20px;border-right:1px solid #f5f5f5;background:#fafafa"><div style="font-size:11px;font-weight:500;color:#404040;margin-bottom:4px">Body — Primary</div><div style="display:flex;gap:6px"><span style="font-size:10px;font-family:monospace;color:#a3a3a3;background:#f5f5f5;padding:2px 6px;border-radius:3px">14px</span><span style="font-size:10px;font-family:monospace;color:#a3a3a3;background:#f5f5f5;padding:2px 6px;border-radius:3px">400</span></div></div>
+      <div style="flex:1;padding:16px 24px"><span style="font-size:14px;color:#171717;line-height:1.5">The dashboard provides an overview of your key metrics and recent activity.</span></div>
+    </div>
+    <div style="display:flex;align-items:center;border-bottom:1px solid #f5f5f5">
+      <div style="width:200px;flex-shrink:0;padding:16px 20px;border-right:1px solid #f5f5f5;background:#fafafa"><div style="font-size:11px;font-weight:500;color:#404040;margin-bottom:4px">Label — Strong</div><div style="display:flex;gap:6px"><span style="font-size:10px;font-family:monospace;color:#a3a3a3;background:#f5f5f5;padding:2px 6px;border-radius:3px">14px</span><span style="font-size:10px;font-family:monospace;color:#a3a3a3;background:#f5f5f5;padding:2px 6px;border-radius:3px">500</span></div></div>
+      <div style="flex:1;padding:16px 24px"><span style="font-size:14px;font-weight:500;color:#171717">Display Name</span></div>
+    </div>
+    <div style="display:flex;align-items:center;border-bottom:1px solid #f5f5f5">
+      <div style="width:200px;flex-shrink:0;padding:16px 20px;border-right:1px solid #f5f5f5;background:#fafafa"><div style="font-size:11px;font-weight:500;color:#404040;margin-bottom:4px">Table Column Header</div><div style="display:flex;gap:6px"><span style="font-size:10px;font-family:monospace;color:#a3a3a3;background:#f5f5f5;padding:2px 6px;border-radius:3px">11px</span><span style="font-size:10px;font-family:monospace;color:#a3a3a3;background:#f5f5f5;padding:2px 6px;border-radius:3px">600</span></div></div>
+      <div style="flex:1;padding:16px 24px"><span style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#737373">CUSTOMER NAME</span></div>
+    </div>
+    <div style="display:flex;align-items:center;border-bottom:1px solid #f5f5f5">
+      <div style="width:200px;flex-shrink:0;padding:16px 20px;border-right:1px solid #f5f5f5;background:#fafafa"><div style="font-size:11px;font-weight:500;color:#404040;margin-bottom:4px">Monospace / Code</div><div style="display:flex;gap:6px"><span style="font-size:10px;font-family:monospace;color:#a3a3a3;background:#f5f5f5;padding:2px 6px;border-radius:3px">13px</span><span style="font-size:10px;font-family:monospace;color:#a3a3a3;background:#f5f5f5;padding:2px 6px;border-radius:3px">400</span></div></div>
+      <div style="flex:1;padding:16px 24px"><span style="font-size:13px;font-family:monospace;color:#171717">user_id: usr_01j9a4f5k2...</span></div>
+    </div>
+    <div style="display:flex;align-items:center">
+      <div style="width:200px;flex-shrink:0;padding:16px 20px;border-right:1px solid #f5f5f5;background:#fafafa"><div style="font-size:11px;font-weight:500;color:#404040;margin-bottom:4px">Caption / Meta</div><div style="display:flex;gap:6px"><span style="font-size:10px;font-family:monospace;color:#a3a3a3;background:#f5f5f5;padding:2px 6px;border-radius:3px">12px</span><span style="font-size:10px;font-family:monospace;color:#a3a3a3;background:#f5f5f5;padding:2px 6px;border-radius:3px">400</span></div></div>
+      <div style="flex:1;padding:16px 24px"><span style="font-size:12px;color:#a3a3a3">Created Jan 15, 2024 · Modified by Sarah Chen</span></div>
+    </div>
+  </div>
+
+  <div style="background:white;border-radius:12px;border:1px solid #e5e5e5;padding:24px;display:grid;grid-template-columns:repeat(3,1fr);gap:24px">
+    <div><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#a3a3a3;margin-bottom:8px">Display</div><div style="font-size:22px;font-weight:700;color:#171717">Space Grotesk</div><div style="font-size:10px;color:#a3a3a3;margin-top:4px;font-family:monospace">H1, H2, hero headlines</div></div>
+    <div><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#a3a3a3;margin-bottom:8px">Body</div><div style="font-size:22px;font-weight:700;color:#171717">Inter</div><div style="font-size:10px;color:#a3a3a3;margin-top:4px;font-family:monospace">All UI text, labels, prose</div></div>
+    <div><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#a3a3a3;margin-bottom:8px">Code / Data</div><div style="font-size:20px;font-weight:700;color:#171717;font-family:monospace">JetBrains Mono</div><div style="font-size:10px;color:#a3a3a3;margin-top:4px;font-family:monospace">Code, IDs, timestamps</div></div>
+  </div>
+</div>`,
+    techStack: ["react", "tailwind"],
+    licenseType: "free",
+  },
+
+  {
+    slug: "density-and-layout-guide",
+    title: "Density & Layout Guide",
+    description: "Side-by-side comparison of compact, default, and comfortable density modes applied to the same user table. Shows how row height, font size, padding, and spacing change between modes. Use to decide which density is right for your context before building.",
+    category: "Foundations",
+    tags: ["foundations", "density", "layout", "compact", "comfortable", "tables", "reference"],
+    style: "",
+    code: `export default function DensityAndLayoutGuide() {
+  const users = [
+    { name: "Sarah Chen", role: "Admin", status: "Active" },
+    { name: "Marcus Rivera", role: "Editor", status: "Active" },
+    { name: "Emily Park", role: "Viewer", status: "Trial" },
+    { name: "David Kim", role: "Editor", status: "Churned" },
+  ];
+
+  const statusStyles: Record<string, string> = {
+    Active:  "bg-emerald-50 text-emerald-700",
+    Trial:   "bg-blue-50 text-blue-700",
+    Churned: "bg-neutral-100 text-neutral-500",
+  };
+
+  const modes = [
+    {
+      name: "Compact",
+      desc: "Data-heavy admin, log viewers, dense analytics",
+      rowH: "h-8",
+      cellPad: "px-4 py-1.5",
+      headPad: "px-4 py-2",
+      textSize: "text-xs",
+      nameSize: "text-xs",
+    },
+    {
+      name: "Default",
+      desc: "Standard dashboards, CRM, settings pages",
+      rowH: "h-11",
+      cellPad: "px-5 py-3",
+      headPad: "px-5 py-2.5",
+      textSize: "text-sm",
+      nameSize: "text-sm",
+    },
+    {
+      name: "Comfortable",
+      desc: "Consumer apps, onboarding, marketing dashboards",
+      rowH: "h-14",
+      cellPad: "px-6 py-4",
+      headPad: "px-6 py-3",
+      textSize: "text-sm",
+      nameSize: "text-base",
+    },
+  ];
+
+  return (
+    <div className="p-8 bg-neutral-50 min-h-[600px] space-y-8 font-sans">
+      <div>
+        <h2 className="text-xl font-bold text-neutral-900 mb-1">Density Modes</h2>
+        <p className="text-sm text-neutral-500">Pick one density per layout and use it consistently. Never mix compact and comfortable in the same view.</p>
+      </div>
+
+      <div className="grid grid-cols-3 gap-6">
+        {modes.map(mode => (
+          <div key={mode.name} className="flex flex-col gap-3">
+            <div className="flex items-start justify-between">
+              <div>
+                <div className="text-sm font-semibold text-neutral-900">{mode.name}</div>
+                <div className="text-xs text-neutral-400 mt-0.5">{mode.desc}</div>
+              </div>
+              <div className={\`px-2 py-0.5 rounded-full text-xs font-medium \${
+                mode.name === "Compact" ? "bg-violet-50 text-violet-700" :
+                mode.name === "Default" ? "bg-blue-50 text-blue-700" :
+                "bg-amber-50 text-amber-700"
+              }\`}>{mode.name}</div>
+            </div>
+
+            <div className="bg-white rounded-xl border border-neutral-200 overflow-hidden shadow-sm">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-neutral-100 bg-neutral-50">
+                    <th className={\`text-left \${mode.headPad} text-xs font-semibold uppercase tracking-wider text-neutral-500\`}>Name</th>
+                    <th className={\`text-left \${mode.headPad} text-xs font-semibold uppercase tracking-wider text-neutral-500\`}>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {users.map((u, i) => (
+                    <tr key={i} className={\`\${mode.rowH} border-b border-neutral-100 last:border-0\`}>
+                      <td className={\`\${mode.cellPad}\`}>
+                        <div className={\`\${mode.nameSize} font-medium text-neutral-900\`}>{u.name}</div>
+                        <div className="text-xs text-neutral-400">{u.role}</div>
+                      </td>
+                      <td className={\`\${mode.cellPad}\`}>
+                        <span className={\`px-2 py-0.5 rounded-full text-xs font-medium \${statusStyles[u.status]}\`}>{u.status}</span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="bg-white rounded-lg border border-neutral-200 p-3 text-xs font-mono text-neutral-400 space-y-0.5">
+              <div>row: <span className="text-blue-500">{mode.rowH.replace("h-", "") + " × 4px"}</span></div>
+              <div>cell: <span className="text-blue-500">{mode.cellPad}</span></div>
+              <div>text: <span className="text-blue-500">{mode.nameSize}</span></div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Spacing reminder */}
+      <div className="bg-white rounded-xl border border-neutral-200 p-6">
+        <h3 className="text-sm font-semibold mb-4">Spacing Rules</h3>
+        <div className="grid grid-cols-3 gap-4 text-xs">
+          <div className="space-y-2">
+            <div className="font-medium text-neutral-700">All spacing is 4px grid</div>
+            <div className="text-neutral-400">p-1=4px · p-2=8px · p-3=12px · p-4=16px · p-6=24px · p-8=32px</div>
+          </div>
+          <div className="space-y-2">
+            <div className="font-medium text-neutral-700">Page padding</div>
+            <div className="text-neutral-400">Mobile: 24px · Tablet: 32px · Desktop: 48px</div>
+          </div>
+          <div className="space-y-2">
+            <div className="font-medium text-neutral-700">Card padding</div>
+            <div className="text-neutral-400">Compact: p-4 (16px) · Default: p-5–p-6 · Spacious: p-8 (32px)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}`,
+    htmlPreview: `<div style="padding:32px;background:#fafafa;min-height:600px;font-family:system-ui,-apple-system,sans-serif">
+  <h2 style="font-size:20px;font-weight:700;color:#171717;margin:0 0 4px">Density Modes</h2>
+  <p style="font-size:13px;color:#a3a3a3;margin:0 0 32px">Pick one density per layout. Never mix compact and comfortable in the same view.</p>
+
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-bottom:32px">
+    <!-- Compact -->
+    <div>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px">
+        <div><div style="font-size:13px;font-weight:600;color:#171717">Compact</div><div style="font-size:11px;color:#a3a3a3;margin-top:2px">Data-heavy admin, log viewers</div></div>
+        <span style="padding:2px 8px;border-radius:9999px;font-size:10px;font-weight:500;background:#f5f3ff;color:#7c3aed">Compact</span>
+      </div>
+      <div style="background:white;border-radius:12px;border:1px solid #e5e5e5;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.06)">
+        <table style="width:100%;border-collapse:collapse">
+          <thead><tr style="border-bottom:1px solid #f5f5f5;background:#fafafa"><th style="text-align:left;padding:8px 16px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:#737373">Name</th><th style="text-align:left;padding:8px 16px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:#737373">Status</th></tr></thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #f5f5f5;height:32px"><td style="padding:6px 16px"><div style="font-size:11px;font-weight:500;color:#171717">Sarah Chen</div><div style="font-size:10px;color:#a3a3a3">Admin</div></td><td style="padding:6px 16px"><span style="padding:1px 6px;border-radius:9999px;font-size:10px;font-weight:500;background:#ecfdf5;color:#047857">Active</span></td></tr>
+            <tr style="border-bottom:1px solid #f5f5f5;height:32px"><td style="padding:6px 16px"><div style="font-size:11px;font-weight:500;color:#171717">Marcus Rivera</div><div style="font-size:10px;color:#a3a3a3">Editor</div></td><td style="padding:6px 16px"><span style="padding:1px 6px;border-radius:9999px;font-size:10px;font-weight:500;background:#ecfdf5;color:#047857">Active</span></td></tr>
+            <tr style="border-bottom:1px solid #f5f5f5;height:32px"><td style="padding:6px 16px"><div style="font-size:11px;font-weight:500;color:#171717">Emily Park</div><div style="font-size:10px;color:#a3a3a3">Viewer</div></td><td style="padding:6px 16px"><span style="padding:1px 6px;border-radius:9999px;font-size:10px;font-weight:500;background:#eff6ff;color:#1d4ed8">Trial</span></td></tr>
+            <tr style="height:32px"><td style="padding:6px 16px"><div style="font-size:11px;font-weight:500;color:#171717">David Kim</div><div style="font-size:10px;color:#a3a3a3">Editor</div></td><td style="padding:6px 16px"><span style="padding:1px 6px;border-radius:9999px;font-size:10px;font-weight:500;background:#f5f5f5;color:#525252">Churned</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="background:white;border-radius:8px;border:1px solid #e5e5e5;padding:10px 12px;margin-top:10px;font-family:monospace;font-size:10px;color:#a3a3a3;line-height:1.8">row: <span style="color:#2563eb">8 × 4px = 32px</span><br/>cell: <span style="color:#2563eb">px-4 py-1.5</span><br/>text: <span style="color:#2563eb">text-xs</span></div>
+    </div>
+    <!-- Default -->
+    <div>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px">
+        <div><div style="font-size:13px;font-weight:600;color:#171717">Default</div><div style="font-size:11px;color:#a3a3a3;margin-top:2px">Standard dashboards, CRM</div></div>
+        <span style="padding:2px 8px;border-radius:9999px;font-size:10px;font-weight:500;background:#eff6ff;color:#1d4ed8">Default</span>
+      </div>
+      <div style="background:white;border-radius:12px;border:1px solid #e5e5e5;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.06)">
+        <table style="width:100%;border-collapse:collapse">
+          <thead><tr style="border-bottom:1px solid #f5f5f5;background:#fafafa"><th style="text-align:left;padding:10px 20px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:#737373">Name</th><th style="text-align:left;padding:10px 20px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:#737373">Status</th></tr></thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #f5f5f5;height:44px"><td style="padding:12px 20px"><div style="font-size:13px;font-weight:500;color:#171717">Sarah Chen</div><div style="font-size:11px;color:#a3a3a3">Admin</div></td><td style="padding:12px 20px"><span style="padding:2px 8px;border-radius:9999px;font-size:11px;font-weight:500;background:#ecfdf5;color:#047857">Active</span></td></tr>
+            <tr style="border-bottom:1px solid #f5f5f5;height:44px"><td style="padding:12px 20px"><div style="font-size:13px;font-weight:500;color:#171717">Marcus Rivera</div><div style="font-size:11px;color:#a3a3a3">Editor</div></td><td style="padding:12px 20px"><span style="padding:2px 8px;border-radius:9999px;font-size:11px;font-weight:500;background:#ecfdf5;color:#047857">Active</span></td></tr>
+            <tr style="border-bottom:1px solid #f5f5f5;height:44px"><td style="padding:12px 20px"><div style="font-size:13px;font-weight:500;color:#171717">Emily Park</div><div style="font-size:11px;color:#a3a3a3">Viewer</div></td><td style="padding:12px 20px"><span style="padding:2px 8px;border-radius:9999px;font-size:11px;font-weight:500;background:#eff6ff;color:#1d4ed8">Trial</span></td></tr>
+            <tr style="height:44px"><td style="padding:12px 20px"><div style="font-size:13px;font-weight:500;color:#171717">David Kim</div><div style="font-size:11px;color:#a3a3a3">Editor</div></td><td style="padding:12px 20px"><span style="padding:2px 8px;border-radius:9999px;font-size:11px;font-weight:500;background:#f5f5f5;color:#525252">Churned</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="background:white;border-radius:8px;border:1px solid #e5e5e5;padding:10px 12px;margin-top:10px;font-family:monospace;font-size:10px;color:#a3a3a3;line-height:1.8">row: <span style="color:#2563eb">11 × 4px = 44px</span><br/>cell: <span style="color:#2563eb">px-5 py-3</span><br/>text: <span style="color:#2563eb">text-sm</span></div>
+    </div>
+    <!-- Comfortable -->
+    <div>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px">
+        <div><div style="font-size:13px;font-weight:600;color:#171717">Comfortable</div><div style="font-size:11px;color:#a3a3a3;margin-top:2px">Consumer apps, onboarding</div></div>
+        <span style="padding:2px 8px;border-radius:9999px;font-size:10px;font-weight:500;background:#fffbeb;color:#b45309">Comfortable</span>
+      </div>
+      <div style="background:white;border-radius:12px;border:1px solid #e5e5e5;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.06)">
+        <table style="width:100%;border-collapse:collapse">
+          <thead><tr style="border-bottom:1px solid #f5f5f5;background:#fafafa"><th style="text-align:left;padding:12px 24px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:#737373">Name</th><th style="text-align:left;padding:12px 24px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:#737373">Status</th></tr></thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #f5f5f5;height:56px"><td style="padding:16px 24px"><div style="font-size:15px;font-weight:500;color:#171717">Sarah Chen</div><div style="font-size:12px;color:#a3a3a3">Admin</div></td><td style="padding:16px 24px"><span style="padding:3px 10px;border-radius:9999px;font-size:12px;font-weight:500;background:#ecfdf5;color:#047857">Active</span></td></tr>
+            <tr style="border-bottom:1px solid #f5f5f5;height:56px"><td style="padding:16px 24px"><div style="font-size:15px;font-weight:500;color:#171717">Marcus Rivera</div><div style="font-size:12px;color:#a3a3a3">Editor</div></td><td style="padding:16px 24px"><span style="padding:3px 10px;border-radius:9999px;font-size:12px;font-weight:500;background:#ecfdf5;color:#047857">Active</span></td></tr>
+            <tr style="border-bottom:1px solid #f5f5f5;height:56px"><td style="padding:16px 24px"><div style="font-size:15px;font-weight:500;color:#171717">Emily Park</div><div style="font-size:12px;color:#a3a3a3">Viewer</div></td><td style="padding:16px 24px"><span style="padding:3px 10px;border-radius:9999px;font-size:12px;font-weight:500;background:#eff6ff;color:#1d4ed8">Trial</span></td></tr>
+            <tr style="height:56px"><td style="padding:16px 24px"><div style="font-size:15px;font-weight:500;color:#171717">David Kim</div><div style="font-size:12px;color:#a3a3a3">Editor</div></td><td style="padding:16px 24px"><span style="padding:3px 10px;border-radius:9999px;font-size:12px;font-weight:500;background:#f5f5f5;color:#525252">Churned</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="background:white;border-radius:8px;border:1px solid #e5e5e5;padding:10px 12px;margin-top:10px;font-family:monospace;font-size:10px;color:#a3a3a3;line-height:1.8">row: <span style="color:#2563eb">14 × 4px = 56px</span><br/>cell: <span style="color:#2563eb">px-6 py-4</span><br/>text: <span style="color:#2563eb">text-base</span></div>
+    </div>
+  </div>
+
+  <div style="background:white;border-radius:12px;border:1px solid #e5e5e5;padding:24px;display:grid;grid-template-columns:repeat(3,1fr);gap:24px">
+    <div><div style="font-size:12px;font-weight:600;color:#404040;margin-bottom:6px">4px spacing grid</div><div style="font-size:11px;color:#a3a3a3;line-height:1.7">p-1=4px · p-2=8px · p-3=12px · p-4=16px · p-6=24px · p-8=32px</div></div>
+    <div><div style="font-size:12px;font-weight:600;color:#404040;margin-bottom:6px">Page padding</div><div style="font-size:11px;color:#a3a3a3;line-height:1.7">Mobile: 24px · Tablet: 32px · Desktop: 48px</div></div>
+    <div><div style="font-size:12px;font-weight:600;color:#404040;margin-bottom:6px">Card padding</div><div style="font-size:11px;color:#a3a3a3;line-height:1.7">Compact: p-4 (16px) · Default: p-5–p-6 · Spacious: p-8 (32px)</div></div>
+  </div>
+</div>`,
+    techStack: ["react", "tailwind"],
+    licenseType: "free",
+  },
+
+  {
+    slug: "anti-pattern-contrast",
+    title: "Anti-Pattern Contrast",
+    description: "Side-by-side before/after showing the most common AI-generated UI mistakes vs their corrected versions. Left: raw browser-default styling, unstyled HTML, no typography hierarchy, missing semantic colors. Right: correct implementation following design foundations. A diagnostic reference for identifying and fixing low-quality output.",
+    category: "Foundations",
+    tags: ["foundations", "anti-patterns", "before-after", "contrast", "mistakes", "reference", "quality"],
+    style: "",
+    code: `export default function AntiPatternContrast() {
+  const rows = [
+    { name: "Sarah Chen", email: "sarah@example.com", role: "Admin", status: "Active" },
+    { name: "Marcus Rivera", email: "m.rivera@example.com", role: "Editor", status: "Inactive" },
+    { name: "Emily Park", email: "e.park@example.com", role: "Viewer", status: "Active" },
+  ];
+
+  return (
+    <div className="p-8 bg-neutral-50 min-h-[700px] font-sans">
+      <div className="mb-8">
+        <h2 className="text-xl font-bold text-neutral-900 mb-1">Anti-Pattern Contrast</h2>
+        <p className="text-sm text-neutral-500">The same UI built wrong (left) vs right (right). Every difference is intentional.</p>
+      </div>
+
+      <div className="grid grid-cols-2 gap-6">
+        {/* ── WRONG ── */}
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-5 h-5 rounded-full bg-red-100 flex items-center justify-center">
+              <span className="text-red-600 text-xs font-bold">✗</span>
+            </div>
+            <span className="text-sm font-semibold text-red-700">Common Mistakes</span>
+          </div>
+          <div style={{ fontFamily: "Times New Roman, serif" }} className="border border-gray-400 bg-white p-4">
+            <h1 style={{ fontSize: "2em" }}>User Management</h1>
+            <p style={{ color: "gray" }}>manage your users here</p>
+            <input type="text" placeholder="search..." style={{ border: "1px solid gray", padding: "2px", width: "100%", marginBottom: "8px" }} />
+            <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid black" }}>
+              <thead>
+                <tr style={{ background: "gray", color: "white" }}>
+                  <td style={{ border: "1px solid black", padding: "4px" }}>Name</td>
+                  <td style={{ border: "1px solid black", padding: "4px" }}>Email</td>
+                  <td style={{ border: "1px solid black", padding: "4px" }}>Role</td>
+                  <td style={{ border: "1px solid black", padding: "4px" }}>Status</td>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((r, i) => (
+                  <tr key={i} style={{ background: i % 2 === 0 ? "#f9f9f9" : "white" }}>
+                    <td style={{ border: "1px solid #ccc", padding: "4px" }}>{r.name}</td>
+                    <td style={{ border: "1px solid #ccc", padding: "4px" }}>{r.email}</td>
+                    <td style={{ border: "1px solid #ccc", padding: "4px" }}>{r.role}</td>
+                    <td style={{ border: "1px solid #ccc", padding: "4px", color: r.status === "Active" ? "green" : "red" }}>{r.status}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <div style={{ marginTop: "8px", display: "flex", gap: "4px" }}>
+              <button style={{ border: "1px solid gray", padding: "4px 8px", background: "white" }}>Cancel</button>
+              <button style={{ border: "none", padding: "4px 8px", background: "blue", color: "white" }}>SAVE CHANGES</button>
+            </div>
+          </div>
+          <div className="mt-3 bg-red-50 border border-red-200 rounded-lg p-4 space-y-1.5">
+            {[
+              "Wrong font: Times New Roman (should be Inter)",
+              "Unstyled h1 tag — no size/weight/color specification",
+              "Input: no height, no border-radius, no focus state",
+              "Table: raw border collapse with visible black borders",
+              "Alternating gray rows — visual noise without purpose",
+              "Status: color only, no semantic badge (color-blind failure)",
+              "Button: raw blue (#0000ff), ALL CAPS label",
+              "Content gap missing between title area and table",
+            ].map(note => (
+              <div key={note} className="flex items-start gap-2 text-xs text-red-700">
+                <span className="mt-0.5 flex-shrink-0">✗</span>
+                <span>{note}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ── CORRECT ── */}
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center">
+              <span className="text-emerald-600 text-xs font-bold">✓</span>
+            </div>
+            <span className="text-sm font-semibold text-emerald-700">Correct Implementation</span>
+          </div>
+          <div className="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
+            <div className="px-6 py-5 border-b border-neutral-100">
+              <h1 className="text-xl font-bold text-neutral-900">User Management</h1>
+              <p className="text-sm text-neutral-400 mt-0.5">Manage access and roles for your team.</p>
+            </div>
+            <div className="px-6 py-3 border-b border-neutral-100">
+              <input
+                type="text"
+                placeholder="Search users..."
+                className="w-full h-9 px-3 text-sm border border-neutral-200 rounded-lg bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-colors"
+              />
+            </div>
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-neutral-100 bg-neutral-50">
+                  <th className="text-left px-6 py-3 text-xs font-semibold uppercase tracking-wider text-neutral-500">Name</th>
+                  <th className="text-left px-6 py-3 text-xs font-semibold uppercase tracking-wider text-neutral-500">Email</th>
+                  <th className="text-left px-6 py-3 text-xs font-semibold uppercase tracking-wider text-neutral-500">Role</th>
+                  <th className="text-left px-6 py-3 text-xs font-semibold uppercase tracking-wider text-neutral-500">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((r, i) => (
+                  <tr key={i} className="border-b border-neutral-100 last:border-0 hover:bg-neutral-50 transition-colors">
+                    <td className="px-6 py-3 font-medium text-neutral-900">{r.name}</td>
+                    <td className="px-6 py-3 text-neutral-500">{r.email}</td>
+                    <td className="px-6 py-3 text-neutral-600">{r.role}</td>
+                    <td className="px-6 py-3">
+                      <span className={\`px-2.5 py-0.5 rounded-full text-xs font-medium \${
+                        r.status === "Active" ? "bg-emerald-50 text-emerald-700" : "bg-neutral-100 text-neutral-500"
+                      }\`}>{r.status}</span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <div className="px-6 py-4 border-t border-neutral-100 flex justify-end gap-3">
+              <button className="h-9 px-4 text-sm font-medium text-neutral-700 bg-white border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors">Cancel</button>
+              <button className="h-9 px-4 text-sm font-medium text-white bg-neutral-900 rounded-lg hover:bg-neutral-700 transition-colors">Save Changes</button>
+            </div>
+          </div>
+          <div className="mt-3 bg-emerald-50 border border-emerald-200 rounded-lg p-4 space-y-1.5">
+            {[
+              "Font: Inter (system-ui fallback) — clean and consistent",
+              "H1: text-xl font-bold text-neutral-900 — explicit hierarchy",
+              "Input: h-9, rounded-lg, focus ring, transition",
+              "Table: border-neutral-100 dividers only — no box borders",
+              "Rows: hover state, last:border-0 — intentional detail",
+              "Status: semantic badge (color + text) — accessible",
+              "Button: neutral-900 primary, sentence case label",
+              "Spacing: consistent 24px gutter throughout",
+            ].map(note => (
+              <div key={note} className="flex items-start gap-2 text-xs text-emerald-700">
+                <span className="mt-0.5 flex-shrink-0">✓</span>
+                <span>{note}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}`,
+    htmlPreview: `<div style="padding:32px;background:#fafafa;min-height:700px;font-family:system-ui,-apple-system,sans-serif">
+  <h2 style="font-size:20px;font-weight:700;color:#171717;margin:0 0 4px">Anti-Pattern Contrast</h2>
+  <p style="font-size:13px;color:#a3a3a3;margin:0 0 32px">The same UI built wrong (left) vs right (right). Every difference is intentional.</p>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+    <!-- WRONG -->
+    <div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+        <div style="width:20px;height:20px;border-radius:50%;background:#fee2e2;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#b91c1c">✗</div>
+        <span style="font-size:13px;font-weight:600;color:#b91c1c">Common Mistakes</span>
+      </div>
+      <div style="font-family:Times New Roman,serif;border:1px solid #aaa;background:white;padding:16px">
+        <h1 style="font-size:2em;margin:0 0 4px">User Management</h1>
+        <p style="color:gray;margin:0 0 8px;font-size:14px">manage your users here</p>
+        <input type="text" placeholder="search..." style="border:1px solid gray;padding:2px;width:100%;box-sizing:border-box;margin-bottom:8px;font-family:inherit" />
+        <table style="width:100%;border-collapse:collapse;border:1px solid black;font-size:13px">
+          <thead><tr style="background:gray;color:white"><td style="border:1px solid black;padding:4px">Name</td><td style="border:1px solid black;padding:4px">Email</td><td style="border:1px solid black;padding:4px">Role</td><td style="border:1px solid black;padding:4px">Status</td></tr></thead>
+          <tbody>
+            <tr style="background:#f9f9f9"><td style="border:1px solid #ccc;padding:4px">Sarah Chen</td><td style="border:1px solid #ccc;padding:4px">sarah@example.com</td><td style="border:1px solid #ccc;padding:4px">Admin</td><td style="border:1px solid #ccc;padding:4px;color:green">Active</td></tr>
+            <tr style="background:white"><td style="border:1px solid #ccc;padding:4px">Marcus Rivera</td><td style="border:1px solid #ccc;padding:4px">m.rivera@example.com</td><td style="border:1px solid #ccc;padding:4px">Editor</td><td style="border:1px solid #ccc;padding:4px;color:red">Inactive</td></tr>
+            <tr style="background:#f9f9f9"><td style="border:1px solid #ccc;padding:4px">Emily Park</td><td style="border:1px solid #ccc;padding:4px">e.park@example.com</td><td style="border:1px solid #ccc;padding:4px">Viewer</td><td style="border:1px solid #ccc;padding:4px;color:green">Active</td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:8px;display:flex;gap:4px">
+          <button style="border:1px solid gray;padding:4px 8px;background:white;font-family:inherit;cursor:pointer">Cancel</button>
+          <button style="border:none;padding:4px 8px;background:blue;color:white;font-family:inherit;cursor:pointer">SAVE CHANGES</button>
+        </div>
+      </div>
+      <div style="margin-top:12px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:16px">
+        ${["Wrong font: Times New Roman", "Unstyled h1 — no size/weight/color", "Input: no height, no border-radius", "Table: raw black borders", "Alt gray rows — visual noise", "Status: color only, no badge", "Button: raw blue, ALL CAPS", "Missing spacing between sections"].map(n => `<div style="display:flex;gap:8px;font-size:11px;color:#b91c1c;margin-bottom:4px"><span style="flex-shrink:0">✗</span><span>${n}</span></div>`).join("")}
+      </div>
+    </div>
+
+    <!-- CORRECT -->
+    <div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+        <div style="width:20px;height:20px;border-radius:50%;background:#d1fae5;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#047857">✓</div>
+        <span style="font-size:13px;font-weight:600;color:#047857">Correct Implementation</span>
+      </div>
+      <div style="background:white;border-radius:12px;border:1px solid #e5e5e5;box-shadow:0 1px 3px rgba(0,0,0,0.06);overflow:hidden">
+        <div style="padding:20px 24px;border-bottom:1px solid #f5f5f5">
+          <div style="font-size:20px;font-weight:700;color:#171717;margin-bottom:2px">User Management</div>
+          <div style="font-size:13px;color:#a3a3a3">Manage access and roles for your team.</div>
+        </div>
+        <div style="padding:12px 24px;border-bottom:1px solid #f5f5f5">
+          <input type="text" placeholder="Search users..." style="width:100%;height:36px;padding:0 12px;font-size:13px;border:1px solid #e5e5e5;border-radius:8px;background:#fafafa;box-sizing:border-box;font-family:inherit;outline:none" />
+        </div>
+        <table style="width:100%;border-collapse:collapse;font-size:13px">
+          <thead><tr style="border-bottom:1px solid #f5f5f5;background:#fafafa"><th style="text-align:left;padding:10px 24px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:#737373">Name</th><th style="text-align:left;padding:10px 24px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:#737373">Email</th><th style="text-align:left;padding:10px 24px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:#737373">Role</th><th style="text-align:left;padding:10px 24px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:#737373">Status</th></tr></thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #f5f5f5"><td style="padding:12px 24px;font-weight:500;color:#171717">Sarah Chen</td><td style="padding:12px 24px;color:#737373">sarah@example.com</td><td style="padding:12px 24px;color:#525252">Admin</td><td style="padding:12px 24px"><span style="padding:2px 8px;border-radius:9999px;font-size:11px;font-weight:500;background:#ecfdf5;color:#047857">Active</span></td></tr>
+            <tr style="border-bottom:1px solid #f5f5f5"><td style="padding:12px 24px;font-weight:500;color:#171717">Marcus Rivera</td><td style="padding:12px 24px;color:#737373">m.rivera@example.com</td><td style="padding:12px 24px;color:#525252">Editor</td><td style="padding:12px 24px"><span style="padding:2px 8px;border-radius:9999px;font-size:11px;font-weight:500;background:#f5f5f5;color:#525252">Inactive</span></td></tr>
+            <tr><td style="padding:12px 24px;font-weight:500;color:#171717">Emily Park</td><td style="padding:12px 24px;color:#737373">e.park@example.com</td><td style="padding:12px 24px;color:#525252">Viewer</td><td style="padding:12px 24px"><span style="padding:2px 8px;border-radius:9999px;font-size:11px;font-weight:500;background:#ecfdf5;color:#047857">Active</span></td></tr>
+          </tbody>
+        </table>
+        <div style="padding:16px 24px;border-top:1px solid #f5f5f5;display:flex;justify-content:flex-end;gap:12px">
+          <button style="height:36px;padding:0 16px;font-size:13px;font-weight:500;color:#404040;background:white;border:1px solid #e5e5e5;border-radius:8px;cursor:pointer;font-family:inherit">Cancel</button>
+          <button style="height:36px;padding:0 16px;font-size:13px;font-weight:500;color:white;background:#171717;border:none;border-radius:8px;cursor:pointer;font-family:inherit">Save Changes</button>
+        </div>
+      </div>
+      <div style="margin-top:12px;background:#ecfdf5;border:1px solid #a7f3d0;border-radius:8px;padding:16px">
+        ${["Font: Inter — clean, consistent", "H1: explicit size, weight, color", "Input: h-9, rounded-lg, focus ring", "Table: subtle dividers only", "Rows: hover state, intentional spacing", "Status: semantic badge (color + text)", "Button: neutral-900, sentence case", "Spacing: 24px gutter throughout"].map(n => `<div style="display:flex;gap:8px;font-size:11px;color:#047857;margin-bottom:4px"><span style="flex-shrink:0">✓</span><span>${n}</span></div>`).join("")}
+      </div>
+    </div>
+  </div>
+</div>`,
+    techStack: ["react", "tailwind"],
+    licenseType: "free",
+  },
 ];

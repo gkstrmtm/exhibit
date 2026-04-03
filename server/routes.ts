@@ -763,15 +763,41 @@ export async function registerRoutes(
 > EXHIBIT is a proof-first UI component library with ${allExhibits.length} production-ready React components across ${categories.length} categories.
 > All components are self-contained React + TypeScript + Tailwind CSS. No external UI library required.
 
-## Fastest access (no server needed — static GitHub files)
+## STEP 1 — Fetch design foundations first (always do this before building any UI)
 
-Fetch the full index with all component code:
+Before writing a single component, fetch the design rulebook. It defines typography, color, spacing,
+layout, component sizing, density modes, and the anti-patterns to avoid.
+
+  https://raw.githubusercontent.com/gkstrmtm/exhibit/main/design-foundations.json
+
+Human-readable version:
+  https://raw.githubusercontent.com/gkstrmtm/exhibit/main/design-foundations.md
+
+The design foundations include:
+- Font families: Inter (body), Space Grotesk (display), JetBrains Mono (code/data)
+- Full type scale with pixel sizes, weights, and usage rules
+- Color system: neutral palette, semantic states (success/warning/error/info), interactive variants
+- 4px spacing grid with correct values for cards, pages, and components
+- Layout dimensions: sidebar widths, nav heights, max-widths for content and reading columns
+- Elevation levels (shadow-sm through shadow-2xl) with correct use cases
+- Component sizing: buttons, inputs, tables, avatars, badges
+- Density modes: compact / default / comfortable — when to use each
+- Anti-patterns list: the most common AI UI mistakes and how to fix them
+
+Reference exhibits (fetch for visual anchors):
+  https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/full-reference-dashboard.tsx
+  https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/design-token-reference.tsx
+  https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/anti-pattern-contrast.tsx
+
+## STEP 2 — Fetch components
+
+Full index with all component code:
   https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components.json
 
-Fetch a single component by slug:
+Single component by slug:
   https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/{slug}.tsx
 
-List categories with slugs:
+Category list with slugs:
   https://raw.githubusercontent.com/gkstrmtm/exhibit/main/categories.json
 
 ## Live API (requires server)
@@ -805,9 +831,10 @@ Each entry includes:
 
 ## Example prompts for AI assistants
 
-"Fetch https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components.json and find me a kanban board component"
+"First fetch https://raw.githubusercontent.com/gkstrmtm/exhibit/main/design-foundations.json, then fetch https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components.json and build me a polished admin dashboard"
+"Get https://raw.githubusercontent.com/gkstrmtm/exhibit/main/design-foundations.json and use it as the design system for this entire project"
+"Fetch https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/full-reference-dashboard.tsx as the visual target for this dashboard"
 "Get https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/command-palette-shell.tsx and use it in my app"
-"Fetch https://raw.githubusercontent.com/gkstrmtm/exhibit/main/categories.json and show me what App Shell patterns are available"
 
 ## GitHub
 

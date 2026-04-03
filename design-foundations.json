@@ -1,0 +1,386 @@
+{
+  "_meta": {
+    "name": "EXHIBIT Design Foundations",
+    "version": "1.0.0",
+    "description": "The complete design rulebook for AI-assisted UI work. Fetch this file at the start of any UI task to guarantee visual consistency, correct typography, and professional output.",
+    "usage": "Pass this file as context before asking an AI to build any dashboard, form, layout, or component. It defines what 'correct' looks and feels like.",
+    "githubUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/design-foundations.json",
+    "componentLibrary": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components.json",
+    "referenceExhibits": {
+      "fullDashboard": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/full-reference-dashboard.tsx",
+      "tokenReference": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/design-token-reference.tsx",
+      "typographySystem": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/typography-system.tsx",
+      "antiPatternContrast": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/anti-pattern-contrast.tsx"
+    }
+  },
+
+  "typography": {
+    "_rule": "Never mix font families except as specified. Never use system-ui or Arial for product UI. Body text is always Inter. Display/headings use Space Grotesk. Code/data uses JetBrains Mono.",
+    "fonts": {
+      "display": {
+        "family": "Space Grotesk",
+        "usage": "Page titles, hero headlines, section headings, card titles, dashboard H1/H2",
+        "fallback": "system-ui, sans-serif"
+      },
+      "body": {
+        "family": "Inter",
+        "usage": "All prose, labels, descriptions, table content, form text, nav items, captions",
+        "fallback": "system-ui, sans-serif"
+      },
+      "mono": {
+        "family": "JetBrains Mono",
+        "usage": "Code snippets, slugs, IDs, numeric data in tables, timestamps, API responses",
+        "fallback": "monospace"
+      }
+    },
+    "scale": {
+      "xs":   { "px": 11, "tailwind": "text-xs",   "usage": "Table column headers (uppercase), captions, badge labels, timestamps" },
+      "sm":   { "px": 13, "tailwind": "text-sm",   "usage": "Body text, nav links, table rows, form labels, secondary info" },
+      "base": { "px": 14, "tailwind": "text-sm",   "usage": "Primary body text, card descriptions, input values" },
+      "md":   { "px": 16, "tailwind": "text-base",  "usage": "Section introductions, prominent labels, sidebar headings" },
+      "lg":   { "px": 18, "tailwind": "text-lg",   "usage": "Card titles, dialog headings, sub-page titles" },
+      "xl":   { "px": 20, "tailwind": "text-xl",   "usage": "Page section headings, KPI metric values" },
+      "2xl":  { "px": 24, "tailwind": "text-2xl",  "usage": "Large KPI numbers, page-level headings (H2)" },
+      "3xl":  { "px": 30, "tailwind": "text-3xl",  "usage": "Page titles (H1), hero subheadlines" },
+      "4xl":  { "px": 36, "tailwind": "text-4xl",  "usage": "Hero headlines (marketing only)" },
+      "5xl":  { "px": 48, "tailwind": "text-5xl",  "usage": "Massive display text (landing pages only)" }
+    },
+    "weights": {
+      "400": { "tailwind": "font-normal",    "usage": "Body copy, descriptions, secondary text" },
+      "500": { "tailwind": "font-medium",    "usage": "Labels, nav items, table data, form field values" },
+      "600": { "tailwind": "font-semibold",  "usage": "Headings, button labels, card titles, badge text" },
+      "700": { "tailwind": "font-bold",      "usage": "KPI values, page titles, display headings" },
+      "800": { "tailwind": "font-extrabold", "usage": "Logo text, hero headlines on marketing pages only" }
+    },
+    "lineHeight": {
+      "tight":   { "value": "1.25", "tailwind": "leading-tight",   "usage": "Headings, titles, display text" },
+      "snug":    { "value": "1.375","tailwind": "leading-snug",    "usage": "Sub-headings, card titles" },
+      "normal":  { "value": "1.5",  "tailwind": "leading-normal",  "usage": "Body text, labels, nav items" },
+      "relaxed": { "value": "1.625","tailwind": "leading-relaxed", "usage": "Long-form prose, descriptions, tooltips" }
+    },
+    "antiPatterns": [
+      "Never set font-size in raw px without a corresponding Tailwind class equivalent",
+      "Never use font-weight 800+ for body text or UI labels",
+      "Never mix more than 3 font weights in a single component",
+      "Never ALL-CAPS body copy or descriptions (uppercase is OK for 10-11px table headers only)",
+      "Never use line-height below 1.25 for any readable text",
+      "Never use font-weight 400 for interactive elements (buttons, links, nav items)"
+    ]
+  },
+
+  "colors": {
+    "_rule": "Use the neutral palette as the foundation. Only add accent color for interactive, semantic, or brand moments. Never use raw color names (red, blue) — use the semantic palette.",
+    "backgrounds": {
+      "page":        { "hex": "#ffffff", "tailwind": "bg-white",        "usage": "Main page background" },
+      "panel":       { "hex": "#fafafa", "tailwind": "bg-neutral-50",   "usage": "Sidebar, aside, secondary panels" },
+      "subtle":      { "hex": "#f5f5f5", "tailwind": "bg-neutral-100",  "usage": "Table headers, hover states, inactive tabs" },
+      "hover":       { "hex": "#f0f0f0", "tailwind": "bg-neutral-100",  "usage": "Row hover, card hover" },
+      "dark":        { "hex": "#1e1e1e", "tailwind": "bg-[#1e1e1e]",   "usage": "Dark mode page background, code editors" },
+      "darkPanel":   { "hex": "#252526", "tailwind": "bg-[#252526]",   "usage": "Dark mode sidebar, secondary panels" }
+    },
+    "text": {
+      "primary":     { "hex": "#0a0a0a", "tailwind": "text-neutral-950","usage": "Headings, primary values, main content" },
+      "secondary":   { "hex": "#404040", "tailwind": "text-neutral-700","usage": "Sub-headings, strong body text" },
+      "muted":       { "hex": "#737373", "tailwind": "text-neutral-500","usage": "Secondary labels, metadata, captions" },
+      "subtle":      { "hex": "#a3a3a3", "tailwind": "text-neutral-400","usage": "Placeholders, disabled states, hints" },
+      "inverse":     { "hex": "#ffffff", "tailwind": "text-white",      "usage": "Text on dark/colored backgrounds" }
+    },
+    "borders": {
+      "default":     { "hex": "#e5e5e5", "tailwind": "border-neutral-200","usage": "Cards, inputs, dividers, panels" },
+      "strong":      { "hex": "#d4d4d4", "tailwind": "border-neutral-300","usage": "Focused inputs, active containers" },
+      "subtle":      { "hex": "#f0f0f0", "tailwind": "border-neutral-100","usage": "Row dividers, internal section separators" },
+      "dark":        { "hex": "#3c3c3c", "tailwind": "border-[#3c3c3c]", "usage": "Dark mode borders" }
+    },
+    "semantic": {
+      "success":     { "bg": "#ecfdf5", "text": "#047857", "border": "#a7f3d0", "tailwind": "bg-emerald-50 text-emerald-700 border-emerald-200" },
+      "warning":     { "bg": "#fffbeb", "text": "#b45309", "border": "#fde68a", "tailwind": "bg-amber-50 text-amber-700 border-amber-200" },
+      "error":       { "bg": "#fef2f2", "text": "#b91c1c", "border": "#fecaca", "tailwind": "bg-red-50 text-red-700 border-red-200" },
+      "info":        { "bg": "#eff6ff", "text": "#1d4ed8", "border": "#bfdbfe", "tailwind": "bg-blue-50 text-blue-700 border-blue-200" },
+      "neutral":     { "bg": "#f5f5f5", "text": "#525252", "border": "#e5e5e5", "tailwind": "bg-neutral-100 text-neutral-600 border-neutral-200" }
+    },
+    "interactive": {
+      "primary":     { "bg": "#171717", "hover": "#404040", "text": "#ffffff", "tailwind": "bg-neutral-900 hover:bg-neutral-700 text-white" },
+      "secondary":   { "bg": "#ffffff", "hover": "#f5f5f5", "text": "#171717", "tailwind": "bg-white hover:bg-neutral-50 text-neutral-900 border border-neutral-200" },
+      "ghost":       { "bg": "transparent", "hover": "#f5f5f5", "text": "#404040", "tailwind": "hover:bg-neutral-100 text-neutral-700" },
+      "link":        { "color": "#2563eb", "hover": "#1d4ed8", "tailwind": "text-blue-600 hover:text-blue-700" },
+      "danger":      { "bg": "#fef2f2", "hover": "#fee2e2", "text": "#b91c1c", "tailwind": "bg-red-50 hover:bg-red-100 text-red-700 border border-red-200" }
+    },
+    "antiPatterns": [
+      "Never use raw blue (#0000ff) for links or buttons — use the semantic link color",
+      "Never use color as the only differentiator — always pair with text, icon, or weight",
+      "Never use rgba backgrounds on solid white surfaces — use the neutral palette instead",
+      "Never exceed 3 distinct background colors in a single component",
+      "Never place light-colored text on neutral-100 or lighter backgrounds (contrast fails)"
+    ]
+  },
+
+  "spacing": {
+    "_rule": "All spacing uses a 4px base unit. Never use arbitrary values outside the scale. Card padding is always 16px (compact), 24px (default), or 32px (spacious). Page padding is 24px mobile, 32px tablet, 48px desktop.",
+    "scale": {
+      "1":  { "px": 4,   "tailwind": "p-1",  "usage": "Micro gaps, icon padding" },
+      "2":  { "px": 8,   "tailwind": "p-2",  "usage": "Inline element gaps, tight padding" },
+      "3":  { "px": 12,  "tailwind": "p-3",  "usage": "Badge padding, compact list items" },
+      "4":  { "px": 16,  "tailwind": "p-4",  "usage": "Card padding (compact), button padding" },
+      "5":  { "px": 20,  "tailwind": "p-5",  "usage": "Card padding (comfortable), section gaps" },
+      "6":  { "px": 24,  "tailwind": "p-6",  "usage": "Card padding (default), dialog padding" },
+      "8":  { "px": 32,  "tailwind": "p-8",  "usage": "Page padding, section padding" },
+      "10": { "px": 40,  "tailwind": "p-10", "usage": "Section vertical spacing" },
+      "12": { "px": 48,  "tailwind": "p-12", "usage": "Large section padding, page-level gaps" },
+      "16": { "px": 64,  "tailwind": "p-16", "usage": "Hero sections, full-bleed spacing" }
+    },
+    "inlineGaps": {
+      "minimum":     "8px between any two inline elements",
+      "comfortable": "12px between related elements in a row",
+      "separated":   "16px+ between distinct groups"
+    },
+    "antiPatterns": [
+      "Never use odd spacing values (5px, 7px, 9px) — always multiples of 4",
+      "Never use margin-top and margin-bottom together on the same element — pick one",
+      "Never collapse section padding below 16px on any surface"
+    ]
+  },
+
+  "layout": {
+    "maxWidth": {
+      "content":     { "px": 1200, "tailwind": "max-w-6xl",  "usage": "Full-width dashboard, admin layouts" },
+      "reading":     { "px": 768,  "tailwind": "max-w-3xl",  "usage": "Docs, long-form reading columns, forms" },
+      "narrow":      { "px": 480,  "tailwind": "max-w-md",   "usage": "Auth forms, modals, narrow dialogs" },
+      "dialog":      { "px": 560,  "tailwind": "max-w-xl",   "usage": "Confirmation dialogs, settings modals" }
+    },
+    "sidebars": {
+      "standard":    { "px": 220, "usage": "Primary navigation sidebar" },
+      "wide":        { "px": 280, "usage": "Sidebar with descriptions or secondary nav" },
+      "icon":        { "px": 48,  "usage": "Collapsed icon-only sidebar" }
+    },
+    "navHeight": {
+      "topNav":      { "px": 56, "tailwind": "h-14", "usage": "Sticky top navigation bar" },
+      "compact":     { "px": 44, "tailwind": "h-11", "usage": "Dense top bar, secondary toolbars" },
+      "bottomTab":   { "px": 64, "tailwind": "h-16", "usage": "Mobile bottom tab navigation" }
+    },
+    "borderRadius": {
+      "sm":  { "px": 4,  "tailwind": "rounded",    "usage": "Compact table rows, badges, small chips" },
+      "md":  { "px": 6,  "tailwind": "rounded-md",  "usage": "Buttons, inputs, compact cards" },
+      "lg":  { "px": 8,  "tailwind": "rounded-lg",  "usage": "Standard cards, panels, dropdowns" },
+      "xl":  { "px": 12, "tailwind": "rounded-xl",  "usage": "Large cards, modals, feature panels" },
+      "2xl": { "px": 16, "tailwind": "rounded-2xl", "usage": "Mobile cards, hero cards, prominent features" },
+      "full":{ "px": 9999,"tailwind": "rounded-full","usage": "Pills, avatars, toggle buttons, status dots" }
+    },
+    "antiPatterns": [
+      "Never mix border-radius sizes within a single card or component",
+      "Never create sidebars wider than 320px without a specific need",
+      "Never place content directly against viewport edges — always use page padding"
+    ]
+  },
+
+  "elevation": {
+    "_rule": "Use the minimum elevation needed. Most surfaces should be flat (level 0). Only lift elements that need to stand above the page.",
+    "levels": {
+      "0": { "css": "none",                                        "usage": "Flat panels, table rows, sections on white" },
+      "1": { "css": "0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04)", "tailwind": "shadow-sm",  "usage": "Cards on neutral backgrounds, lifted panels" },
+      "2": { "css": "0 4px 12px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.06)","tailwind": "shadow-md",  "usage": "Dropdowns, popovers, date pickers, tooltips" },
+      "3": { "css": "0 10px 30px rgba(0,0,0,0.12), 0 4px 8px rgba(0,0,0,0.06)","tailwind": "shadow-lg",  "usage": "Floating menus, command palettes" },
+      "4": { "css": "0 20px 60px rgba(0,0,0,0.18), 0 8px 16px rgba(0,0,0,0.08)","tailwind": "shadow-2xl","usage": "Modals, full-screen overlays, side drawers" }
+    },
+    "antiPatterns": [
+      "Never apply shadow to elements already inside a card with a shadow",
+      "Never use shadow-xl on flat list items or table rows",
+      "Never mix box-shadow and border on the same element unless intentional (e.g., cards)"
+    ]
+  },
+
+  "components": {
+    "buttons": {
+      "sizes": {
+        "sm":  { "height": "32px", "padding": "0 12px", "fontSize": "12px", "tailwind": "h-8 px-3 text-xs" },
+        "md":  { "height": "36px", "padding": "0 16px", "fontSize": "13px", "tailwind": "h-9 px-4 text-sm" },
+        "lg":  { "height": "40px", "padding": "0 20px", "fontSize": "14px", "tailwind": "h-10 px-5 text-sm" },
+        "xl":  { "height": "48px", "padding": "0 24px", "fontSize": "15px", "tailwind": "h-12 px-6 text-base" }
+      },
+      "rules": [
+        "Always font-weight 500 minimum",
+        "Minimum width 80px for any button",
+        "Icon buttons must have a tooltip or aria-label",
+        "Destructive actions must use the danger variant, not just red text",
+        "Never use outline buttons as the primary CTA"
+      ]
+    },
+    "inputs": {
+      "height":     "36px default, 32px compact, 40px prominent",
+      "border":     "1px solid #e5e5e5 (neutral-200)",
+      "focusRing":  "2px ring at 10% opacity of the accent color",
+      "borderRadius": "8px (rounded-lg)",
+      "padding":    "px-3 py-2",
+      "fontSize":   "14px (sm)",
+      "rules": [
+        "Every input must have a visible label (never rely on placeholder as label)",
+        "Error state: border-red-400 + red helper text below",
+        "Success state: border-emerald-400 only (no icon needed)",
+        "Disabled state: bg-neutral-50 + text-neutral-400 + cursor-not-allowed"
+      ]
+    },
+    "tables": {
+      "rowHeight":    "44px default, 36px compact, 56px comfortable",
+      "headerStyle":  "text-xs font-semibold uppercase tracking-wider text-neutral-500, bg-neutral-50",
+      "bodyStyle":    "text-sm font-normal text-neutral-700",
+      "borders":      "border-b border-neutral-100 between rows, border-neutral-200 around table",
+      "rules": [
+        "Always right-align numeric columns",
+        "Never show more than 8 columns without horizontal scroll",
+        "Status columns use semantic badge pills (never raw text)",
+        "Action columns (edit/delete) go in the rightmost column",
+        "Empty state inside table should explain why and what action to take"
+      ]
+    },
+    "badges": {
+      "height":      "20-22px",
+      "shape":       "rounded-full always",
+      "fontSize":    "10-11px",
+      "fontWeight":  "500-600",
+      "textCase":    "Sentence case for tags, UPPERCASE for status codes only",
+      "variants":    ["success (green)", "warning (amber)", "error (red)", "info (blue)", "neutral (gray)"]
+    },
+    "avatars": {
+      "xs":  "24px — avatar stacks, compact lists",
+      "sm":  "32px — table rows, comments, sidebar user",
+      "md":  "40px — profile cards, message headers",
+      "lg":  "48px — profile pages, onboarding",
+      "xl":  "64px — hero profiles, creator pages",
+      "rule": "Always rounded-full. Use gradient backgrounds for initials. Never use a square avatar."
+    },
+    "cards": {
+      "border":        "1px solid #e5e5e5",
+      "borderRadius":  "8px (rounded-lg) or 12px (rounded-xl) for prominent cards",
+      "shadow":        "shadow-sm on neutral-50 backgrounds, none on white",
+      "padding":       "16px compact, 20px standard, 24px comfortable, 32px spacious",
+      "rules": [
+        "Never nest cards more than 1 level deep",
+        "Cards on a white page background should have a border AND shadow-sm",
+        "Cards inside a panel (bg-neutral-50) need only a border"
+      ]
+    }
+  },
+
+  "density": {
+    "_rule": "Pick one density mode per layout and use it consistently throughout. Never mix compact and comfortable in the same view.",
+    "compact": {
+      "usage": "Data-heavy tables, admin panels, dense analytics, spreadsheet-like views",
+      "rowHeight": "32-36px",
+      "fontSize": "12-13px",
+      "padding": "8-12px",
+      "example": "Revenue reconciliation tables, log viewers, permission matrices"
+    },
+    "default": {
+      "usage": "Standard product dashboards, settings pages, CRM views",
+      "rowHeight": "44px",
+      "fontSize": "13-14px",
+      "padding": "16px",
+      "example": "User tables, order lists, inbox threads"
+    },
+    "comfortable": {
+      "usage": "Marketing dashboards, consumer apps, onboarding flows, mobile views",
+      "rowHeight": "56-64px",
+      "fontSize": "14-16px",
+      "padding": "20-24px",
+      "example": "Activity feeds, profile sections, pricing cards"
+    }
+  },
+
+  "dataDisplay": {
+    "kpiCards": {
+      "maxPerRow": 4,
+      "required": ["metric label", "primary value", "trend indicator"],
+      "optional": ["sparkline", "comparison period", "secondary metric"],
+      "rules": [
+        "KPI label: 11-12px, text-neutral-500, font-medium",
+        "KPI value: 24-28px, font-bold, text-neutral-900",
+        "Trend: 12px, font-semibold, emerald-600 for positive, red-500 for negative",
+        "Never show more than 4 KPI cards in a single row without scrolling"
+      ]
+    },
+    "charts": {
+      "required": ["title", "data labels or axis labels", "legend if 2+ series"],
+      "recommended": ["comparison period label", "empty state with explanation"],
+      "rules": [
+        "Always include a chart title — never a chart without context",
+        "Bar charts: right-align y-axis labels, use neutral-200 grid lines",
+        "Line charts: 2px stroke width, dot on last data point",
+        "Pie/donut: always show legend to the right or below"
+      ]
+    },
+    "emptyStates": {
+      "required": ["explanation of why it's empty", "primary action to populate it"],
+      "optional": ["illustration or icon", "secondary action"],
+      "rules": [
+        "Never just show 'No data found' — explain why and what to do",
+        "Empty table: center the message in the table body rows, not outside the table",
+        "Empty search: distinguish between 'no results' and 'nothing exists yet'"
+      ]
+    }
+  },
+
+  "antiPatterns": {
+    "_description": "These are the most common mistakes AI-generated UI makes. Avoid all of them.",
+    "typography": [
+      "Raw browser default fonts (Times New Roman, system-ui without specifying Inter/Space Grotesk)",
+      "Unstyled h1/h2/h3 tags — always specify font-size, weight, and color",
+      "Mixed font sizes on the same level (some labels 12px, others 14px)",
+      "Long text blocks with line-height: 1 or less",
+      "ALL CAPS for descriptions or body content"
+    ],
+    "layout": [
+      "Content touching the viewport edge with no padding",
+      "Inconsistent gutter widths within the same grid",
+      "Deeply nested divs with redundant padding",
+      "Fixed pixel heights on containers that should expand with content",
+      "Missing max-width on reading columns (text spanning full 1400px)"
+    ],
+    "color": [
+      "Raw blue links (#0000ff or browser default blue)",
+      "Red/green only with no text label for status (color-blind failure)",
+      "Low contrast gray text on gray backgrounds",
+      "Multiple competing accent colors in the same component",
+      "Using background color to group elements that should use borders or whitespace"
+    ],
+    "interaction": [
+      "Buttons without hover/active states",
+      "Unlabeled icon buttons (no tooltip, no aria-label)",
+      "Form submission with no loading state and no error handling display",
+      "Modals without a visible close button or ESC key support",
+      "Dropdowns that extend outside the viewport"
+    ],
+    "dataDisplay": [
+      "Left-aligned numbers in data columns",
+      "Truncated text without a tooltip",
+      "Charts without titles or axis labels",
+      "Status text in black without semantic color treatment",
+      "Empty tables showing nothing instead of an empty state message",
+      "More than 8 columns in a table without horizontal scroll"
+    ],
+    "rawStyle": [
+      "Unstyled HTML select elements (use a custom dropdown component)",
+      "Browser-default radio buttons and checkboxes (style them)",
+      "Tables with no border-collapse, raw border styling, or alternating gray rows without intent",
+      "Forms with inconsistent input heights in the same form",
+      "Mixing outline and solid button styles randomly"
+    ]
+  },
+
+  "targetReference": {
+    "_description": "This is what 'done right' looks like. Use these components as anchors.",
+    "fullDashboard": {
+      "slug": "full-reference-dashboard",
+      "description": "The canonical example of a complete, polished admin dashboard. Every element follows these foundations. Use it as the visual target.",
+      "url": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/full-reference-dashboard.tsx"
+    },
+    "tokenReference": {
+      "slug": "design-token-reference",
+      "description": "Visual showcase of every color, type size, spacing value, and elevation level from this system.",
+      "url": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/design-token-reference.tsx"
+    },
+    "antiPatternContrast": {
+      "slug": "anti-pattern-contrast",
+      "description": "Side-by-side showing common raw/broken UI vs the corrected version. Useful for understanding what NOT to do.",
+      "url": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/anti-pattern-contrast.tsx"
+    }
+  }
+}
