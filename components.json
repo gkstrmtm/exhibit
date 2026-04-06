@@ -16,6 +16,70 @@
     "code": "export default function AccountSettings() {\n  const navItems = [\"Profile\", \"Security\", \"Notifications\", \"Billing\", \"Team\"];\n\n  return (\n    <div className=\"min-h-[500px] bg-gray-50 flex\">\n      <div className=\"w-56 bg-white border-r border-gray-200 p-6\">\n        <h3 className=\"text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4\">Settings</h3>\n        <nav className=\"space-y-1\">\n          {navItems.map(item => (\n            <a key={item} href=\"#\" className={`block px-3 py-2 rounded-lg text-sm ${\n              item === \"Profile\" ? \"bg-blue-50 text-blue-700 font-medium\" : \"text-gray-600 hover:bg-gray-50\"\n            }`}>{item}</a>\n          ))}\n        </nav>\n      </div>\n      <div className=\"flex-1 p-8 max-w-2xl\">\n        <h2 className=\"text-xl font-semibold text-gray-900 mb-6\">Profile</h2>\n        <div className=\"flex items-center gap-4 mb-8\">\n          <div className=\"relative w-20 h-20 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-2xl font-bold\">\n            JD\n            <div className=\"absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity cursor-pointer\">\n              <span className=\"text-white text-xs font-medium\">Change</span>\n            </div>\n          </div>\n          <div>\n            <div className=\"font-medium text-gray-900\">John Doe</div>\n            <div className=\"text-sm text-gray-500\">john@example.com</div>\n          </div>\n        </div>\n        <div className=\"space-y-4\">\n          <div>\n            <label className=\"block text-sm font-medium text-gray-700 mb-1\">Display Name</label>\n            <input type=\"text\" value=\"John Doe\" className=\"w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm\" />\n          </div>\n          <div>\n            <label className=\"block text-sm font-medium text-gray-700 mb-1\">Email</label>\n            <input type=\"email\" value=\"john@example.com\" className=\"w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm\" />\n          </div>\n          <div>\n            <label className=\"block text-sm font-medium text-gray-700 mb-1\">Bio</label>\n            <textarea rows={3} placeholder=\"Write a short bio...\" className=\"w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm resize-none\"></textarea>\n          </div>\n          <button className=\"px-6 py-2.5 bg-blue-600 text-white rounded-lg font-medium text-sm\">Save Changes</button>\n        </div>\n      </div>\n    </div>\n  );\n}"
   },
   {
+    "slug": "connected-apps",
+    "title": "Connected Apps",
+    "description": "OAuth connected applications list — shows app name, logo placeholder, connected date, and a Disconnect button per row.",
+    "category": "Account",
+    "tags": [
+      "oauth",
+      "connected apps",
+      "integrations",
+      "account",
+      "settings"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/connected-apps.tsx",
+    "code": "export default function ConnectedApps() {\n  const apps = [\n    { name: \"GitHub\", icon: \"GH\", scopes: \"Read repos, profile\", connected: \"Connected Mar 1\" },\n    { name: \"Figma\", icon: \"F\", scopes: \"Read files, projects\", connected: \"Connected Feb 20\" },\n    { name: \"Linear\", icon: \"L\", scopes: \"View issues, comments\", connected: \"Connected Jan 5\" },\n  ];\n  return (\n    <div className=\"bg-white border border-neutral-100 rounded-xl divide-y divide-neutral-50 max-w-md\">\n      {apps.map(app => (\n        <div key={app.name} className=\"flex items-center gap-4 px-5 py-4\">\n          <div className=\"w-9 h-9 rounded-lg bg-neutral-100 flex items-center justify-center text-xs font-bold text-neutral-600 shrink-0\">{app.icon}</div>\n          <div className=\"flex-1 min-w-0\">\n            <div className=\"text-sm font-medium text-neutral-900\">{app.name}</div>\n            <div className=\"text-xs text-neutral-400\">{app.scopes}</div>\n          </div>\n          <div className=\"text-right shrink-0\">\n            <div className=\"text-xs text-neutral-400 mb-1\">{app.connected}</div>\n            <button className=\"text-xs text-red-500 hover:underline\">Disconnect</button>\n          </div>\n        </div>\n      ))}\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "notification-preferences",
+    "title": "Notification Preferences",
+    "description": "Toggle rows for email and push notification categories — activity, marketing, security. Clean label/description/toggle layout.",
+    "category": "Account",
+    "tags": [
+      "notifications",
+      "preferences",
+      "toggles",
+      "account",
+      "settings"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/notification-preferences.tsx",
+    "code": "export default function NotificationPreferences() {\n  const prefs = [\n    { label: \"Account activity\", desc: \"Sign-ins, password changes, API key usage\", on: true },\n    { label: \"Component saves\", desc: \"When someone saves one of your exhibits\", on: true },\n    { label: \"New followers\", desc: \"When a creator follows your profile\", on: false },\n    { label: \"Product updates\", desc: \"New features, changelog, and announcements\", on: false },\n  ];\n  return (\n    <div className=\"bg-white border border-neutral-100 rounded-xl divide-y divide-neutral-50 max-w-md\">\n      {prefs.map(p => (\n        <div key={p.label} className=\"flex items-center justify-between px-5 py-4\">\n          <div>\n            <div className=\"text-sm font-medium text-neutral-800\">{p.label}</div>\n            <div className=\"text-xs text-neutral-400 mt-0.5\">{p.desc}</div>\n          </div>\n          <div className={`w-9 h-5 rounded-full flex items-center px-0.5 transition-colors ${p.on ? \"bg-neutral-900\" : \"bg-neutral-200\"}`}>\n            <div className={`w-4 h-4 rounded-full bg-white shadow transition-transform ${p.on ? \"translate-x-4\" : \"\"}`} />\n          </div>\n        </div>\n      ))}\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "profile-edit-form",
+    "title": "Profile Edit Form",
+    "description": "Edit profile form with avatar upload area, name, handle, bio, and website fields. Persistent labels, clear CTA hierarchy.",
+    "category": "Account",
+    "tags": [
+      "profile",
+      "edit",
+      "form",
+      "account",
+      "settings"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/profile-edit-form.tsx",
+    "code": "export default function ProfileEditForm() {\n  return (\n    <div className=\"bg-white border border-neutral-100 rounded-xl p-6 max-w-md space-y-5\">\n      <h2 className=\"text-sm font-semibold text-neutral-900\">Edit Profile</h2>\n      <div className=\"flex items-center gap-4\">\n        <div className=\"w-16 h-16 rounded-full bg-neutral-200 flex items-center justify-center text-2xl font-bold text-white\">M</div>\n        <button className=\"text-sm text-blue-600 hover:underline\">Change photo</button>\n      </div>\n      {[{label:\"Display name\",val:\"Mia Chen\"},{label:\"Username\",val:\"@mia\",pre:\"@\"},{label:\"Website\",val:\"mia.design\"}].map(f => (\n        <div key={f.label}>\n          <label className=\"block text-xs font-medium text-neutral-600 mb-1.5\">{f.label}</label>\n          <input defaultValue={f.val} className=\"w-full px-3 py-2 text-sm border border-neutral-200 rounded-lg text-neutral-900 focus:outline-none focus:border-blue-400\" />\n        </div>\n      ))}\n      <div>\n        <label className=\"block text-xs font-medium text-neutral-600 mb-1.5\">Bio</label>\n        <textarea rows={3} defaultValue=\"Product designer & developer.\" className=\"w-full px-3 py-2 text-sm border border-neutral-200 rounded-lg text-neutral-900 resize-none focus:outline-none focus:border-blue-400\" />\n      </div>\n      <div className=\"flex gap-2 pt-1\">\n        <button className=\"flex-1 py-2 text-sm bg-neutral-900 text-white rounded-lg hover:bg-neutral-800\">Save changes</button>\n        <button className=\"px-4 py-2 text-sm border border-neutral-200 text-neutral-600 rounded-lg hover:bg-neutral-50\">Cancel</button>\n      </div>\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "security-settings",
+    "title": "Security Settings",
+    "description": "Password change section with current/new/confirm fields, and a two-factor authentication enable row. Clean section dividers.",
+    "category": "Account",
+    "tags": [
+      "security",
+      "password",
+      "2fa",
+      "account",
+      "settings"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/security-settings.tsx",
+    "code": "export default function SecuritySettings() {\n  return (\n    <div className=\"bg-white border border-neutral-100 rounded-xl divide-y divide-neutral-100 max-w-md\">\n      <div className=\"p-5 space-y-4\">\n        <h3 className=\"text-sm font-semibold text-neutral-900\">Change password</h3>\n        {[\"Current password\",\"New password\",\"Confirm new password\"].map(l => (\n          <div key={l}>\n            <label className=\"block text-xs font-medium text-neutral-600 mb-1.5\">{l}</label>\n            <input type=\"password\" defaultValue=\"••••••••\" className=\"w-full px-3 py-2 text-sm border border-neutral-200 rounded-lg focus:outline-none focus:border-blue-400\" />\n          </div>\n        ))}\n        <button className=\"px-4 py-2 text-sm bg-neutral-900 text-white rounded-lg\">Update password</button>\n      </div>\n      <div className=\"p-5 flex items-center justify-between\">\n        <div>\n          <div className=\"text-sm font-medium text-neutral-900\">Two-factor authentication</div>\n          <div className=\"text-xs text-neutral-400 mt-0.5\">Add an extra layer of security to your account</div>\n        </div>\n        <button className=\"px-3 py-1.5 text-xs border border-neutral-200 rounded-lg text-neutral-600 hover:bg-neutral-50\">Enable</button>\n      </div>\n    </div>\n  );\n}"
+  },
+  {
     "slug": "team-members-list",
     "title": "Team Members List",
     "description": "Team management table with member info, role dropdowns, status badges, and action controls.",
@@ -80,6 +144,22 @@
     "code": "export default function RolePermissionsEditor() {\n  const roles = [\"Owner\", \"Admin\", \"Editor\", \"Viewer\"];\n  const features = [\"Dashboard\", \"Users\", \"Content\", \"Billing\", \"Settings\"];\n  const actions = [\"View\", \"Create\", \"Edit\", \"Delete\"];\n  const perms: Record<string, boolean[]> = {\n    Dashboard: [true, true, true, false],\n    Users: [true, true, true, true],\n    Content: [true, true, true, false],\n    Billing: [true, false, false, false],\n    Settings: [true, false, true, false],\n  };\n\n  return (\n    <div className=\"p-8 bg-neutral-50 min-h-[300px]\">\n      <div className=\"max-w-3xl mx-auto flex gap-6\">\n        <div className=\"w-48 shrink-0\">\n          <div className=\"text-xs font-medium text-neutral-500 uppercase tracking-wide mb-2\">Roles</div>\n          <div className=\"flex flex-col gap-1\">\n            {roles.map((r) => (\n              <div key={r} className={`px-3 py-2 rounded-md text-sm font-medium cursor-pointer ${r === \"Admin\" ? \"bg-blue-600 text-white\" : \"text-neutral-600 hover:bg-neutral-100\"}`}>{r}</div>\n            ))}\n          </div>\n        </div>\n        <div className=\"flex-1\">\n          <table className=\"w-full text-sm\">\n            <thead>\n              <tr className=\"border-b\">\n                <th className=\"text-left py-2 text-xs font-medium text-neutral-500 uppercase\">Feature</th>\n                {actions.map((a) => <th key={a} className=\"text-center py-2 text-xs font-medium text-neutral-500 uppercase\">{a}</th>)}\n              </tr>\n            </thead>\n            <tbody>\n              {features.map((f) => (\n                <tr key={f} className=\"border-b border-neutral-100\">\n                  <td className=\"py-3 font-medium text-neutral-800\">{f}</td>\n                  {perms[f].map((on, i) => (\n                    <td key={i} className=\"text-center py-3\">\n                      <div className={`w-9 h-5 rounded-full mx-auto cursor-pointer ${on ? \"bg-blue-600\" : \"bg-neutral-200\"}`} style={{ position: \"relative\" }}>\n                        <div className=\"w-4 h-4 rounded-full bg-white absolute top-0.5 shadow\" style={{ left: on ? \"1.1rem\" : \"0.15rem\" }} />\n                      </div>\n                    </td>\n                  ))}\n                </tr>\n              ))}\n            </tbody>\n          </table>\n        </div>\n      </div>\n    </div>\n  );\n}"
   },
   {
+    "slug": "system-health-panel",
+    "title": "System Health Panel",
+    "description": "Service status panel showing operational/degraded/outage state for each subsystem. Green dot for healthy, amber for degraded, red for outage.",
+    "category": "Admin",
+    "tags": [
+      "admin",
+      "status",
+      "health",
+      "monitoring",
+      "services"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/system-health-panel.tsx",
+    "code": "export default function SystemHealthPanel() {\n  const services = [\n    { name: \"API\", status: \"operational\", latency: \"42ms\" },\n    { name: \"Database\", status: \"operational\", latency: \"8ms\" },\n    { name: \"CDN\", status: \"degraded\", latency: \"310ms\" },\n    { name: \"Email\", status: \"operational\", latency: \"—\" },\n    { name: \"Search\", status: \"outage\", latency: \"—\" },\n  ];\n  const dot = (s: string) => ({ operational: \"#10b981\", degraded: \"#f59e0b\", outage: \"#ef4444\" }[s] || \"#a3a3a3\");\n  return (\n    <div className=\"bg-white border border-neutral-100 rounded-xl overflow-hidden max-w-xs\">\n      <div className=\"px-4 py-3 border-b border-neutral-100 flex items-center justify-between\">\n        <span className=\"text-sm font-semibold text-neutral-900\">System status</span>\n        <span className=\"px-2 py-0.5 bg-green-50 text-green-700 text-xs rounded-full\">Mostly operational</span>\n      </div>\n      {services.map(s => (\n        <div key={s.name} className=\"flex items-center gap-3 px-4 py-3 border-b border-neutral-50 last:border-0\">\n          <div className=\"w-2 h-2 rounded-full shrink-0\" style={{ background: dot(s.status) }} />\n          <div className=\"flex-1 text-sm text-neutral-700\">{s.name}</div>\n          <div className=\"text-xs text-neutral-400 font-mono\">{s.latency}</div>\n          <div className=\"text-xs text-right\" style={{ color: dot(s.status) }}>{s.status}</div>\n        </div>\n      ))}\n    </div>\n  );\n}"
+  },
+  {
     "slug": "user-admin-profile",
     "title": "User Admin Profile View",
     "description": "Administrative user profile with avatar, status/role badges, info grid, action buttons (suspend, ban, reset, impersonate), and notes section.",
@@ -94,6 +174,22 @@
     "style": "",
     "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/user-admin-profile.tsx",
     "code": "export default function UserAdminProfile() {\n  return (\n    <div className=\"p-8 bg-neutral-50 min-h-[300px]\">\n      <div className=\"max-w-2xl mx-auto bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden\">\n        <div className=\"p-6 border-b border-neutral-100\">\n          <div className=\"flex items-center gap-4\">\n            <div className=\"w-16 h-16 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-xl font-bold\">JD</div>\n            <div>\n              <h2 className=\"text-lg font-semibold\">Jane Doe</h2>\n              <p className=\"text-sm text-neutral-500\">jane.doe@example.com</p>\n              <div className=\"flex gap-2 mt-1\">\n                <span className=\"bg-emerald-100 text-emerald-800 text-xs font-medium px-2 py-0.5 rounded-full\">Active</span>\n                <span className=\"bg-blue-100 text-blue-800 text-xs font-medium px-2 py-0.5 rounded-full\">Editor</span>\n              </div>\n            </div>\n          </div>\n        </div>\n        <div className=\"p-6 border-b border-neutral-100 grid grid-cols-2 gap-4\">\n          <div><div className=\"text-xs text-neutral-500 mb-1\">Join Date</div><div className=\"text-sm font-medium\">March 12, 2023</div></div>\n          <div><div className=\"text-xs text-neutral-500 mb-1\">Last Login</div><div className=\"text-sm font-medium\">Jan 15, 2024 at 2:34 PM</div></div>\n          <div><div className=\"text-xs text-neutral-500 mb-1\">IP Address</div><div className=\"text-sm font-mono\">192.168.1.42</div></div>\n          <div><div className=\"text-xs text-neutral-500 mb-1\">Sessions</div><div className=\"text-sm font-medium\">3 active</div></div>\n        </div>\n        <div className=\"p-6 border-b border-neutral-100 flex flex-wrap gap-2\">\n          <button className=\"px-4 py-2 text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200 rounded-lg\">Suspend</button>\n          <button className=\"px-4 py-2 text-xs font-medium bg-red-50 text-red-700 border border-red-200 rounded-lg\">Ban</button>\n          <button className=\"px-4 py-2 text-xs font-medium bg-neutral-50 text-neutral-700 border border-neutral-200 rounded-lg\">Reset Password</button>\n          <button className=\"px-4 py-2 text-xs font-medium bg-purple-50 text-purple-700 border border-purple-200 rounded-lg\">Impersonate</button>\n        </div>\n        <div className=\"p-6\">\n          <div className=\"text-xs font-medium text-neutral-500 uppercase tracking-wide mb-2\">Admin Notes</div>\n          <textarea className=\"w-full border border-neutral-200 rounded-lg p-3 text-sm resize-none\" rows={3} placeholder=\"Add a note about this user...\" />\n          <button className=\"mt-2 px-4 py-2 bg-blue-600 text-white text-xs font-medium rounded-lg\">Add Note</button>\n        </div>\n      </div>\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "user-management-row",
+    "title": "User Management Row",
+    "description": "Admin user row with avatar, name, email, role badge, join date, and inline action buttons. Used in admin user tables.",
+    "category": "Admin",
+    "tags": [
+      "admin",
+      "user management",
+      "roles",
+      "table row",
+      "users"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/user-management-row.tsx",
+    "code": "export default function UserManagementRow() {\n  const users = [\n    { name: \"Mia Chen\", email: \"mia@acme.com\", role: \"Admin\", joined: \"Mar 1\" },\n    { name: \"Leo Park\", email: \"leo@acme.com\", role: \"Member\", joined: \"Mar 15\" },\n    { name: \"Ava Torres\", email: \"ava@acme.com\", role: \"Viewer\", joined: \"Apr 2\" },\n  ];\n  return (\n    <div className=\"bg-white border border-neutral-100 rounded-xl overflow-hidden text-sm max-w-lg\">\n      {users.map((u, i) => (\n        <div key={i} className=\"flex items-center gap-3 px-4 py-3.5 border-b border-neutral-50 last:border-0\">\n          <div className=\"w-8 h-8 rounded-full bg-neutral-200 flex items-center justify-center text-xs font-bold text-neutral-600 shrink-0\">{u.name[0]}</div>\n          <div className=\"flex-1 min-w-0\">\n            <div className=\"font-medium text-neutral-900\">{u.name}</div>\n            <div className=\"text-xs text-neutral-400\">{u.email}</div>\n          </div>\n          <span className={`px-2 py-0.5 rounded-full text-xs font-medium mr-3 ${u.role === \"Admin\" ? \"bg-purple-50 text-purple-700\" : u.role === \"Member\" ? \"bg-blue-50 text-blue-700\" : \"bg-neutral-100 text-neutral-500\"}`}>{u.role}</span>\n          <span className=\"text-xs text-neutral-300 mr-3 shrink-0\">{u.joined}</span>\n          <button className=\"text-xs text-red-400 hover:text-red-600\">Remove</button>\n        </div>\n      ))}\n    </div>\n  );\n}"
   },
   {
     "slug": "analytics-dashboard-shell",
@@ -373,6 +469,39 @@
     "code": "export default function MagicLinkFlow() {\n  return (\n    <div className=\"min-h-[400px] bg-gray-50 flex items-center justify-center p-8 gap-8\">\n      <div className=\"w-full max-w-sm bg-white rounded-2xl shadow-lg border border-gray-200 p-8\">\n        <h2 className=\"text-xl font-semibold text-gray-900 mb-1\">Sign in with email</h2>\n        <p className=\"text-sm text-gray-500 mb-6\">We'll send you a magic link to sign in instantly.</p>\n        <div className=\"space-y-4\">\n          <div>\n            <label className=\"block text-sm font-medium text-gray-700 mb-1\">Email address</label>\n            <input type=\"email\" placeholder=\"you@example.com\" className=\"w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm\" />\n          </div>\n          <button className=\"w-full py-2.5 bg-blue-600 text-white rounded-lg font-medium text-sm\">Send magic link</button>\n        </div>\n      </div>\n      <div className=\"w-full max-w-sm bg-white rounded-2xl shadow-lg border border-gray-200 p-8 text-center\">\n        <div className=\"w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl\">✉️</div>\n        <h2 className=\"text-xl font-semibold text-gray-900 mb-1\">Check your inbox</h2>\n        <p className=\"text-sm text-gray-500 mb-6\">We sent a link to <strong>user@example.com</strong></p>\n        <button className=\"text-sm text-blue-600 font-medium hover:underline\">Resend link</button>\n      </div>\n    </div>\n  );\n}"
   },
   {
+    "slug": "magic-link-sent",
+    "title": "Magic Link Sent",
+    "description": "Post-submit email confirmation state for magic link auth. Envelope icon, inbox instruction, resend link, and wrong-email escape hatch.",
+    "category": "Authentication",
+    "tags": [
+      "magic link",
+      "email",
+      "authentication",
+      "confirmation",
+      "passwordless"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/magic-link-sent.tsx",
+    "code": "export default function MagicLinkSent() {\n  return (\n    <div className=\"flex flex-col items-center justify-center text-center py-12 px-8 max-w-sm mx-auto\">\n      <div className=\"w-14 h-14 rounded-full bg-blue-50 flex items-center justify-center text-2xl mb-5\">📬</div>\n      <h2 className=\"text-base font-semibold text-neutral-900 mb-1.5\">Check your inbox</h2>\n      <p className=\"text-sm text-neutral-500 mb-5 leading-relaxed\">We sent a sign-in link to <strong className=\"text-neutral-700\">mia@acme.com</strong>. Click it to continue — it expires in 10 minutes.</p>\n      <button className=\"text-sm text-blue-600 hover:underline mb-2\">Resend link</button>\n      <button className=\"text-sm text-neutral-400 hover:text-neutral-600\">Use a different email →</button>\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "oauth-button-group",
+    "title": "OAuth Button Group",
+    "description": "Continue with Google, GitHub, and Apple buttons in a clean stacked group. Icon + label layout, border style, no color pollution.",
+    "category": "Authentication",
+    "tags": [
+      "oauth",
+      "social login",
+      "Google",
+      "GitHub",
+      "Apple",
+      "authentication"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/oauth-button-group.tsx",
+    "code": "export default function OAuthButtons() {\n  const providers = [\n    { name: \"Google\", icon: \"G\" },\n    { name: \"GitHub\", icon: \"⌥\" },\n    { name: \"Apple\", icon: \"⌘\" },\n  ];\n  return (\n    <div className=\"space-y-2.5 max-w-xs mx-auto py-8 px-6\">\n      <div className=\"text-sm font-semibold text-neutral-900 text-center mb-5\">Continue with</div>\n      {providers.map(p => (\n        <button key={p.name} className=\"w-full flex items-center gap-3 px-4 py-2.5 border border-neutral-200 rounded-xl text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors\">\n          <span className=\"w-7 h-7 rounded-md bg-neutral-100 flex items-center justify-center text-sm font-bold\">{p.icon}</span>\n          Continue with {p.name}\n        </button>\n      ))}\n    </div>\n  );\n}"
+  },
+  {
     "slug": "sign-in-form-clean",
     "title": "Sign In Form",
     "description": "Clean, centered sign-in card with email/password fields, social login options, and forgot password link.",
@@ -389,6 +518,38 @@
     "code": "export default function SignInForm() {\n  return (\n    <div className=\"min-h-[600px] bg-gray-50 flex items-center justify-center p-8\">\n      <div className=\"w-full max-w-sm\">\n        <div className=\"bg-white rounded-2xl shadow-lg border border-gray-200 p-8\">\n          <div className=\"flex justify-center mb-6\">\n            <div className=\"w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-lg\">A</div>\n          </div>\n          <h2 className=\"text-xl font-semibold text-center text-gray-900 mb-1\">Welcome back</h2>\n          <p className=\"text-sm text-gray-500 text-center mb-6\">Sign in to your account to continue</p>\n          <div className=\"space-y-4\">\n            <div>\n              <label className=\"block text-sm font-medium text-gray-700 mb-1\">Email</label>\n              <input type=\"email\" placeholder=\"you@example.com\" className=\"w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm\" />\n            </div>\n            <div>\n              <label className=\"block text-sm font-medium text-gray-700 mb-1\">Password</label>\n              <div className=\"relative\">\n                <input type=\"password\" placeholder=\"••••••••\" className=\"w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm pr-16\" />\n                <button className=\"absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-500\">Show</button>\n              </div>\n            </div>\n            <div className=\"flex justify-end\">\n              <a href=\"#\" className=\"text-sm text-blue-600 hover:underline\">Forgot password?</a>\n            </div>\n            <button className=\"w-full py-2.5 bg-blue-600 text-white rounded-lg font-medium text-sm hover:bg-blue-700\">Sign In</button>\n          </div>\n          <div className=\"my-6 flex items-center gap-3\">\n            <div className=\"flex-1 h-px bg-gray-200\"></div>\n            <span className=\"text-xs text-gray-400\">or continue with</span>\n            <div className=\"flex-1 h-px bg-gray-200\"></div>\n          </div>\n          <div className=\"flex gap-3\">\n            <button className=\"flex-1 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center justify-center gap-2\">\n              <span>G</span> Google\n            </button>\n            <button className=\"flex-1 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center justify-center gap-2\">\n              <span>⌘</span> GitHub\n            </button>\n          </div>\n          <p className=\"text-sm text-gray-500 text-center mt-6\">\n            Don't have an account? <a href=\"#\" className=\"text-blue-600 font-medium hover:underline\">Sign up</a>\n          </p>\n        </div>\n      </div>\n    </div>\n  );\n}"
   },
   {
+    "slug": "two-factor-input",
+    "title": "Two-Factor Code Input",
+    "description": "Six individual digit boxes for 2FA or OTP entry. Auto-focus next box on input, backspace clears and moves back, paste support across all six.",
+    "category": "Authentication",
+    "tags": [
+      "2FA",
+      "OTP",
+      "code input",
+      "authentication",
+      "verification"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/two-factor-input.tsx",
+    "code": "import { useRef } from \"react\";\nexport default function TwoFactorInput() {\n  const refs = Array.from({ length: 6 }, () => useRef<HTMLInputElement>(null));\n  const handleInput = (i: number, v: string) => {\n    if (v && i < 5) refs[i + 1].current?.focus();\n    if (!v && i > 0) refs[i - 1].current?.focus();\n  };\n  return (\n    <div className=\"flex flex-col items-center gap-6 py-10 px-6\">\n      <div className=\"text-sm font-semibold text-neutral-900\">Enter the 6-digit code</div>\n      <div className=\"flex gap-2\">\n        {refs.map((ref, i) => (\n          <input\n            key={i}\n            ref={ref}\n            maxLength={1}\n            className=\"w-10 h-12 text-center text-lg font-semibold border border-neutral-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 text-neutral-900\"\n            onChange={e => handleInput(i, e.target.value)}\n          />\n        ))}\n      </div>\n      <button className=\"px-8 py-2 bg-neutral-900 text-white text-sm rounded-lg font-medium\">Verify</button>\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "invoice-list",
+    "title": "Invoice List",
+    "description": "Billing invoice table with period, amount, status badge, and a PDF download link per row. Clean minimal layout with paid/unpaid distinction.",
+    "category": "Billing",
+    "tags": [
+      "billing",
+      "invoice",
+      "payment",
+      "history",
+      "table"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/invoice-list.tsx",
+    "code": "export default function InvoiceList() {\n  const invoices = [\n    { period: \"March 2026\", amount: \"$49.00\", status: \"paid\", date: \"Apr 1, 2026\" },\n    { period: \"February 2026\", amount: \"$49.00\", status: \"paid\", date: \"Mar 1, 2026\" },\n    { period: \"January 2026\", amount: \"$49.00\", status: \"paid\", date: \"Feb 1, 2026\" },\n    { period: \"December 2025\", amount: \"$49.00\", status: \"paid\", date: \"Jan 1, 2026\" },\n  ];\n  return (\n    <div className=\"bg-white border border-neutral-100 rounded-xl overflow-hidden max-w-md\">\n      <div className=\"px-5 py-3 border-b border-neutral-100 flex items-center justify-between\">\n        <span className=\"text-sm font-semibold text-neutral-900\">Invoices</span>\n        <span className=\"text-xs text-neutral-400\">Pro plan · $49/mo</span>\n      </div>\n      {invoices.map(inv => (\n        <div key={inv.period} className=\"flex items-center px-5 py-3.5 border-b border-neutral-50 last:border-0\">\n          <div className=\"flex-1\">\n            <div className=\"text-sm text-neutral-800\">{inv.period}</div>\n            <div className=\"text-xs text-neutral-400 mt-0.5\">{inv.date}</div>\n          </div>\n          <div className=\"text-sm font-medium text-neutral-700 mr-4\">{inv.amount}</div>\n          <span className=\"px-2 py-0.5 bg-green-50 text-green-700 text-xs rounded-full mr-4\">{inv.status}</span>\n          <button className=\"text-xs text-blue-600 hover:underline\">PDF</button>\n        </div>\n      ))}\n    </div>\n  );\n}"
+  },
+  {
     "slug": "invoice-list-pattern",
     "title": "Invoice List",
     "description": "Billing history table with invoice numbers, dates, amounts, status badges (Paid/Pending/Failed), and download links.",
@@ -403,6 +564,54 @@
     "style": "",
     "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/invoice-list-pattern.tsx",
     "code": "export default function InvoiceList() {\n  const invoices = [\n    { id: \"INV-2024-001\", date: \"Jan 15, 2024\", amount: \"$29.00\", status: \"Paid\" },\n    { id: \"INV-2024-002\", date: \"Feb 15, 2024\", amount: \"$29.00\", status: \"Paid\" },\n    { id: \"INV-2024-003\", date: \"Mar 15, 2024\", amount: \"$29.00\", status: \"Paid\" },\n    { id: \"INV-2024-004\", date: \"Apr 15, 2024\", amount: \"$29.00\", status: \"Pending\" },\n    { id: \"INV-2024-005\", date: \"May 15, 2024\", amount: \"$29.00\", status: \"Failed\" },\n  ];\n\n  const statusColors: Record<string, string> = {\n    Paid: \"bg-emerald-50 text-emerald-700\",\n    Pending: \"bg-amber-50 text-amber-700\",\n    Failed: \"bg-red-50 text-red-700\",\n  };\n\n  return (\n    <div className=\"p-8 bg-white min-h-[400px]\">\n      <div className=\"max-w-3xl mx-auto\">\n        <div className=\"flex justify-between items-center mb-6\">\n          <h2 className=\"text-xl font-bold text-slate-900\">Billing History</h2>\n          <button className=\"text-sm text-blue-600 font-medium hover:text-blue-700\">Download All</button>\n        </div>\n        <div className=\"border border-slate-200 rounded-xl overflow-hidden\">\n          <table className=\"w-full text-sm\">\n            <thead>\n              <tr className=\"bg-slate-50 text-slate-500 text-xs uppercase tracking-wider\">\n                <th className=\"text-left p-4 font-medium\">Invoice</th>\n                <th className=\"text-left p-4 font-medium\">Date</th>\n                <th className=\"text-left p-4 font-medium\">Amount</th>\n                <th className=\"text-left p-4 font-medium\">Status</th>\n                <th className=\"text-right p-4 font-medium\"></th>\n              </tr>\n            </thead>\n            <tbody>\n              {invoices.map((inv) => (\n                <tr key={inv.id} className=\"border-t border-slate-100\">\n                  <td className=\"p-4 font-mono text-slate-700\">{inv.id}</td>\n                  <td className=\"p-4 text-slate-500\">{inv.date}</td>\n                  <td className=\"p-4 font-medium text-slate-700\">{inv.amount}</td>\n                  <td className=\"p-4\">\n                    <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[inv.status]}`}>\n                      {inv.status}\n                    </span>\n                  </td>\n                  <td className=\"p-4 text-right\">\n                    <a href=\"#\" className=\"text-blue-600 text-sm hover:underline\">Download</a>\n                  </td>\n                </tr>\n              ))}\n            </tbody>\n          </table>\n        </div>\n      </div>\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "payment-method-card",
+    "title": "Payment Method Card",
+    "description": "Saved credit card display with masked number, brand badge, expiry, and Set as default / Remove actions. Clean card-on-card layout.",
+    "category": "Billing",
+    "tags": [
+      "payment",
+      "credit card",
+      "billing",
+      "saved card",
+      "method"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/payment-method-card.tsx",
+    "code": "export default function PaymentMethodCard() {\n  return (\n    <div className=\"bg-white border border-neutral-100 rounded-xl p-5 max-w-sm space-y-4\">\n      <div className=\"flex items-center justify-between\">\n        <span className=\"text-sm font-semibold text-neutral-900\">Payment method</span>\n        <button className=\"text-xs text-blue-600 hover:underline\">+ Add new</button>\n      </div>\n      <div className=\"flex items-center gap-4 p-4 border border-neutral-200 rounded-xl bg-neutral-50\">\n        <div className=\"w-10 h-7 bg-neutral-800 rounded flex items-center justify-center text-white text-xs font-bold tracking-tight\">VISA</div>\n        <div className=\"flex-1\">\n          <div className=\"text-sm font-medium text-neutral-900\">•••• •••• •••• 4242</div>\n          <div className=\"text-xs text-neutral-400 mt-0.5\">Expires 09/27</div>\n        </div>\n        <span className=\"px-2 py-0.5 bg-blue-50 text-blue-600 text-xs rounded-full font-medium\">Default</span>\n      </div>\n      <div className=\"flex items-center gap-4 p-4 border border-neutral-100 rounded-xl opacity-60\">\n        <div className=\"w-10 h-7 bg-orange-500 rounded flex items-center justify-center text-white text-xs font-bold\">MC</div>\n        <div className=\"flex-1\">\n          <div className=\"text-sm font-medium text-neutral-900\">•••• •••• •••• 8881</div>\n          <div className=\"text-xs text-neutral-400 mt-0.5\">Expires 03/26</div>\n        </div>\n        <button className=\"text-xs text-neutral-500 hover:underline\">Set default</button>\n      </div>\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "plan-upgrade-cta",
+    "title": "Plan Upgrade CTA",
+    "description": "Inline upgrade prompt that appears when a usage limit is near. Feature highlights, price badge, and a solid Upgrade button with ghost Dismiss.",
+    "category": "Billing",
+    "tags": [
+      "upgrade",
+      "billing",
+      "CTA",
+      "plan",
+      "upsell"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/plan-upgrade-cta.tsx",
+    "code": "export default function PlanUpgradeCTA() {\n  return (\n    <div className=\"bg-neutral-950 rounded-xl p-5 max-w-sm\">\n      <div className=\"flex items-start justify-between mb-3\">\n        <div>\n          <div className=\"text-sm font-semibold text-white\">You're at 84% of your API limit</div>\n          <div className=\"text-xs text-neutral-400 mt-0.5\">Upgrade to Pro before you hit the cap</div>\n        </div>\n        <span className=\"bg-amber-400 text-amber-900 text-xs font-bold px-2 py-0.5 rounded-full\">⚠ Soon</span>\n      </div>\n      <ul className=\"space-y-1.5 mb-4\">\n        {[\"500k API calls / month\",\"Unlimited team seats\",\"Priority support\"].map(f => (\n          <li key={f} className=\"flex items-center gap-2 text-xs text-neutral-300\">\n            <span className=\"text-green-400\">✓</span> {f}\n          </li>\n        ))}\n      </ul>\n      <div className=\"flex gap-2\">\n        <button className=\"flex-1 py-2 text-sm bg-white text-neutral-900 rounded-lg font-medium hover:bg-neutral-100\">Upgrade to Pro — $49/mo</button>\n        <button className=\"px-3 py-2 text-sm text-neutral-500 hover:text-neutral-300\">Dismiss</button>\n      </div>\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "usage-meter",
+    "title": "Usage Meter",
+    "description": "Current-cycle resource usage bars for API calls, storage, and seats. Each row shows used/limit, colored fill, and an upgrade nudge at threshold.",
+    "category": "Billing",
+    "tags": [
+      "usage",
+      "meter",
+      "quota",
+      "billing",
+      "limits"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/usage-meter.tsx",
+    "code": "export default function UsageMeter() {\n  const metrics = [\n    { label: \"API calls\", used: 84200, limit: 100000, unit: \"\", color: \"#f59e0b\" },\n    { label: \"Storage\", used: 3.8, limit: 10, unit: \"GB\", color: \"#3b82f6\" },\n    { label: \"Team seats\", used: 4, limit: 5, unit: \"\", color: \"#10b981\" },\n  ];\n  return (\n    <div className=\"bg-white border border-neutral-100 rounded-xl p-5 space-y-5 max-w-sm\">\n      <div className=\"flex items-center justify-between\">\n        <span className=\"text-sm font-semibold text-neutral-900\">Usage this cycle</span>\n        <span className=\"text-xs text-neutral-400\">Resets Apr 14</span>\n      </div>\n      {metrics.map(m => {\n        const pct = Math.round((m.used / m.limit) * 100);\n        return (\n          <div key={m.label}>\n            <div className=\"flex justify-between text-xs text-neutral-600 mb-1.5\">\n              <span>{m.label}</span>\n              <span>{m.used.toLocaleString()}{m.unit} / {m.limit.toLocaleString()}{m.unit}</span>\n            </div>\n            <div className=\"h-1.5 bg-neutral-100 rounded-full overflow-hidden\">\n              <div className=\"h-full rounded-full\" style={{ width: `${pct}%`, background: m.color }} />\n            </div>\n          </div>\n        );\n      })}\n    </div>\n  );\n}"
   },
   {
     "slug": "usage-meter-pattern",
@@ -738,6 +947,38 @@
     "code": "export default function GradientBorderCard() {\n  return (\n    <div className=\"p-12 bg-neutral-950 flex items-center justify-center min-h-[300px]\">\n      <div className=\"relative group\">\n        <div className=\"absolute -inset-0.5 bg-gradient-to-r from-pink-600 to-purple-600 rounded-xl blur opacity-75 group-hover:opacity-100 transition duration-500\" />\n        <div className=\"relative bg-neutral-900 rounded-xl p-8 space-y-4 max-w-sm\">\n          <div className=\"flex items-center gap-3\">\n            <div className=\"w-10 h-10 rounded-lg bg-gradient-to-br from-pink-500 to-purple-500 flex items-center justify-center text-white font-bold\">⚡</div>\n            <div>\n              <h3 className=\"text-white font-semibold\">Turbo Mode</h3>\n              <p className=\"text-neutral-400 text-xs\">10x faster builds</p>\n            </div>\n          </div>\n          <p className=\"text-neutral-300 text-sm leading-relaxed\">\n            Enable turbo mode to dramatically speed up your build pipeline with intelligent caching and parallel compilation.\n          </p>\n          <button className=\"text-sm text-purple-400 hover:text-purple-300 font-medium transition-colors\">\n            Learn more →\n          </button>\n        </div>\n      </div>\n    </div>\n  );\n}"
   },
   {
+    "slug": "image-preview-card",
+    "title": "Image Preview Card",
+    "description": "Media card with an image placeholder, category tag, title, description excerpt, and read-more arrow. Common blog and content listing pattern.",
+    "category": "Cards",
+    "tags": [
+      "card",
+      "image",
+      "preview",
+      "blog",
+      "content"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/image-preview-card.tsx",
+    "code": "export default function ImagePreviewCard() {\n  return (\n    <div className=\"bg-white border border-neutral-100 rounded-xl overflow-hidden max-w-xs hover:shadow-md transition-shadow\">\n      <div className=\"h-36 bg-gradient-to-br from-neutral-200 to-neutral-300 flex items-center justify-center text-neutral-400 text-3xl\">🖼</div>\n      <div className=\"p-4\">\n        <div className=\"inline-flex items-center px-2 py-0.5 bg-blue-50 text-blue-700 text-xs rounded-full font-medium mb-2\">Tutorial</div>\n        <h3 className=\"text-sm font-semibold text-neutral-900 mb-1 leading-snug\">Building a design system from scratch</h3>\n        <p className=\"text-xs text-neutral-500 leading-relaxed mb-3\">Learn the principles behind scalable component architecture and token-based theming.</p>\n        <div className=\"flex items-center justify-between\">\n          <div className=\"flex items-center gap-2\">\n            <div className=\"w-5 h-5 rounded-full bg-neutral-200 text-xs flex items-center justify-center font-bold text-neutral-600\">M</div>\n            <span className=\"text-xs text-neutral-400\">Mia Chen</span>\n          </div>\n          <button className=\"text-xs text-neutral-400 hover:text-neutral-700\">Read →</button>\n        </div>\n      </div>\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "notification-card",
+    "title": "Notification Card",
+    "description": "Alert-style card with left border accent, icon, title, description, and a dismiss action. Four semantic variants: info, success, warning, error.",
+    "category": "Cards",
+    "tags": [
+      "card",
+      "notification",
+      "alert",
+      "feedback",
+      "banner"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/notification-card.tsx",
+    "code": "export default function NotificationCard() {\n  const alerts = [\n    { type: \"info\", icon: \"ℹ\", title: \"New feature available\", desc: \"Component export is now live.\", color: \"#3b82f6\", bg: \"#eff6ff\" },\n    { type: \"success\", icon: \"✓\", title: \"Deploy successful\", desc: \"Version 2.4.1 is now live.\", color: \"#16a34a\", bg: \"#f0fdf4\" },\n    { type: \"warning\", icon: \"⚠\", title: \"Approaching limit\", desc: \"84% of your API quota used.\", color: \"#d97706\", bg: \"#fffbeb\" },\n    { type: \"error\", icon: \"✕\", title: \"Build failed\", desc: \"TypeScript error on line 42.\", color: \"#dc2626\", bg: \"#fef2f2\" },\n  ];\n  return (\n    <div className=\"space-y-2.5 max-w-sm p-4\">\n      {alerts.map(a => (\n        <div key={a.type} className=\"flex items-start gap-3 px-4 py-3 rounded-xl\" style={{ background: a.bg, borderLeft: `3px solid ${a.color}` }}>\n          <span className=\"text-sm font-bold mt-0.5 shrink-0\" style={{ color: a.color }}>{a.icon}</span>\n          <div className=\"flex-1 min-w-0\">\n            <div className=\"text-sm font-medium text-neutral-900\">{a.title}</div>\n            <div className=\"text-xs text-neutral-500 mt-0.5\">{a.desc}</div>\n          </div>\n          <button className=\"text-neutral-300 hover:text-neutral-500 text-xs shrink-0\">✕</button>\n        </div>\n      ))}\n    </div>\n  );\n}"
+  },
+  {
     "slug": "testimonial-card",
     "title": "Testimonial Card",
     "description": "Social proof testimonial with avatar, quote, and company attribution. Clean and trustworthy.",
@@ -752,6 +993,22 @@
     "style": "",
     "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/testimonial-card.tsx",
     "code": "export default function TestimonialCard() {\n  return (\n    <div className=\"p-12 bg-neutral-50 flex items-center justify-center min-h-[300px]\">\n      <div className=\"max-w-lg bg-white rounded-2xl border border-neutral-200 p-8 shadow-sm\">\n        <div className=\"flex gap-1 mb-4\">\n          {[...Array(5)].map((_, i) => (\n            <span key={i} className=\"text-amber-400 text-lg\">★</span>\n          ))}\n        </div>\n        <blockquote className=\"text-neutral-800 leading-relaxed mb-6\">\n          \"This tool completely transformed our workflow. We shipped 3x faster and our team morale went through the roof. Can't imagine going back.\"\n        </blockquote>\n        <div className=\"flex items-center gap-3\">\n          <div className=\"w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-cyan-400 flex items-center justify-center text-white font-bold text-sm\">SR</div>\n          <div>\n            <div className=\"text-sm font-semibold text-neutral-900\">Sarah Rodriguez</div>\n            <div className=\"text-xs text-neutral-500\">VP of Engineering, TechCo</div>\n          </div>\n        </div>\n      </div>\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "cart-line-item",
+    "title": "Cart Line Item",
+    "description": "Shopping cart item row with product name, variant info, quantity control, price, and remove button. Compact inline layout.",
+    "category": "Commerce",
+    "tags": [
+      "cart",
+      "line item",
+      "quantity",
+      "e-commerce",
+      "checkout"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/cart-line-item.tsx",
+    "code": "import { useState } from \"react\";\nexport default function CartLineItem() {\n  const [qty, setQty] = useState(2);\n  return (\n    <div className=\"bg-white border border-neutral-100 rounded-xl p-4 max-w-sm space-y-3\">\n      {[{ name: \"Ghost Button Pack\", variant: \"React • License: 1 seat\", price: 12 }].map(item => (\n        <div key={item.name} className=\"flex items-start gap-3\">\n          <div className=\"w-12 h-12 rounded-lg bg-neutral-100 flex items-center justify-center text-xl shrink-0\">🧩</div>\n          <div className=\"flex-1 min-w-0\">\n            <div className=\"text-sm font-medium text-neutral-900\">{item.name}</div>\n            <div className=\"text-xs text-neutral-400 mt-0.5\">{item.variant}</div>\n            <div className=\"flex items-center gap-2 mt-2\">\n              <button onClick={() => setQty(q => Math.max(1, q - 1))} className=\"w-6 h-6 rounded border border-neutral-200 text-neutral-600 text-xs hover:bg-neutral-50\">-</button>\n              <span className=\"text-sm w-4 text-center\">{qty}</span>\n              <button onClick={() => setQty(q => q + 1)} className=\"w-6 h-6 rounded border border-neutral-200 text-neutral-600 text-xs hover:bg-neutral-50\">+</button>\n            </div>\n          </div>\n          <div className=\"text-right shrink-0\">\n            <div className=\"text-sm font-semibold text-neutral-900\">${item.price * qty}</div>\n            <button className=\"text-xs text-neutral-300 hover:text-red-400 mt-1\">Remove</button>\n          </div>\n        </div>\n      ))}\n    </div>\n  );\n}"
   },
   {
     "slug": "checkout-summary-card",
@@ -770,6 +1027,54 @@
     "code": "export default function CheckoutSummary() {\n  return (\n    <div className=\"min-h-[500px] flex items-center justify-center bg-slate-50 p-8\">\n      <div className=\"bg-white rounded-2xl shadow-lg border border-slate-200 max-w-md w-full p-8\">\n        <h2 className=\"text-xl font-bold text-slate-900 mb-6\">Order Summary</h2>\n        <div className=\"space-y-4 mb-6\">\n          <div className=\"flex justify-between items-start\">\n            <div>\n              <div className=\"font-medium text-slate-800\">Pro Annual Plan</div>\n              <div className=\"text-xs text-slate-400\">Billed yearly</div>\n            </div>\n            <div className=\"font-medium text-slate-800\">$348.00</div>\n          </div>\n          <div className=\"flex justify-between items-start\">\n            <div>\n              <div className=\"font-medium text-slate-800\">Priority Support</div>\n              <div className=\"text-xs text-slate-400\">Add-on</div>\n            </div>\n            <div className=\"font-medium text-slate-800\">$120.00</div>\n          </div>\n        </div>\n        <div className=\"border-t border-slate-100 pt-4 space-y-2 mb-4\">\n          <div className=\"flex justify-between text-sm text-slate-500\">\n            <span>Subtotal</span><span>$468.00</span>\n          </div>\n          <div className=\"flex justify-between text-sm text-emerald-600\">\n            <span>Discount (10%)</span><span>-$46.80</span>\n          </div>\n        </div>\n        <div className=\"border-t border-slate-200 pt-4 mb-6\">\n          <div className=\"flex justify-between items-center\">\n            <span className=\"text-lg font-bold text-slate-900\">Total</span>\n            <span className=\"text-2xl font-bold text-slate-900\">$421.20</span>\n          </div>\n        </div>\n        <div className=\"bg-slate-50 rounded-xl p-4 mb-6 flex items-center gap-3\">\n          <div className=\"w-10 h-7 bg-gradient-to-r from-blue-600 to-blue-400 rounded-md flex items-center justify-center text-white text-xs font-bold\">VISA</div>\n          <div>\n            <div className=\"text-sm font-medium text-slate-700\">•••• •••• •••• 4242</div>\n            <div className=\"text-xs text-slate-400\">Expires 12/26</div>\n          </div>\n        </div>\n        <button className=\"w-full py-3.5 bg-blue-600 text-white rounded-xl font-semibold text-sm hover:bg-blue-700 transition-colors\">Complete Purchase</button>\n      </div>\n    </div>\n  );\n}"
   },
   {
+    "slug": "order-confirmation",
+    "title": "Order Confirmation",
+    "description": "Post-purchase confirmation with checkmark animation, order ID, summary items, and a continue button. Clean end-of-checkout state.",
+    "category": "Commerce",
+    "tags": [
+      "order",
+      "confirmation",
+      "checkout",
+      "success",
+      "commerce"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/order-confirmation.tsx",
+    "code": "export default function OrderConfirmation() {\n  return (\n    <div className=\"bg-white border border-neutral-100 rounded-xl p-6 max-w-xs text-center space-y-4\">\n      <div className=\"w-14 h-14 rounded-full bg-green-50 flex items-center justify-center text-2xl mx-auto\">✓</div>\n      <div>\n        <div className=\"text-base font-bold text-neutral-900\">Order confirmed!</div>\n        <div className=\"text-xs text-neutral-400 mt-1\">Order #EXB-20481</div>\n      </div>\n      <div className=\"bg-neutral-50 rounded-xl p-3 text-left space-y-2\">\n        {[{ name: \"Ghost Button Pack\", qty: 1, price: \"$12\" },{ name: \"Dark Shell\", qty: 2, price: \"$24\" }].map(item => (\n          <div key={item.name} className=\"flex items-center justify-between text-xs\">\n            <span className=\"text-neutral-600\">{item.name} ×{item.qty}</span>\n            <span className=\"font-medium text-neutral-900\">{item.price}</span>\n          </div>\n        ))}\n        <div className=\"pt-2 border-t border-neutral-200 flex justify-between text-sm font-semibold\">\n          <span>Total</span><span>$36</span>\n        </div>\n      </div>\n      <button className=\"w-full py-2.5 bg-neutral-900 text-white text-sm rounded-xl font-medium\">Back to marketplace</button>\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "product-listing-card",
+    "title": "Product Listing Card",
+    "description": "E-commerce product card with image placeholder, name, price, rating, and Add to cart button. Hover state on card with shadow lift.",
+    "category": "Commerce",
+    "tags": [
+      "product",
+      "card",
+      "e-commerce",
+      "shop",
+      "listing"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/product-listing-card.tsx",
+    "code": "export default function ProductListingCard() {\n  return (\n    <div className=\"bg-white border border-neutral-100 rounded-xl overflow-hidden max-w-[200px] hover:shadow-md transition-shadow\">\n      <div className=\"h-40 bg-gradient-to-br from-neutral-100 to-neutral-200 flex items-center justify-center text-4xl\">🧩</div>\n      <div className=\"p-3\">\n        <div className=\"text-xs font-semibold text-neutral-900 mb-0.5 truncate\">Ghost Button Pack</div>\n        <div className=\"flex items-center gap-1 mb-2\">\n          <span className=\"text-amber-400 text-xs\">★★★★★</span>\n          <span className=\"text-xs text-neutral-400\">(42)</span>\n        </div>\n        <div className=\"flex items-center justify-between\">\n          <span className=\"text-sm font-bold text-neutral-900\">$12</span>\n          <button className=\"px-2 py-1 bg-neutral-900 text-white text-xs rounded-lg\">Add</button>\n        </div>\n      </div>\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "review-card",
+    "title": "Review Card",
+    "description": "Individual customer review with star rating, review text, reviewer name, avatar, and verified purchase badge.",
+    "category": "Commerce",
+    "tags": [
+      "review",
+      "testimonial",
+      "rating",
+      "commerce",
+      "feedback"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/review-card.tsx",
+    "code": "export default function ReviewCard() {\n  return (\n    <div className=\"bg-white border border-neutral-100 rounded-xl p-4 max-w-xs space-y-3\">\n      <div className=\"flex items-center gap-0.5\">\n        {[...Array(5)].map((_, i) => <span key={i} className=\"text-amber-400 text-sm\">★</span>)}\n      </div>\n      <p className=\"text-sm text-neutral-700 leading-relaxed\">\"Exactly what I needed. Clean code, great documentation, saved me hours.\"</p>\n      <div className=\"flex items-center gap-2.5 pt-1\">\n        <div className=\"w-7 h-7 rounded-full bg-neutral-200 flex items-center justify-center text-xs font-bold text-neutral-600\">M</div>\n        <div>\n          <div className=\"text-xs font-medium text-neutral-900\">Mia Chen</div>\n          <div className=\"text-xs text-neutral-400\">Verified purchase · Apr 2026</div>\n        </div>\n      </div>\n    </div>\n  );\n}"
+  },
+  {
     "slug": "upgrade-modal-pattern",
     "title": "Upgrade Modal",
     "description": "Modal overlay with current plan vs Pro comparison, key benefits, pricing, and action buttons for upgrading or dismissing.",
@@ -784,6 +1089,38 @@
     "style": "",
     "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/upgrade-modal-pattern.tsx",
     "code": "export default function UpgradeModal() {\n  const benefits = [\n    \"Unlimited projects & collaborators\",\n    \"Advanced analytics dashboard\",\n    \"Priority email & chat support\",\n    \"Custom domain mapping\",\n    \"99.9% uptime SLA\",\n  ];\n\n  return (\n    <div className=\"min-h-[500px] flex items-center justify-center bg-black/50 p-8\">\n      <div className=\"bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8\">\n        <div className=\"text-center mb-6\">\n          <div className=\"inline-flex items-center gap-2 bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-xs font-semibold mb-3\">⚡ Upgrade Available</div>\n          <h2 className=\"text-2xl font-bold text-slate-900\">Upgrade to Pro</h2>\n          <p className=\"text-slate-500 text-sm mt-1\">Unlock the full potential of your workspace</p>\n        </div>\n        <div className=\"grid grid-cols-2 gap-4 mb-6\">\n          <div className=\"border border-slate-200 rounded-xl p-4 text-center\">\n            <div className=\"text-xs text-slate-400 uppercase tracking-wider mb-1\">Current Plan</div>\n            <div className=\"font-semibold text-slate-700\">Starter</div>\n            <div className=\"text-slate-400 text-sm\">$9/mo</div>\n          </div>\n          <div className=\"border-2 border-blue-500 rounded-xl p-4 text-center bg-blue-50/50\">\n            <div className=\"text-xs text-blue-500 uppercase tracking-wider mb-1\">Recommended</div>\n            <div className=\"font-semibold text-slate-900\">Pro</div>\n            <div className=\"text-blue-600 text-sm font-medium\">$29/mo</div>\n          </div>\n        </div>\n        <div className=\"space-y-2.5 mb-6\">\n          {benefits.map((b) => (\n            <div key={b} className=\"flex items-center gap-2.5 text-sm text-slate-600\">\n              <div className=\"w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 text-xs flex-shrink-0\">✓</div>\n              {b}\n            </div>\n          ))}\n        </div>\n        <div className=\"text-center mb-6\">\n          <span className=\"text-3xl font-bold text-slate-900\">$29</span>\n          <span className=\"text-slate-400 text-sm\">/month, billed monthly</span>\n        </div>\n        <div className=\"flex flex-col gap-3\">\n          <button className=\"w-full py-3 bg-blue-600 text-white rounded-xl font-medium text-sm hover:bg-blue-700 transition-colors\">Upgrade Now</button>\n          <button className=\"w-full py-3 text-slate-400 text-sm hover:text-slate-600 transition-colors\">Maybe Later</button>\n        </div>\n      </div>\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "chat-message-bubbles",
+    "title": "Chat Message Bubbles",
+    "description": "Two-sided chat bubble layout — sent messages on the right in dark, received on the left in light. Timestamp and avatar per sender.",
+    "category": "Communication",
+    "tags": [
+      "chat",
+      "messages",
+      "bubbles",
+      "communication",
+      "conversation"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/chat-message-bubbles.tsx",
+    "code": "export default function ChatMessageBubbles() {\n  const messages = [\n    { text: \"Hey! Did you see the new button exhibit?\", sent: false, time: \"10:41\" },\n    { text: \"Just checked it out — looks really clean.\", sent: true, time: \"10:42\" },\n    { text: \"Right? The ghost variant is chef's kiss 🤌\", sent: false, time: \"10:42\" },\n    { text: \"Adding it to my collection now.\", sent: true, time: \"10:43\" },\n  ];\n  return (\n    <div className=\"bg-neutral-50 rounded-xl p-4 space-y-3 max-w-xs\">\n      {messages.map((m, i) => (\n        <div key={i} className={`flex ${m.sent ? \"justify-end\" : \"justify-start\"}`}>\n          <div className={`max-w-[80%] px-3 py-2 rounded-2xl text-xs leading-relaxed ${m.sent ? \"bg-neutral-900 text-white rounded-br-sm\" : \"bg-white border border-neutral-100 text-neutral-700 rounded-bl-sm\"}`}>\n            {m.text}\n            <div className={`text-[10px] mt-1 ${m.sent ? \"text-neutral-400\" : \"text-neutral-300\"}`}>{m.time}</div>\n          </div>\n        </div>\n      ))}\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "email-composer",
+    "title": "Email Composer",
+    "description": "Compact email compose form with To, Subject, and body fields plus Send and Discard actions. Flat, no-modal inline compose pattern.",
+    "category": "Communication",
+    "tags": [
+      "email",
+      "compose",
+      "form",
+      "communication",
+      "message"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/email-composer.tsx",
+    "code": "export default function EmailComposer() {\n  return (\n    <div className=\"bg-white border border-neutral-200 rounded-xl overflow-hidden max-w-sm shadow-lg\">\n      <div className=\"flex items-center justify-between px-4 py-2.5 bg-neutral-900 text-white\">\n        <span className=\"text-xs font-semibold\">New message</span>\n        <div className=\"flex gap-2\">\n          <button className=\"text-neutral-400 hover:text-white text-xs\">–</button>\n          <button className=\"text-neutral-400 hover:text-white text-xs\">✕</button>\n        </div>\n      </div>\n      <div className=\"divide-y divide-neutral-100\">\n        <div className=\"flex items-center px-4 py-2\">\n          <span className=\"text-xs text-neutral-400 w-12 shrink-0\">To</span>\n          <input defaultValue=\"mia@acme.com\" className=\"flex-1 text-sm text-neutral-700 outline-none\" />\n        </div>\n        <div className=\"flex items-center px-4 py-2\">\n          <span className=\"text-xs text-neutral-400 w-12 shrink-0\">Subject</span>\n          <input defaultValue=\"Re: Design handoff\" className=\"flex-1 text-sm text-neutral-700 outline-none\" />\n        </div>\n      </div>\n      <textarea rows={4} defaultValue=\"Hi Mia,\" className=\"w-full px-4 pt-2 pb-1 text-sm text-neutral-700 outline-none resize-none border-none\" />\n      <div className=\"flex items-center justify-between px-4 py-2.5 border-t border-neutral-100\">\n        <button className=\"px-4 py-1.5 bg-blue-600 text-white text-xs rounded-lg font-medium\">Send</button>\n        <button className=\"text-neutral-400 hover:text-neutral-700 text-xs\">🗑</button>\n      </div>\n    </div>\n  );\n}"
   },
   {
     "slug": "inbox-thread-layout",
@@ -802,6 +1139,22 @@
     "code": "export default function InboxThreadLayout() {\n  const convos = [\n    { name: \"Sarah M.\", preview: \"Sounds great! Let me know when...\", time: \"2m\", unread: true, initials: \"SM\" },\n    { name: \"Design Team\", preview: \"New mockups are ready for review\", time: \"15m\", unread: true, initials: \"DT\" },\n    { name: \"Alex P.\", preview: \"Thanks for the feedback on the...\", time: \"1h\", unread: false, initials: \"AP\" },\n    { name: \"Jordan K.\", preview: \"Can we schedule a call tomorrow?\", time: \"3h\", unread: false, initials: \"JK\" },\n  ];\n  return (\n    <div className=\"bg-white min-h-[300px] rounded-xl border border-neutral-200 overflow-hidden flex\">\n      <div className=\"w-[250px] border-r border-neutral-200 flex flex-col\">\n        <div className=\"p-3 border-b border-neutral-100 text-sm font-semibold\">Inbox</div>\n        {convos.map(c => (\n          <div key={c.name} className={`p-3 border-b border-neutral-50 cursor-pointer hover:bg-neutral-50 flex gap-2.5 ${c.name === \"Sarah M.\" ? \"bg-indigo-50\" : \"\"}`}>\n            <div className=\"w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-xs font-bold text-indigo-600 flex-shrink-0\">{c.initials}</div>\n            <div className=\"flex-1 min-w-0\">\n              <div className=\"flex justify-between items-center\">\n                <span className=\"text-sm font-medium truncate\">{c.name}</span>\n                <span className=\"text-[10px] text-neutral-400\">{c.time}</span>\n              </div>\n              <div className=\"text-xs text-neutral-500 truncate\">{c.preview}</div>\n            </div>\n            {c.unread && <div className=\"w-2 h-2 rounded-full bg-indigo-500 mt-1.5 flex-shrink-0\" />}\n          </div>\n        ))}\n      </div>\n      <div className=\"flex-1 flex flex-col\">\n        <div className=\"p-3 border-b border-neutral-100 text-sm font-semibold\">Sarah M.</div>\n        <div className=\"flex-1 p-4 flex flex-col gap-3 overflow-auto\">\n          <div className=\"self-start max-w-[70%]\">\n            <div className=\"bg-neutral-100 rounded-2xl rounded-tl-sm px-3 py-2 text-sm\">Hey! I reviewed the component pack. Looks amazing!</div>\n            <div className=\"text-[10px] text-neutral-400 mt-1\">10:42 AM</div>\n          </div>\n          <div className=\"self-end max-w-[70%]\">\n            <div className=\"bg-indigo-600 text-white rounded-2xl rounded-tr-sm px-3 py-2 text-sm\">Thanks! I added a few more variants. Want me to share the updated link?</div>\n            <div className=\"text-[10px] text-neutral-400 mt-1 text-right\">10:44 AM</div>\n          </div>\n          <div className=\"self-start max-w-[70%]\">\n            <div className=\"bg-neutral-100 rounded-2xl rounded-tl-sm px-3 py-2 text-sm\">Sounds great! Let me know when it's ready.</div>\n            <div className=\"text-[10px] text-neutral-400 mt-1\">10:45 AM</div>\n          </div>\n        </div>\n        <div className=\"p-3 border-t border-neutral-100 flex gap-2\">\n          <input type=\"text\" placeholder=\"Type a reply...\" className=\"flex-1 text-sm px-3 py-2 border border-neutral-200 rounded-lg outline-none focus:border-indigo-300\" />\n          <button className=\"px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors\">Send</button>\n        </div>\n      </div>\n    </div>\n  );\n}"
   },
   {
+    "slug": "notification-bell-dropdown",
+    "title": "Notification Bell Dropdown",
+    "description": "Bell icon with badge count that opens a stacked notification list. Read/unread distinction with a blue dot. Mark all read action.",
+    "category": "Communication",
+    "tags": [
+      "notification",
+      "bell",
+      "dropdown",
+      "communication",
+      "inbox"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/notification-bell-dropdown.tsx",
+    "code": "export default function NotificationBellDropdown() {\n  const notifs = [\n    { text: \"Mia starred your exhibit\", time: \"2m ago\", read: false },\n    { text: \"New comment on Bento Grid\", time: \"1h ago\", read: false },\n    { text: \"Leo is now following you\", time: \"3h ago\", read: true },\n  ];\n  return (\n    <div className=\"relative w-fit\">\n      <div className=\"relative inline-block\">\n        <button className=\"w-9 h-9 rounded-xl border border-neutral-200 flex items-center justify-center text-lg hover:bg-neutral-50\">🔔</button>\n        <div className=\"absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-[9px] font-bold\">2</div>\n      </div>\n      <div className=\"absolute top-11 right-0 w-72 bg-white border border-neutral-100 rounded-xl shadow-xl overflow-hidden z-10\">\n        <div className=\"flex items-center justify-between px-4 py-3 border-b border-neutral-100\">\n          <span className=\"text-xs font-semibold text-neutral-900\">Notifications</span>\n          <button className=\"text-xs text-blue-600 hover:underline\">Mark all read</button>\n        </div>\n        {notifs.map((n, i) => (\n          <div key={i} className={`flex items-start gap-3 px-4 py-3 border-b border-neutral-50 last:border-0 ${!n.read ? \"bg-blue-50/30\" : \"\"}`}>\n            {!n.read && <div className=\"w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0 mt-1.5\" />}\n            {n.read && <div className=\"w-1.5 shrink-0\" />}\n            <div className=\"flex-1 min-w-0\">\n              <div className=\"text-xs text-neutral-700\">{n.text}</div>\n              <div className=\"text-xs text-neutral-400 mt-0.5\">{n.time}</div>\n            </div>\n          </div>\n        ))}\n      </div>\n    </div>\n  );\n}"
+  },
+  {
     "slug": "structured-proposal-card",
     "title": "Structured Proposal Card",
     "description": "A proposal card with project details, timeline, budget, deliverables checklist, and Accept/Decline/Counter action buttons, styled with a blue accent border.",
@@ -818,6 +1171,38 @@
     "code": "export default function StructuredProposalCard() {\n  const deliverables = [\n    \"Responsive landing page with animations\",\n    \"Dashboard with 5 interactive widgets\",\n    \"User authentication & settings flow\",\n  ];\n  return (\n    <div className=\"p-8 bg-neutral-100 min-h-[300px] flex items-center justify-center\">\n      <div className=\"bg-white rounded-xl border-2 border-blue-200 shadow-sm max-w-md w-full overflow-hidden\">\n        <div className=\"bg-blue-50 px-5 py-3 border-b border-blue-100\">\n          <div className=\"text-xs text-blue-600 font-semibold uppercase tracking-wider\">Project Proposal</div>\n        </div>\n        <div className=\"p-5\">\n          <h3 className=\"font-bold text-lg mb-1\">E-Commerce Redesign</h3>\n          <p className=\"text-sm text-neutral-600 mb-4 leading-relaxed\">Complete UI/UX overhaul of the existing storefront, including mobile-first responsive design and performance optimization.</p>\n          <div className=\"grid grid-cols-2 gap-3 mb-4\">\n            <div className=\"bg-neutral-50 rounded-lg p-3\">\n              <div className=\"text-xs text-neutral-500 mb-0.5\">Timeline</div>\n              <div className=\"text-sm font-semibold\">2-3 weeks</div>\n            </div>\n            <div className=\"bg-neutral-50 rounded-lg p-3\">\n              <div className=\"text-xs text-neutral-500 mb-0.5\">Budget</div>\n              <div className=\"text-sm font-semibold\">$2,400</div>\n            </div>\n          </div>\n          <div className=\"mb-4\">\n            <div className=\"text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-2\">Deliverables</div>\n            <div className=\"flex flex-col gap-2\">\n              {deliverables.map(d => (\n                <div key={d} className=\"flex items-start gap-2 text-sm\">\n                  <span className=\"text-emerald-500 mt-0.5\">✓</span>\n                  <span className=\"text-neutral-700\">{d}</span>\n                </div>\n              ))}\n            </div>\n          </div>\n          <div className=\"flex gap-2 pt-4 border-t border-neutral-100\">\n            <button className=\"flex-1 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors\">Accept</button>\n            <button className=\"flex-1 py-2 border border-neutral-200 rounded-lg text-sm font-medium hover:bg-neutral-50 transition-colors text-neutral-700\">Decline</button>\n            <button className=\"flex-1 py-2 border border-indigo-200 rounded-lg text-sm font-medium text-indigo-600 hover:bg-indigo-50 transition-colors\">Counter</button>\n          </div>\n        </div>\n      </div>\n    </div>\n  );\n}"
   },
   {
+    "slug": "thread-list-item",
+    "title": "Thread List Item",
+    "description": "Email inbox thread row with sender avatar, name, preview snippet, timestamp, and unread bold treatment. Clean Gmail-style layout.",
+    "category": "Communication",
+    "tags": [
+      "email",
+      "inbox",
+      "thread",
+      "list",
+      "communication"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/thread-list-item.tsx",
+    "code": "export default function ThreadListItem() {\n  const threads = [\n    { sender: \"Mia Chen\", subject: \"Re: Design handoff\", preview: \"Looks great! Can we schedule a review call?\", time: \"10:42\", unread: true },\n    { sender: \"Leo Park\", subject: \"Component feedback\", preview: \"Left a few comments on the ghost button pr...\", time: \"Yesterday\", unread: true },\n    { sender: \"GitHub\", subject: \"Your build passed\", preview: \"[exhibit] All checks passed on main branch\", time: \"Tue\", unread: false },\n  ];\n  return (\n    <div className=\"bg-white border border-neutral-100 rounded-xl divide-y divide-neutral-50 max-w-sm\">\n      {threads.map((t, i) => (\n        <div key={i} className=\"flex items-start gap-3 px-4 py-3.5 hover:bg-neutral-50 cursor-pointer\">\n          <div className={`w-8 h-8 rounded-full bg-neutral-200 flex items-center justify-center text-xs font-bold text-neutral-600 shrink-0 mt-0.5 ${t.unread ? \"ring-2 ring-blue-500/30\" : \"\"}`}>{t.sender[0]}</div>\n          <div className=\"flex-1 min-w-0\">\n            <div className=\"flex items-baseline justify-between gap-2\">\n              <span className={`text-sm ${t.unread ? \"font-semibold text-neutral-900\" : \"text-neutral-600\"}`}>{t.sender}</span>\n              <span className=\"text-xs text-neutral-400 shrink-0\">{t.time}</span>\n            </div>\n            <div className={`text-xs mt-0.5 truncate ${t.unread ? \"text-neutral-700 font-medium\" : \"text-neutral-400\"}`}>{t.subject}</div>\n            <div className=\"text-xs text-neutral-400 truncate mt-0.5\">{t.preview}</div>\n          </div>\n        </div>\n      ))}\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "activity-feed-panel",
+    "title": "Activity Feed Panel",
+    "description": "Recent activity list with avatar, action description, timestamp, and a subtle left-border accent. Grouped into a card panel with scroll.",
+    "category": "Dashboard",
+    "tags": [
+      "activity",
+      "feed",
+      "events",
+      "dashboard",
+      "timeline"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/activity-feed-panel.tsx",
+    "code": "export default function ActivityFeedPanel() {\n  const events = [\n    { user: \"MK\", name: \"Mia K\", action: \"published a new exhibit\", target: \"Ghost Button Set\", time: \"2m ago\", color: \"#3b82f6\" },\n    { user: \"LP\", name: \"Leo P\", action: \"starred\", target: \"Dark Pricing Card\", time: \"14m ago\", color: \"#10b981\" },\n    { user: \"AT\", name: \"Ava T\", action: \"remixed\", target: \"Command Palette\", time: \"1h ago\", color: \"#f59e0b\" },\n    { user: \"ST\", name: \"Sam T\", action: \"commented on\", target: \"Bento Grid\", time: \"3h ago\", color: \"#8b5cf6\" },\n  ];\n  return (\n    <div className=\"bg-white border border-neutral-100 rounded-xl overflow-hidden max-w-sm\">\n      <div className=\"px-4 py-3 border-b border-neutral-100 flex items-center justify-between\">\n        <span className=\"text-sm font-semibold text-neutral-900\">Recent activity</span>\n        <button className=\"text-xs text-neutral-400 hover:text-neutral-700\">View all</button>\n      </div>\n      <div className=\"divide-y divide-neutral-50\">\n        {events.map((e, i) => (\n          <div key={i} className=\"flex items-start gap-3 px-4 py-3\">\n            <div className=\"w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0 mt-0.5\" style={{ background: e.color }}>{e.user}</div>\n            <div className=\"flex-1 min-w-0\">\n              <div className=\"text-xs text-neutral-700\"><span className=\"font-medium\">{e.name}</span> {e.action} <span className=\"font-medium\">{e.target}</span></div>\n              <div className=\"text-xs text-neutral-400 mt-0.5\">{e.time}</div>\n            </div>\n          </div>\n        ))}\n      </div>\n    </div>\n  );\n}"
+  },
+  {
     "slug": "dashboard-header-pattern",
     "title": "Dashboard Header",
     "description": "Header with title, breadcrumbs, action buttons, and a live status chip. Essential for any analytics or admin dashboard.",
@@ -832,6 +1217,54 @@
     "style": "",
     "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/dashboard-header-pattern.tsx",
     "code": "export default function DashboardHeader() {\n  return (\n    <div className=\"min-h-[300px] bg-white border border-neutral-200 rounded-lg overflow-hidden\">\n      <div className=\"border-b border-neutral-200 bg-white px-8 py-6\">\n        <div className=\"flex items-center gap-2 text-xs text-neutral-400 mb-4\">\n          <span className=\"hover:text-neutral-600 cursor-pointer\">Home</span>\n          <span>›</span>\n          <span className=\"hover:text-neutral-600 cursor-pointer\">Dashboard</span>\n          <span>›</span>\n          <span className=\"text-neutral-700 font-medium\">Analytics</span>\n        </div>\n        <div className=\"flex items-center justify-between\">\n          <div className=\"flex items-center gap-3\">\n            <h1 className=\"text-2xl font-bold text-neutral-900\">Analytics Overview</h1>\n            <span className=\"inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200\">\n              <span className=\"w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse\" />\n              Live\n            </span>\n          </div>\n          <div className=\"flex items-center gap-3\">\n            <button className=\"px-4 py-2 text-sm font-medium text-neutral-700 bg-white border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors\">\n              Export\n            </button>\n            <button className=\"px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors\">\n              New Report\n            </button>\n          </div>\n        </div>\n      </div>\n      <div className=\"p-8 bg-neutral-50 flex-1\">\n        <div className=\"text-sm text-neutral-400\">Dashboard content goes here</div>\n      </div>\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "kpi-stats-row",
+    "title": "KPI Stats Row",
+    "description": "Four key metric cards in a horizontal row — value, label, and a percentage delta with directional color coding. Clean neutral background.",
+    "category": "Dashboard",
+    "tags": [
+      "KPI",
+      "stats",
+      "metrics",
+      "dashboard",
+      "cards"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/kpi-stats-row.tsx",
+    "code": "export default function KPIStatsRow() {\n  const stats = [\n    { label: \"Total revenue\", value: \"$48,291\", delta: \"+12.4%\", up: true },\n    { label: \"Active users\", value: \"3,842\", delta: \"+8.1%\", up: true },\n    { label: \"Conversion\", value: \"3.24%\", delta: \"-0.3%\", up: false },\n    { label: \"Avg session\", value: \"4m 12s\", delta: \"+22s\", up: true },\n  ];\n  return (\n    <div className=\"grid grid-cols-2 md:grid-cols-4 gap-4\">\n      {stats.map(s => (\n        <div key={s.label} className=\"bg-white border border-neutral-100 rounded-xl p-4\">\n          <div className=\"text-xs text-neutral-500 mb-1.5\">{s.label}</div>\n          <div className=\"text-xl font-bold text-neutral-900 mb-1\">{s.value}</div>\n          <div className={`text-xs font-medium ${s.up ? \"text-green-600\" : \"text-red-500\"}`}>{s.delta} vs last month</div>\n        </div>\n      ))}\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "metric-trend-card",
+    "title": "Metric Card with Trend",
+    "description": "Single metric card with a large value, comparison delta, 7-day mini sparkline bars, and a subtle color based on direction.",
+    "category": "Dashboard",
+    "tags": [
+      "metric",
+      "sparkline",
+      "trend",
+      "dashboard",
+      "chart"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/metric-trend-card.tsx",
+    "code": "export default function MetricTrendCard() {\n  const points = [42, 58, 51, 67, 73, 69, 84];\n  const max = Math.max(...points);\n  return (\n    <div className=\"bg-white border border-neutral-100 rounded-xl p-5 max-w-xs\">\n      <div className=\"text-xs text-neutral-500 mb-1\">Weekly active creators</div>\n      <div className=\"flex items-end justify-between mb-4\">\n        <div>\n          <div className=\"text-2xl font-bold text-neutral-900\">1,284</div>\n          <div className=\"text-xs font-medium text-green-600 mt-0.5\">↑ 14.2% vs last week</div>\n        </div>\n      </div>\n      <div className=\"flex items-end gap-1 h-14\">\n        {points.map((p, i) => (\n          <div key={i} className=\"flex-1 rounded-sm\" style={{ height: `${(p / max) * 100}%`, background: i === points.length - 1 ? \"#111\" : \"#e5e5e5\" }} />\n        ))}\n      </div>\n      <div className=\"flex justify-between text-xs text-neutral-300 mt-1.5\">\n        <span>Mon</span><span>Sun</span>\n      </div>\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "quick-actions-grid",
+    "title": "Quick Actions Grid",
+    "description": "2×3 grid of shortcut action buttons — icon, label, and subtle background. Used in dashboards and home screens for top-of-mind tasks.",
+    "category": "Dashboard",
+    "tags": [
+      "quick actions",
+      "shortcuts",
+      "grid",
+      "dashboard",
+      "actions"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/quick-actions-grid.tsx",
+    "code": "export default function QuickActionsGrid() {\n  const actions = [\n    { icon: \"✦\", label: \"New exhibit\", color: \"#f0f9ff\", accent: \"#0284c7\" },\n    { icon: \"⬡\", label: \"Collection\", color: \"#fdf4ff\", accent: \"#a21caf\" },\n    { icon: \"⎘\", label: \"Duplicate\", color: \"#f0fdf4\", accent: \"#15803d\" },\n    { icon: \"↑\", label: \"Publish\", color: \"#fff7ed\", accent: \"#c2410c\" },\n    { icon: \"★\", label: \"Saved\", color: \"#fefce8\", accent: \"#a16207\" },\n    { icon: \"⚙\", label: \"Settings\", color: \"#fafafa\", accent: \"#525252\" },\n  ];\n  return (\n    <div className=\"grid grid-cols-3 gap-3 p-4 bg-white border border-neutral-100 rounded-xl max-w-xs\">\n      {actions.map(a => (\n        <button key={a.label} className=\"flex flex-col items-center gap-2 p-3.5 rounded-xl hover:scale-[1.02] transition-transform\" style={{ background: a.color }}>\n          <span className=\"text-xl\" style={{ color: a.accent }}>{a.icon}</span>\n          <span className=\"text-xs font-medium\" style={{ color: a.accent }}>{a.label}</span>\n        </button>\n      ))}\n    </div>\n  );\n}"
   },
   {
     "slug": "stat-cards-with-trends",
@@ -865,6 +1298,38 @@
     "style": "",
     "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/activity-log-timeline.tsx",
     "code": "export default function ActivityLogTimeline() {\n  const events = [\n    { time: \"2024-01-15 14:32\", actor: \"Sarah Chen\", action: \"created user account\", type: \"user\" },\n    { time: \"2024-01-15 14:28\", actor: \"Admin Bot\", action: \"changed permissions for Editor role\", type: \"permission\" },\n    { time: \"2024-01-15 13:55\", actor: \"James Miller\", action: 'edited document \"Q4 Report\"', type: \"document\" },\n    { time: \"2024-01-15 12:10\", actor: \"DevOps Service\", action: \"generated new API key (prod-****-7f3a)\", type: \"api\" },\n    { time: \"2024-01-15 11:45\", actor: \"Maria Garcia\", action: \"updated notification settings\", type: \"settings\" },\n  ];\n\n  return (\n    <div className=\"p-8 bg-white min-h-[300px]\">\n      <div className=\"max-w-2xl mx-auto\">\n        {events.map((e, i) => (\n          <div key={i} className={`flex gap-4 py-4 px-4 ${i % 2 === 0 ? \"bg-neutral-50\" : \"bg-white\"} rounded`}>\n            <span className=\"text-xs text-neutral-400 font-mono w-36 shrink-0 pt-0.5\">{e.time}</span>\n            <div className=\"flex flex-col items-center pt-1.5\">\n              <div className=\"w-2.5 h-2.5 rounded-full bg-blue-500 border-2 border-blue-200\" />\n              {i < events.length - 1 && <div className=\"w-px flex-1 bg-neutral-200 mt-1\" />}\n            </div>\n            <div className=\"text-sm text-neutral-700 pb-2\">\n              <strong className=\"text-neutral-900\">{e.actor}</strong> {e.action}\n            </div>\n          </div>\n        ))}\n      </div>\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "compact-settings-list",
+    "title": "Compact Settings List",
+    "description": "Dense settings list with label, current value, and arrow — no wasted vertical space. Every row is a single line. Inspired by iOS Settings.",
+    "category": "Data Density",
+    "tags": [
+      "settings",
+      "dense",
+      "compact",
+      "list",
+      "data density"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/compact-settings-list.tsx",
+    "code": "export default function CompactSettingsList() {\n  const settings = [\n    { label: \"Theme\", value: \"System\" },\n    { label: \"Language\", value: \"English\" },\n    { label: \"Timezone\", value: \"UTC-8\" },\n    { label: \"Date format\", value: \"MM/DD/YYYY\" },\n    { label: \"Currency\", value: \"USD ($)\" },\n    { label: \"Notifications\", value: \"Email only\" },\n  ];\n  return (\n    <div className=\"bg-white border border-neutral-100 rounded-xl divide-y divide-neutral-50 max-w-xs text-sm\">\n      {settings.map(s => (\n        <button key={s.label} className=\"w-full flex items-center justify-between px-4 py-2.5 hover:bg-neutral-50 transition-colors text-left\">\n          <span className=\"text-neutral-700\">{s.label}</span>\n          <div className=\"flex items-center gap-1.5\">\n            <span className=\"text-neutral-400 text-xs\">{s.value}</span>\n            <span className=\"text-neutral-300 text-xs\">›</span>\n          </div>\n        </button>\n      ))}\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "dense-activity-log",
+    "title": "Dense Activity Log",
+    "description": "Compact activity log where each row is a single tight line: timestamp, actor, action, and target. Max info per vertical pixel.",
+    "category": "Data Density",
+    "tags": [
+      "activity log",
+      "audit",
+      "dense",
+      "compact",
+      "data density"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/dense-activity-log.tsx",
+    "code": "export default function DenseActivityLog() {\n  const logs = [\n    { time: \"10:42\", actor: \"mia\", action: \"published\", target: \"Ghost Button Set\" },\n    { time: \"10:38\", actor: \"system\", action: \"build completed\", target: \"v2.4.1\" },\n    { time: \"10:31\", actor: \"leo\", action: \"starred\", target: \"Dark Pricing Card\" },\n    { time: \"10:14\", actor: \"ava\", action: \"remixed\", target: \"Command Palette\" },\n    { time: \"09:58\", actor: \"sam\", action: \"commented\", target: \"Bento Grid\" },\n    { time: \"09:41\", actor: \"mia\", action: \"updated\", target: \"Glassmorphism Card\" },\n  ];\n  return (\n    <div className=\"bg-white border border-neutral-100 rounded-xl overflow-hidden max-w-md font-mono text-xs\">\n      <div className=\"px-3 py-2 bg-neutral-50 border-b border-neutral-100 flex gap-4 text-neutral-400 font-medium uppercase tracking-wide text-[10px]\">\n        <span className=\"w-10\">Time</span><span className=\"w-16\">Actor</span><span className=\"flex-1\">Event</span>\n      </div>\n      {logs.map((l, i) => (\n        <div key={i} className=\"px-3 py-1.5 border-b border-neutral-50 last:border-0 flex gap-4 items-center hover:bg-neutral-50\">\n          <span className=\"text-neutral-300 w-10 shrink-0\">{l.time}</span>\n          <span className=\"text-neutral-600 w-16 truncate shrink-0\">{l.actor}</span>\n          <span className=\"text-neutral-500 shrink-0\">{l.action}</span>\n          <span className=\"text-neutral-400 truncate\">{l.target}</span>\n        </div>\n      ))}\n    </div>\n  );\n}"
   },
   {
     "slug": "export-pattern-ui",
@@ -963,6 +1428,115 @@
     "code": "export default function AvatarStack() {\n  const colors = [\"#3B82F6\", \"#EF4444\", \"#10B981\", \"#F59E0B\", \"#8B5CF6\"];\n  const initials = [\"JD\", \"AK\", \"SM\", \"RB\", \"LW\"];\n\n  return (\n    <div className=\"p-12 bg-white flex items-center justify-center min-h-[150px]\">\n      <div className=\"flex items-center\">\n        <div className=\"flex -space-x-3\">\n          {colors.map((c, i) => (\n            <div\n              key={i}\n              className=\"w-10 h-10 rounded-full border-2 border-white flex items-center justify-center text-white text-xs font-bold shadow-sm\"\n              style={{ backgroundColor: c, zIndex: colors.length - i }}\n            >\n              {initials[i]}\n            </div>\n          ))}\n        </div>\n        <div className=\"ml-1 w-10 h-10 rounded-full border-2 border-white bg-neutral-100 flex items-center justify-center text-neutral-500 text-xs font-medium\">\n          +8\n        </div>\n      </div>\n    </div>\n  );\n}"
   },
   {
+    "slug": "progress-bar-list",
+    "title": "Progress Bar List",
+    "description": "Vertical list of labeled progress bars — category breakdown, language distribution, or survey results. Each bar shows label, fill, and percentage.",
+    "category": "Data Display",
+    "tags": [
+      "progress",
+      "bars",
+      "data display",
+      "breakdown",
+      "metrics"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/progress-bar-list.tsx",
+    "code": "export default function ProgressBarList() {\n  const items = [\n    { label: \"Buttons\", pct: 64, color: \"#3b82f6\" },\n    { label: \"App Shells\", pct: 48, color: \"#8b5cf6\" },\n    { label: \"Feedback\", pct: 32, color: \"#10b981\" },\n    { label: \"Cards\", pct: 18, color: \"#f59e0b\" },\n    { label: \"Navigation\", pct: 12, color: \"#ef4444\" },\n  ];\n  return (\n    <div className=\"bg-white border border-neutral-100 rounded-xl p-5 space-y-4 max-w-xs\">\n      <div className=\"text-sm font-semibold text-neutral-900\">Top categories</div>\n      {items.map(item => (\n        <div key={item.label}>\n          <div className=\"flex justify-between text-xs text-neutral-600 mb-1.5\">\n            <span>{item.label}</span>\n            <span className=\"font-medium\">{item.pct}%</span>\n          </div>\n          <div className=\"h-1.5 bg-neutral-100 rounded-full overflow-hidden\">\n            <div className=\"h-full rounded-full\" style={{ width: `${item.pct}%`, background: item.color }} />\n          </div>\n        </div>\n      ))}\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "stats-grid",
+    "title": "Stats Grid",
+    "description": "2×2 grid of stat cards — each with icon, value, and label. Clean neutral palette, icon accent color per metric. Good for overview dashboards.",
+    "category": "Data Display",
+    "tags": [
+      "stats",
+      "grid",
+      "metrics",
+      "data display",
+      "cards"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/stats-grid.tsx",
+    "code": "export default function StatsGrid() {\n  const stats = [\n    { icon: \"⬡\", label: \"Exhibits\", value: \"284\", color: \"#6366f1\" },\n    { icon: \"★\", label: \"Total saves\", value: \"12.4k\", color: \"#f59e0b\" },\n    { icon: \"↺\", label: \"Remixes\", value: \"831\", color: \"#10b981\" },\n    { icon: \"👥\", label: \"Creators\", value: \"1,209\", color: \"#3b82f6\" },\n  ];\n  return (\n    <div className=\"grid grid-cols-2 gap-4 max-w-xs\">\n      {stats.map(s => (\n        <div key={s.label} className=\"bg-white border border-neutral-100 rounded-xl p-4\">\n          <div className=\"w-8 h-8 rounded-lg flex items-center justify-center text-base mb-3\" style={{ background: s.color + \"15\", color: s.color }}>{s.icon}</div>\n          <div className=\"text-lg font-bold text-neutral-900\">{s.value}</div>\n          <div className=\"text-xs text-neutral-400 mt-0.5\">{s.label}</div>\n        </div>\n      ))}\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "vertical-timeline",
+    "title": "Vertical Timeline",
+    "description": "Chronological event timeline with icon nodes, titles, descriptions, and timestamps. Left-aligned with a connecting line. Suitable for changelogs and histories.",
+    "category": "Data Display",
+    "tags": [
+      "timeline",
+      "events",
+      "changelog",
+      "history",
+      "data display"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/vertical-timeline.tsx",
+    "code": "export default function VerticalTimeline() {\n  const events = [\n    { icon: \"🚀\", title: \"v2.0 launched\", desc: \"Major redesign with dark mode\", time: \"Apr 2, 2026\" },\n    { icon: \"⭐\", title: \"1k creators\", desc: \"Community milestone reached\", time: \"Mar 14, 2026\" },\n    { icon: \"⚡\", title: \"API released\", desc: \"Public component API went live\", time: \"Feb 28, 2026\" },\n    { icon: \"🌱\", title: \"Beta launched\", desc: \"First 50 creators invited\", time: \"Jan 10, 2026\" },\n  ];\n  return (\n    <div className=\"max-w-xs py-4 pl-2\">\n      {events.map((e, i) => (\n        <div key={i} className=\"flex gap-4 relative\">\n          {i < events.length - 1 && <div className=\"absolute left-4 top-8 w-px h-full bg-neutral-100\" />}\n          <div className=\"w-8 h-8 rounded-full bg-neutral-50 border border-neutral-100 flex items-center justify-center text-base shrink-0 relative z-10\">{e.icon}</div>\n          <div className=\"pb-6\">\n            <div className=\"text-sm font-medium text-neutral-900\">{e.title}</div>\n            <div className=\"text-xs text-neutral-500 mt-0.5\">{e.desc}</div>\n            <div className=\"text-xs text-neutral-300 mt-1\">{e.time}</div>\n          </div>\n        </div>\n      ))}\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "empty-state-activity",
+    "title": "Empty Activity Feed",
+    "description": "Zero-state for a project activity feed. Soft pulse icon, descriptive copy, and encouragement to take first action.",
+    "category": "Empty States",
+    "tags": [
+      "empty state",
+      "activity",
+      "feed",
+      "zero state",
+      "timeline"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/empty-state-activity.tsx",
+    "code": "export default function EmptyActivityFeed() {\n  return (\n    <div className=\"flex flex-col items-center justify-center py-16 px-6 text-center\">\n      <div className=\"w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center text-xl mb-4\">⚡</div>\n      <h3 className=\"text-sm font-semibold text-neutral-900 mb-1\">No activity yet</h3>\n      <p className=\"text-xs text-neutral-500 max-w-[220px]\">Activity from you and your team will show up here — commits, deployments, comments.</p>\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "empty-state-billing",
+    "title": "Empty Billing History",
+    "description": "Zero-state for an invoices tab. Receipt icon, 'No invoices yet' headline, and a note that the first invoice appears after the trial.",
+    "category": "Empty States",
+    "tags": [
+      "empty state",
+      "billing",
+      "invoices",
+      "zero state"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/empty-state-billing.tsx",
+    "code": "export default function EmptyBillingHistory() {\n  return (\n    <div className=\"flex flex-col items-center justify-center py-16 px-6 text-center\">\n      <div className=\"w-12 h-12 rounded-xl bg-neutral-100 flex items-center justify-center text-xl mb-4\">🧾</div>\n      <h3 className=\"text-sm font-semibold text-neutral-900 mb-1\">No invoices yet</h3>\n      <p className=\"text-xs text-neutral-500 max-w-[220px]\">Your first invoice will appear here after your free trial ends on Apr 14.</p>\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "empty-state-notifications",
+    "title": "Empty Notifications",
+    "description": "Zero-state panel for an empty notification inbox. Bell icon, friendly headline, and soft subtext. No CTA — nothing to do.",
+    "category": "Empty States",
+    "tags": [
+      "empty state",
+      "notifications",
+      "inbox",
+      "zero state"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/empty-state-notifications.tsx",
+    "code": "export default function EmptyNotifications() {\n  return (\n    <div className=\"flex flex-col items-center justify-center py-16 px-6 text-center\">\n      <div className=\"w-14 h-14 rounded-full bg-neutral-100 flex items-center justify-center text-2xl mb-4\">🔔</div>\n      <h3 className=\"text-sm font-semibold text-neutral-800 mb-1\">You're all caught up</h3>\n      <p className=\"text-xs text-neutral-400 max-w-[220px]\">New notifications will appear here when there's activity on your account.</p>\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "empty-state-search",
+    "title": "Empty Search Results",
+    "description": "No-results state for a filtered search. Shows a magnifier icon, clear headline, suggestion copy, and a ghost 'Clear filters' button.",
+    "category": "Empty States",
+    "tags": [
+      "empty state",
+      "search",
+      "no results",
+      "zero state"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/empty-state-search.tsx",
+    "code": "export default function EmptySearchResults() {\n  return (\n    <div className=\"flex flex-col items-center justify-center py-20 px-6 text-center\">\n      <div className=\"text-5xl mb-4\">🔍</div>\n      <h3 className=\"text-base font-semibold text-neutral-900 mb-1\">No results for \"dark button\"</h3>\n      <p className=\"text-sm text-neutral-500 max-w-xs mb-5\">Try a different keyword or remove some filters to see more components.</p>\n      <button className=\"px-4 py-2 text-sm border border-neutral-200 rounded-lg text-neutral-600 hover:bg-neutral-50\">Clear filters</button>\n    </div>\n  );\n}"
+  },
+  {
     "slug": "empty-state-first-run",
     "title": "Empty State - First Run",
     "description": "Centered empty state with a CSS-drawn document icon, heading, description, and primary/secondary action buttons. Ideal for onboarding and first-run experiences.",
@@ -977,6 +1551,22 @@
     "style": "",
     "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/empty-state-first-run.tsx",
     "code": "export default function EmptyStateFirstRun() {\n  return (\n    <div className=\"min-h-[400px] bg-white border border-neutral-200 rounded-lg flex items-center justify-center p-12\">\n      <div className=\"text-center max-w-sm\">\n        <div className=\"mx-auto mb-6 w-20 h-20 rounded-2xl bg-neutral-100 border-2 border-dashed border-neutral-300 flex items-center justify-center\">\n          <div className=\"relative\">\n            <div className=\"w-8 h-10 border-2 border-neutral-400 rounded-sm bg-white\" />\n            <div className=\"absolute top-2 left-1.5 w-5 h-0.5 bg-neutral-300 rounded\" />\n            <div className=\"absolute top-3.5 left-1.5 w-3 h-0.5 bg-neutral-300 rounded\" />\n            <div className=\"absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-blue-600 flex items-center justify-center\">\n              <span className=\"text-white text-xs font-bold\">+</span>\n            </div>\n          </div>\n        </div>\n        <h3 className=\"text-lg font-semibold text-neutral-900 mb-2\">No projects yet</h3>\n        <p className=\"text-sm text-neutral-500 mb-6 leading-relaxed\">\n          Get started by creating your first project. You can also import existing projects from your local machine or a Git repository.\n        </p>\n        <div className=\"flex items-center justify-center gap-3\">\n          <button className=\"px-5 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors\">\n            Create your first project\n          </button>\n          <button className=\"px-5 py-2.5 text-sm font-medium text-neutral-700 bg-white border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors\">\n            Import\n          </button>\n        </div>\n      </div>\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "empty-state-team",
+    "title": "Empty Team Members",
+    "description": "Zero-state for a team management page. Avatar placeholder ring, headline, description, and a solid 'Invite member' CTA.",
+    "category": "Empty States",
+    "tags": [
+      "empty state",
+      "team",
+      "invite",
+      "members",
+      "zero state"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/empty-state-team.tsx",
+    "code": "export default function EmptyTeamMembers() {\n  return (\n    <div className=\"flex flex-col items-center justify-center py-16 px-6 text-center\">\n      <div className=\"flex -space-x-2 mb-5\">\n        {[...Array(4)].map((_, i) => (\n          <div key={i} className=\"w-10 h-10 rounded-full bg-neutral-100 border-2 border-white flex items-center justify-center text-neutral-300 text-lg\">+</div>\n        ))}\n      </div>\n      <h3 className=\"text-sm font-semibold text-neutral-900 mb-1\">No team members yet</h3>\n      <p className=\"text-xs text-neutral-500 max-w-[240px] mb-5\">Invite your teammates to collaborate. They'll get an email with a sign-in link.</p>\n      <button className=\"px-4 py-2 text-sm bg-neutral-900 text-white rounded-lg hover:bg-neutral-800\">Invite member</button>\n    </div>\n  );\n}"
   },
   {
     "slug": "empty-state-illustration",
@@ -1198,6 +1788,22 @@
     "code": "export default function TypographySystem() {\n  const sections = [\n    {\n      label: \"Display / Headings\",\n      items: [\n        { name: \"H1 — Page Title\", size: \"30px\", weight: 700, class: \"text-3xl font-bold\", sample: \"Analytics Dashboard\" },\n        { name: \"H2 — Section Heading\", size: \"24px\", weight: 700, class: \"text-2xl font-bold\", sample: \"Revenue Overview\" },\n        { name: \"H3 — Card Title / Dialog\", size: \"18px\", weight: 600, class: \"text-lg font-semibold\", sample: \"Recent Transactions\" },\n        { name: \"H4 — Sub-section\", size: \"16px\", weight: 600, class: \"text-base font-semibold\", sample: \"Filter by Status\" },\n      ],\n    },\n    {\n      label: \"Body\",\n      items: [\n        { name: \"Body — Primary\", size: \"14px\", weight: 400, class: \"text-sm\", sample: \"The dashboard provides an overview of your key metrics and recent activity. Use the filters above to narrow the results.\" },\n        { name: \"Body — Secondary\", size: \"13px\", weight: 400, class: \"text-sm text-neutral-500\", sample: \"Last updated 2 minutes ago · Synced from Stripe and Mixpanel\" },\n        { name: \"Label — Strong\", size: \"14px\", weight: 500, class: \"text-sm font-medium\", sample: \"Display Name\" },\n        { name: \"Caption / Meta\", size: \"12px\", weight: 400, class: \"text-xs text-neutral-400\", sample: \"Created Jan 15, 2024 · Modified by Sarah Chen\" },\n      ],\n    },\n    {\n      label: \"Functional\",\n      items: [\n        { name: \"Table Column Header\", size: \"11px\", weight: 600, class: \"text-xs font-semibold uppercase tracking-wider text-neutral-500\", sample: \"CUSTOMER NAME\" },\n        { name: \"Badge / Tag\", size: \"11px\", weight: 500, class: \"text-xs font-medium\", sample: \"Pro Plan\" },\n        { name: \"Button — Medium\", size: \"13px\", weight: 500, class: \"text-sm font-medium\", sample: \"Save Changes\" },\n        { name: \"Monospace / Code\", size: \"13px\", weight: 400, class: \"text-sm font-mono\", sample: \"user_id: usr_01j9a4f5k2...\" },\n        { name: \"Link\", size: \"13px\", weight: 500, class: \"text-sm font-medium text-blue-600 underline\", sample: \"View full report →\" },\n      ],\n    },\n  ];\n\n  return (\n    <div className=\"p-8 bg-neutral-50 min-h-[600px] space-y-10 font-sans\">\n      {sections.map(section => (\n        <section key={section.label}>\n          <h2 className=\"text-xs font-semibold uppercase tracking-widest text-neutral-400 mb-4\">{section.label}</h2>\n          <div className=\"bg-white rounded-xl border border-neutral-200 overflow-hidden\">\n            {section.items.map((item, i) => (\n              <div key={item.name}\n                className={`flex items-start gap-0 ${i < section.items.length - 1 ? \"border-b border-neutral-100\" : \"\"}`}>\n                {/* Annotation */}\n                <div className=\"w-52 flex-shrink-0 px-5 py-4 border-r border-neutral-100 bg-neutral-50/50\">\n                  <div className=\"text-xs font-medium text-neutral-700 mb-1\">{item.name}</div>\n                  <div className=\"flex gap-2\">\n                    <span className=\"text-[10px] font-mono text-neutral-400 bg-neutral-100 px-1.5 py-0.5 rounded\">{item.size}</span>\n                    <span className=\"text-[10px] font-mono text-neutral-400 bg-neutral-100 px-1.5 py-0.5 rounded\">{item.weight}</span>\n                  </div>\n                  <div className=\"mt-1 text-[10px] font-mono text-blue-400 break-all\">{item.class}</div>\n                </div>\n                {/* Live sample */}\n                <div className=\"flex-1 px-6 py-4 flex items-center\">\n                  <span className={item.class}>{item.sample}</span>\n                </div>\n              </div>\n            ))}\n          </div>\n        </section>\n      ))}\n\n      {/* Pairing rules */}\n      <section>\n        <h2 className=\"text-xs font-semibold uppercase tracking-widest text-neutral-400 mb-4\">Font Pairing Rules</h2>\n        <div className=\"bg-white rounded-xl border border-neutral-200 p-6 grid grid-cols-3 gap-6\">\n          <div>\n            <div className=\"text-xs text-neutral-400 font-medium uppercase tracking-wide mb-2\">Display</div>\n            <div className=\"text-2xl font-bold\" style={{ fontFamily: \"'Space Grotesk', sans-serif\" }}>Space Grotesk</div>\n            <div className=\"text-xs text-neutral-400 mt-1 font-mono\">H1, H2, hero headlines</div>\n          </div>\n          <div>\n            <div className=\"text-xs text-neutral-400 font-medium uppercase tracking-wide mb-2\">Body</div>\n            <div className=\"text-2xl font-bold\">Inter</div>\n            <div className=\"text-xs text-neutral-400 mt-1 font-mono\">All UI text, labels, prose</div>\n          </div>\n          <div>\n            <div className=\"text-xs text-neutral-400 font-medium uppercase tracking-wide mb-2\">Code / Data</div>\n            <div className=\"text-2xl font-bold font-mono\">JetBrains Mono</div>\n            <div className=\"text-xs text-neutral-400 mt-1 font-mono\">Code, IDs, timestamps</div>\n          </div>\n        </div>\n      </section>\n    </div>\n  );\n}"
   },
   {
+    "slug": "achievement-badge-card",
+    "title": "Achievement Badge Card",
+    "description": "Earned achievement display with icon, title, description, and unlock date. Uses a glowing accent ring for earned vs. locked state.",
+    "category": "Gamification",
+    "tags": [
+      "achievement",
+      "badge",
+      "gamification",
+      "reward",
+      "unlocked"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/achievement-badge-card.tsx",
+    "code": "export default function AchievementBadgeCard() {\n  const badges = [\n    { icon: \"🔥\", label: \"Hot Streak\", desc: \"7 exhibits in 7 days\", earned: true, date: \"Earned Mar 14\" },\n    { icon: \"⭐\", label: \"First Save\", desc: \"Your exhibit was saved\", earned: true, date: \"Earned Feb 1\" },\n    { icon: \"🏆\", label: \"Top Creator\", desc: \"Reach 1k total saves\", earned: false, date: \"0/1000 saves\" },\n  ];\n  return (\n    <div className=\"flex gap-3 p-4 flex-wrap\">\n      {badges.map(b => (\n        <div key={b.label} className={`flex flex-col items-center text-center p-4 rounded-xl border w-28 ${b.earned ? \"border-amber-200 bg-amber-50\" : \"border-neutral-100 bg-neutral-50 opacity-50 grayscale\"}`}>\n          <div className={`text-3xl mb-2 ${b.earned ? \"\" : \"opacity-40\"}`}>{b.icon}</div>\n          <div className=\"text-xs font-semibold text-neutral-900\">{b.label}</div>\n          <div className=\"text-xs text-neutral-400 mt-0.5 leading-tight\">{b.desc}</div>\n          <div className={`text-xs mt-1.5 ${b.earned ? \"text-amber-600 font-medium\" : \"text-neutral-400\"}`}>{b.date}</div>\n        </div>\n      ))}\n    </div>\n  );\n}"
+  },
+  {
     "slug": "challenge-submission-card",
     "title": "Challenge Submission Card",
     "description": "A card displaying a challenge entry with gradient preview, submitter info, vote count with upvote button, comment count, and rank badge.",
@@ -1230,6 +1836,22 @@
     "code": "export default function LeaderboardWeekly() {\n  const entries = [\n    { rank: 1, name: \"Alex Chen\", initials: \"AC\", score: 2840 },\n    { rank: 2, name: \"Maria S.\", initials: \"MS\", score: 2650 },\n    { rank: 3, name: \"Jordan K.\", initials: \"JK\", score: 2510 },\n    { rank: 4, name: \"Sam Lee\", initials: \"SL\", score: 2340 },\n    { rank: 5, name: \"You\", initials: \"ME\", score: 2180 },\n    { rank: 6, name: \"Priya N.\", initials: \"PN\", score: 1990 },\n    { rank: 7, name: \"Erik O.\", initials: \"EO\", score: 1820 },\n    { rank: 8, name: \"Lina W.\", initials: \"LW\", score: 1650 },\n  ];\n  const maxScore = entries[0].score;\n  const medals = [\"#D4AF37\", \"#A0A0A0\", \"#CD7F32\"];\n  return (\n    <div className=\"p-6 bg-white min-h-[300px] rounded-xl border border-neutral-200\">\n      <div className=\"flex justify-between items-center mb-6\">\n        <h3 className=\"text-lg font-bold\">Weekly Leaderboard</h3>\n        <div className=\"flex bg-neutral-100 rounded-lg p-0.5\">\n          <button className=\"px-3 py-1 text-xs font-medium bg-white rounded-md shadow-sm\">Weekly</button>\n          <button className=\"px-3 py-1 text-xs font-medium text-neutral-500\">All-Time</button>\n        </div>\n      </div>\n      <div className=\"flex flex-col gap-2\">\n        {entries.map(e => (\n          <div key={e.rank} className={`flex items-center gap-3 p-2.5 rounded-lg ${e.rank === 5 ? \"bg-blue-50 border border-blue-100\" : \"hover:bg-neutral-50\"}`} style={e.rank <= 3 ? { borderLeft: `3px solid ${medals[e.rank-1]}` } : {}}>\n            <span className=\"w-6 text-sm font-bold text-neutral-400 text-center\">#{e.rank}</span>\n            <div className=\"w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-xs font-bold text-indigo-600\">{e.initials}</div>\n            <span className=\"text-sm font-medium flex-1\">{e.name}</span>\n            <div className=\"w-24 h-1.5 bg-neutral-100 rounded-full overflow-hidden\">\n              <div className=\"h-full bg-indigo-500 rounded-full\" style={{ width: `${(e.score / maxScore) * 100}%` }} />\n            </div>\n            <span className=\"text-sm font-mono text-neutral-600 w-12 text-right\">{e.score}</span>\n          </div>\n        ))}\n      </div>\n    </div>\n  );\n}"
   },
   {
+    "slug": "leaderboard-rows",
+    "title": "Leaderboard Rows",
+    "description": "Top-5 creator leaderboard with rank number, avatar, display name, and score. Gold/silver/bronze highlight for the podium positions.",
+    "category": "Gamification",
+    "tags": [
+      "leaderboard",
+      "ranking",
+      "gamification",
+      "score",
+      "top creators"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/leaderboard-rows.tsx",
+    "code": "export default function LeaderboardRows() {\n  const creators = [\n    { rank: 1, name: \"Mia Chen\", handle: \"@mia\", score: \"4,821\", color: \"#f59e0b\" },\n    { rank: 2, name: \"Leo Park\", handle: \"@leo\", score: \"3,640\", color: \"#9ca3af\" },\n    { rank: 3, name: \"Ava Torres\", handle: \"@ava\", score: \"2,990\", color: \"#cd7c2f\" },\n    { rank: 4, name: \"Sam Kim\", handle: \"@sam\", score: \"1,844\", color: undefined },\n    { rank: 5, name: \"Jordan Lee\", handle: \"@jordan\", score: \"1,201\", color: undefined },\n  ];\n  return (\n    <div className=\"bg-white border border-neutral-100 rounded-xl divide-y divide-neutral-50 max-w-xs\">\n      {creators.map(c => (\n        <div key={c.rank} className=\"flex items-center gap-3 px-4 py-3\">\n          <div className=\"w-6 text-center text-sm font-bold\" style={{ color: c.color || \"#d4d4d4\" }}>#{c.rank}</div>\n          <div className=\"w-8 h-8 rounded-full bg-neutral-200 flex items-center justify-center text-xs font-bold text-neutral-600 shrink-0\">{c.name[0]}</div>\n          <div className=\"flex-1 min-w-0\">\n            <div className=\"text-sm font-medium text-neutral-900\">{c.name}</div>\n            <div className=\"text-xs text-neutral-400\">{c.handle}</div>\n          </div>\n          <div className=\"text-sm font-semibold text-neutral-700\">{c.score}</div>\n        </div>\n      ))}\n    </div>\n  );\n}"
+  },
+  {
     "slug": "profile-credibility-badges",
     "title": "Profile Credibility Section",
     "description": "A credibility card showing user level, progress bar, earned badge collection with unicode icons, adoption metrics, and percentile ranking.",
@@ -1244,6 +1866,22 @@
     "style": "",
     "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/profile-credibility-badges.tsx",
     "code": "export default function ProfileCredibilityBadges() {\n  const badges = [\n    { icon: \"🏗️\", label: \"Builder\" },\n    { icon: \"⭐\", label: \"Star\" },\n    { icon: \"🔥\", label: \"Streak\" },\n    { icon: \"🎯\", label: \"Precise\" },\n    { icon: \"💎\", label: \"Quality\" },\n    { icon: \"🚀\", label: \"Launcher\" },\n  ];\n  return (\n    <div className=\"p-8 bg-neutral-50 min-h-[300px] flex items-center justify-center\">\n      <div className=\"bg-white rounded-xl border border-neutral-200 p-6 max-w-md w-full\">\n        <div className=\"flex items-center justify-between mb-4\">\n          <div className=\"flex items-center gap-3\">\n            <div className=\"px-3 py-1.5 bg-indigo-100 rounded-lg\">\n              <span className=\"text-indigo-700 font-bold text-sm\">Lv.7</span>\n            </div>\n            <div>\n              <div className=\"font-bold text-sm\">Level 7 — Architect</div>\n              <div className=\"text-xs text-neutral-500\">72% to Level 8</div>\n            </div>\n          </div>\n          <div className=\"text-right\">\n            <div className=\"text-xs font-bold text-emerald-600\">Top 5%</div>\n          </div>\n        </div>\n        <div className=\"w-full h-2 bg-neutral-100 rounded-full mb-6 overflow-hidden\">\n          <div className=\"h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full\" style={{ width: \"72%\" }} />\n        </div>\n        <div className=\"mb-6\">\n          <div className=\"text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-3\">Earned Badges</div>\n          <div className=\"flex gap-3\">\n            {badges.map(b => (\n              <div key={b.label} className=\"w-10 h-10 rounded-full bg-neutral-50 border border-neutral-200 flex items-center justify-center text-lg\" title={b.label}>\n                {b.icon}\n              </div>\n            ))}\n          </div>\n        </div>\n        <div className=\"flex items-center justify-between pt-4 border-t border-neutral-100 text-sm\">\n          <span className=\"text-neutral-500\">Adoption</span>\n          <span className=\"font-semibold\">Used by 1.2k developers</span>\n        </div>\n      </div>\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "xp-level-bar",
+    "title": "XP Level Progress Bar",
+    "description": "Creator level progress indicator with current level badge, XP progress bar, and XP needed to reach next level. Compact single-row layout.",
+    "category": "Gamification",
+    "tags": [
+      "XP",
+      "level",
+      "progress",
+      "gamification",
+      "badge"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/xp-level-bar.tsx",
+    "code": "export default function XPLevelBar() {\n  const current = 340;\n  const nextLevel = 500;\n  const pct = Math.round((current / nextLevel) * 100);\n  return (\n    <div className=\"bg-white border border-neutral-100 rounded-xl p-5 max-w-xs\">\n      <div className=\"flex items-center gap-3 mb-3\">\n        <div className=\"w-9 h-9 rounded-lg bg-neutral-900 flex items-center justify-center\">\n          <span className=\"text-white text-xs font-black\">L7</span>\n        </div>\n        <div className=\"flex-1\">\n          <div className=\"text-sm font-semibold text-neutral-900\">Craftsman</div>\n          <div className=\"text-xs text-neutral-400\">Level 7 · Design Engineer</div>\n        </div>\n      </div>\n      <div className=\"h-2 bg-neutral-100 rounded-full overflow-hidden mb-1.5\">\n        <div className=\"h-full bg-neutral-900 rounded-full\" style={{ width: `${pct}%` }} />\n      </div>\n      <div className=\"flex justify-between text-xs text-neutral-400\">\n        <span>{current} XP</span>\n        <span>{nextLevel - current} XP to Level 8</span>\n      </div>\n    </div>\n  );\n}"
   },
   {
     "slug": "command-palette",
@@ -1262,6 +1900,54 @@
     "code": "export default function CommandPalette() {\n  const results = [\n    { icon: \"📄\", label: \"Dashboard\", hint: \"Go to page\" },\n    { icon: \"⚙️\", label: \"Settings\", hint: \"Preferences\" },\n    { icon: \"👤\", label: \"Profile\", hint: \"Account\" },\n    { icon: \"📊\", label: \"Analytics\", hint: \"Reports\" },\n  ];\n\n  return (\n    <div className=\"p-12 bg-neutral-900/90 flex items-start justify-center min-h-[400px] pt-20\">\n      <div className=\"w-full max-w-lg bg-white rounded-xl shadow-2xl border border-neutral-200 overflow-hidden\">\n        <div className=\"flex items-center gap-3 px-4 py-3 border-b border-neutral-100\">\n          <span className=\"text-neutral-400 text-sm\">🔍</span>\n          <input\n            type=\"text\"\n            placeholder=\"Type a command or search...\"\n            className=\"flex-1 bg-transparent outline-none text-sm text-neutral-800 placeholder:text-neutral-400\"\n            defaultValue=\"dash\"\n          />\n          <kbd className=\"hidden sm:inline-block px-2 py-0.5 bg-neutral-100 rounded text-[10px] text-neutral-500 font-mono border border-neutral-200\">ESC</kbd>\n        </div>\n        <div className=\"py-2\">\n          <div className=\"px-3 py-1.5 text-[10px] font-semibold text-neutral-400 uppercase tracking-wider\">Results</div>\n          {results.map((r, i) => (\n            <div\n              key={r.label}\n              className={`flex items-center gap-3 px-4 py-2.5 text-sm cursor-pointer ${\n                i === 0 ? \"bg-blue-50 text-blue-900\" : \"text-neutral-700 hover:bg-neutral-50\"\n              }`}\n            >\n              <span>{r.icon}</span>\n              <span className=\"flex-1 font-medium\">{r.label}</span>\n              <span className=\"text-xs text-neutral-400\">{r.hint}</span>\n            </div>\n          ))}\n        </div>\n      </div>\n    </div>\n  );\n}"
   },
   {
+    "slug": "date-range-input",
+    "title": "Date Range Picker",
+    "description": "Start and end date inputs in a connected inline layout with a dash separator. Clear labeling, focus states, and a consistent border group.",
+    "category": "Inputs",
+    "tags": [
+      "date",
+      "date range",
+      "input",
+      "picker",
+      "form"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/date-range-input.tsx",
+    "code": "export default function DateRangeInput() {\n  return (\n    <div className=\"max-w-sm p-6 space-y-2\">\n      <label className=\"block text-xs font-medium text-neutral-600\">Date range</label>\n      <div className=\"flex items-center gap-2\">\n        <input type=\"date\" defaultValue=\"2026-04-01\" className=\"flex-1 px-3 py-2 text-sm border border-neutral-200 rounded-lg focus:outline-none focus:border-blue-400 text-neutral-700\" />\n        <span className=\"text-neutral-400 text-sm shrink-0\">→</span>\n        <input type=\"date\" defaultValue=\"2026-04-30\" className=\"flex-1 px-3 py-2 text-sm border border-neutral-200 rounded-lg focus:outline-none focus:border-blue-400 text-neutral-700\" />\n      </div>\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "file-upload-zone",
+    "title": "File Upload Drop Zone",
+    "description": "Drag-and-drop file upload area with border dash, icon, instruction copy, and a 'Browse files' fallback button. Accepts images and PDFs.",
+    "category": "Inputs",
+    "tags": [
+      "file upload",
+      "drag and drop",
+      "input",
+      "dropzone",
+      "file"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/file-upload-zone.tsx",
+    "code": "export default function FileUploadZone() {\n  return (\n    <div className=\"max-w-sm p-6\">\n      <div className=\"border-2 border-dashed border-neutral-200 rounded-xl p-8 flex flex-col items-center text-center hover:border-neutral-300 hover:bg-neutral-50 transition-colors cursor-pointer\">\n        <div className=\"text-3xl mb-3\">⬆</div>\n        <div className=\"text-sm font-medium text-neutral-700 mb-1\">Drop files here</div>\n        <div className=\"text-xs text-neutral-400 mb-4\">PNG, JPG, PDF up to 10MB</div>\n        <button className=\"px-4 py-1.5 text-xs font-medium border border-neutral-200 rounded-lg text-neutral-600 hover:bg-neutral-100\">Browse files</button>\n      </div>\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "search-with-clear",
+    "title": "Search Input with Clear",
+    "description": "Search field with leading magnifier icon, clear × button that appears on input, and live character count. Focus ring on active state.",
+    "category": "Inputs",
+    "tags": [
+      "search",
+      "input",
+      "clear",
+      "text field",
+      "form"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/search-with-clear.tsx",
+    "code": "import { useState } from \"react\";\nexport default function SearchWithClear() {\n  const [v, setV] = useState(\"\");\n  return (\n    <div className=\"max-w-sm p-6\">\n      <div className=\"relative\">\n        <span className=\"absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 text-sm\">🔍</span>\n        <input\n          value={v}\n          onChange={e => setV(e.target.value)}\n          placeholder=\"Search components...\"\n          className=\"w-full pl-9 pr-9 py-2.5 text-sm border border-neutral-200 rounded-xl focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 text-neutral-900 placeholder:text-neutral-400\"\n        />\n        {v && (\n          <button onClick={() => setV(\"\")} className=\"absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700 text-xs\">✕</button>\n        )}\n      </div>\n    </div>\n  );\n}"
+  },
+  {
     "slug": "swiss-inputs",
     "title": "Swiss Style Inputs",
     "description": "Minimalist form fields relying on typography, whitespace, and subtle micro-interactions.",
@@ -1276,6 +1962,22 @@
     "style": "",
     "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/swiss-inputs.tsx",
     "code": "export default function SwissInput() {\n  return (\n    <div className=\"p-12 bg-[#F5F5F5] flex flex-col gap-8 items-center justify-center min-h-[300px]\">\n      <div className=\"w-full max-w-md relative group\">\n        <label className=\"text-xs font-bold uppercase tracking-wider text-neutral-500 mb-1.5 block\">\n          Email Address\n        </label>\n        <input\n          type=\"email\"\n          placeholder=\"name@example.com\"\n          className=\"w-full bg-transparent border-b-2 border-neutral-300 py-2 text-lg focus:outline-none focus:border-blue-600 transition-colors placeholder:text-neutral-400 font-medium\"\n        />\n      </div>\n      <div className=\"w-full max-w-md relative\">\n        <label className=\"text-xs font-bold uppercase tracking-wider text-neutral-500 mb-1.5 block\">\n          Search Archive\n        </label>\n        <div className=\"relative\">\n          <input\n            type=\"text\"\n            className=\"w-full bg-white border border-neutral-200 pl-3 pr-10 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/10 focus:border-blue-600 transition-all placeholder:text-neutral-400 shadow-sm\"\n            placeholder=\"Type to search...\"\n          />\n        </div>\n      </div>\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "tag-input",
+    "title": "Tag Input",
+    "description": "Multi-tag input where each entered value becomes a removable pill. Type and press Enter or comma to add. Backspace removes the last tag.",
+    "category": "Inputs",
+    "tags": [
+      "tag input",
+      "multi-select",
+      "pills",
+      "input",
+      "chips"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/tag-input.tsx",
+    "code": "import { useState, KeyboardEvent } from \"react\";\nexport default function TagInput() {\n  const [tags, setTags] = useState([\"design\", \"react\"]);\n  const [v, setV] = useState(\"\");\n  const add = () => {\n    const t = v.trim().replace(/,/g, \"\");\n    if (t && !tags.includes(t)) setTags([...tags, t]);\n    setV(\"\");\n  };\n  const onKey = (e: KeyboardEvent) => {\n    if (e.key === \"Enter\" || e.key === \",\") { e.preventDefault(); add(); }\n    if (e.key === \"Backspace\" && !v) setTags(tags.slice(0, -1));\n  };\n  return (\n    <div className=\"max-w-sm p-6\">\n      <label className=\"block text-xs font-medium text-neutral-600 mb-1.5\">Tags</label>\n      <div className=\"flex flex-wrap gap-1.5 p-2 border border-neutral-200 rounded-xl min-h-[44px] focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-100\">\n        {tags.map(t => (\n          <span key={t} className=\"flex items-center gap-1 px-2 py-0.5 bg-neutral-100 rounded-md text-xs text-neutral-700\">\n            {t}\n            <button onClick={() => setTags(tags.filter(x => x !== t))} className=\"text-neutral-400 hover:text-neutral-700\">×</button>\n          </span>\n        ))}\n        <input value={v} onChange={e => setV(e.target.value)} onKeyDown={onKey} placeholder=\"Add tag...\" className=\"flex-1 min-w-[80px] text-sm outline-none bg-transparent text-neutral-900 placeholder:text-neutral-400\" />\n      </div>\n    </div>\n  );\n}"
   },
   {
     "slug": "bento-grid",
@@ -1294,6 +1996,70 @@
     "code": "export default function BentoGrid() {\n  return (\n    <div className=\"p-8 bg-neutral-50 min-h-[500px]\">\n      <div className=\"grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto\">\n        {/* Large card */}\n        <div className=\"col-span-2 row-span-2 bg-gradient-to-br from-blue-600 to-blue-800 rounded-3xl p-8 text-white flex flex-col justify-end min-h-[280px]\">\n          <div className=\"text-4xl mb-2\">📱</div>\n          <h3 className=\"text-xl font-bold mb-1\">Cross-Platform</h3>\n          <p className=\"text-blue-200 text-sm\">Build once, deploy everywhere. iOS, Android, and Web from a single codebase.</p>\n        </div>\n\n        {/* Small cards */}\n        <div className=\"bg-white rounded-3xl p-6 border border-neutral-200 flex flex-col justify-between min-h-[130px]\">\n          <div className=\"text-2xl\">⚡</div>\n          <div>\n            <h4 className=\"font-semibold text-sm\">Fast</h4>\n            <p className=\"text-neutral-500 text-xs\">60fps animations</p>\n          </div>\n        </div>\n        <div className=\"bg-white rounded-3xl p-6 border border-neutral-200 flex flex-col justify-between min-h-[130px]\">\n          <div className=\"text-2xl\">🔒</div>\n          <div>\n            <h4 className=\"font-semibold text-sm\">Secure</h4>\n            <p className=\"text-neutral-500 text-xs\">E2E encrypted</p>\n          </div>\n        </div>\n\n        {/* Medium card */}\n        <div className=\"col-span-2 bg-neutral-900 rounded-3xl p-8 text-white flex items-center gap-6 min-h-[130px]\">\n          <div className=\"text-4xl\">🎨</div>\n          <div>\n            <h3 className=\"font-bold mb-1\">Design System</h3>\n            <p className=\"text-neutral-400 text-sm\">50+ components, fully customizable with your brand tokens.</p>\n          </div>\n        </div>\n      </div>\n    </div>\n  );\n}"
   },
   {
+    "slug": "sidebar-content-layout",
+    "title": "Sidebar + Content Layout",
+    "description": "Classic two-column layout with a narrow sidebar for navigation and a main content area. Shows slot-based content structure.",
+    "category": "Layout",
+    "tags": [
+      "sidebar",
+      "layout",
+      "two-column",
+      "navigation",
+      "shell"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/sidebar-content-layout.tsx",
+    "code": "export default function SidebarContentLayout() {\n  return (\n    <div className=\"flex h-80 bg-neutral-50 rounded-xl overflow-hidden border border-neutral-100\">\n      <aside className=\"w-44 bg-white border-r border-neutral-100 p-3 shrink-0\">\n        <div className=\"text-xs font-semibold text-neutral-400 uppercase tracking-wide mb-3 px-2\">Menu</div>\n        {[\"Dashboard\",\"Components\",\"Analytics\",\"Settings\"].map((item, i) => (\n          <div key={item} className={`px-2 py-1.5 rounded-lg text-sm mb-0.5 ${i === 0 ? \"bg-neutral-100 font-medium text-neutral-900\" : \"text-neutral-500 hover:bg-neutral-50\"}`}>{item}</div>\n        ))}\n      </aside>\n      <main className=\"flex-1 p-5\">\n        <div className=\"h-4 bg-neutral-200 rounded-full w-32 mb-4\" />\n        <div className=\"grid grid-cols-2 gap-3 mb-4\">\n          <div className=\"h-20 bg-white rounded-lg border border-neutral-100\" />\n          <div className=\"h-20 bg-white rounded-lg border border-neutral-100\" />\n        </div>\n        <div className=\"h-24 bg-white rounded-lg border border-neutral-100\" />\n      </main>\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "split-pane-layout",
+    "title": "Split Pane Layout",
+    "description": "Vertical split with a code editor panel on the left and a preview panel on the right. Shows the two-panel pattern for live editor UIs.",
+    "category": "Layout",
+    "tags": [
+      "split pane",
+      "layout",
+      "editor",
+      "preview",
+      "two-panel"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/split-pane-layout.tsx",
+    "code": "export default function SplitPaneLayout() {\n  return (\n    <div className=\"flex h-72 bg-neutral-950 rounded-xl overflow-hidden border border-neutral-800 font-mono\">\n      <div className=\"w-1/2 border-r border-neutral-800 p-4\">\n        <div className=\"flex items-center gap-2 mb-3\">\n          <div className=\"w-2.5 h-2.5 rounded-full bg-red-500\" />\n          <div className=\"w-2.5 h-2.5 rounded-full bg-amber-400\" />\n          <div className=\"w-2.5 h-2.5 rounded-full bg-green-500\" />\n          <span className=\"text-xs text-neutral-500 ml-2\">Button.tsx</span>\n        </div>\n        <div className=\"text-xs text-neutral-400 space-y-1 leading-relaxed\">\n          <div><span className=\"text-purple-400\">export default</span> <span className=\"text-blue-400\">function</span> <span className=\"text-yellow-300\">Button</span>() {'{'}</div>\n          <div className=\"pl-4\"><span className=\"text-blue-400\">return</span> (</div>\n          <div className=\"pl-8\">&lt;<span className=\"text-red-400\">button</span> <span className=\"text-green-400\">className</span>=<span className=\"text-amber-400\">\"px-4 py-2\"</span>&gt;</div>\n          <div className=\"pl-12 text-neutral-300\">Click me</div>\n          <div className=\"pl-8\">&lt;/<span className=\"text-red-400\">button</span>&gt;</div>\n          <div className=\"pl-4\">)</div>\n          <div>{'}'}</div>\n        </div>\n      </div>\n      <div className=\"flex-1 flex items-center justify-center bg-white\">\n        <button className=\"px-4 py-2 bg-neutral-900 text-white text-sm rounded-lg\">Click me</button>\n      </div>\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "sticky-page-header",
+    "title": "Sticky Page Header",
+    "description": "Full-width page header with logo, nav links, and CTA that sticks to the top on scroll. Shows shadow elevation on stuck state.",
+    "category": "Layout",
+    "tags": [
+      "sticky",
+      "header",
+      "navigation",
+      "layout",
+      "topbar"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/sticky-page-header.tsx",
+    "code": "export default function StickyPageHeader() {\n  return (\n    <div className=\"relative h-64 overflow-y-auto bg-neutral-50 rounded-xl border border-neutral-100\">\n      <header className=\"sticky top-0 z-10 bg-white/90 backdrop-blur border-b border-neutral-100 px-5 py-3 flex items-center justify-between shadow-sm\">\n        <div className=\"font-bold text-sm text-neutral-900 tracking-tight\">EXHIBIT</div>\n        <nav className=\"flex gap-4\">\n          {[\"Docs\",\"Blog\",\"Pricing\"].map(l => <a key={l} href=\"#\" className=\"text-sm text-neutral-500 hover:text-neutral-900 transition-colors\">{l}</a>)}\n        </nav>\n        <button className=\"px-3 py-1.5 bg-neutral-900 text-white text-xs rounded-lg font-medium\">Get started</button>\n      </header>\n      <div className=\"p-5 space-y-3\">\n        {[...Array(6)].map((_, i) => <div key={i} className=\"h-8 bg-white rounded-lg border border-neutral-100\" />)}\n      </div>\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "tab-content-switcher",
+    "title": "Tab Content Switcher",
+    "description": "Pill-style tab bar that switches between different content panels. Solid filled active pill, ghost inactive. Common in settings and profiles.",
+    "category": "Layout",
+    "tags": [
+      "tabs",
+      "layout",
+      "switcher",
+      "pills",
+      "content"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/tab-content-switcher.tsx",
+    "code": "import { useState } from \"react\";\nexport default function TabContentSwitcher() {\n  const [active, setActive] = useState(\"Code\");\n  const tabs = [\"Preview\",\"Code\",\"Props\"];\n  return (\n    <div className=\"bg-white border border-neutral-100 rounded-xl overflow-hidden max-w-sm\">\n      <div className=\"flex gap-1 p-2 bg-neutral-50 border-b border-neutral-100\">\n        {tabs.map(t => (\n          <button key={t} onClick={() => setActive(t)} className={`flex-1 py-1.5 text-xs font-medium rounded-lg transition-all ${active === t ? \"bg-white shadow-sm text-neutral-900\" : \"text-neutral-500 hover:text-neutral-700\"}`}>{t}</button>\n        ))}\n      </div>\n      <div className=\"p-5 font-mono text-xs text-neutral-500\">\n        {active === \"Preview\" && <div className=\"text-center py-4 text-2xl\">🎨</div>}\n        {active === \"Code\" && <pre className=\"text-xs\">{'<Button size=\"sm\">\\n  Click me\\n</Button>'}</pre>}\n        {active === \"Props\" && <div className=\"space-y-1\"><div><span className=\"text-blue-600\">size</span>: \"sm\" | \"md\" | \"lg\"</div><div><span className=\"text-blue-600\">variant</span>: \"solid\" | \"ghost\"</div></div>}\n      </div>\n    </div>\n  );\n}"
+  },
+  {
     "slug": "typographic-hero",
     "title": "Typographic Hero System",
     "description": "Massive editorial-style hero with strict grid hierarchy. Inspired by Swiss International Style posters.",
@@ -1308,6 +2074,54 @@
     "style": "",
     "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/typographic-hero.tsx",
     "code": "export default function TypographicHero() {\n  return (\n    <div className=\"bg-[#f0f0f0] text-black min-h-[400px] flex flex-col justify-between p-8 md:p-16 border border-black\">\n      <div className=\"border-b border-black pb-4 flex justify-between items-end\">\n        <span className=\"font-mono text-xs tracking-widest uppercase\">Volume 01</span>\n        <span className=\"font-mono text-xs tracking-widest uppercase\">2024—25</span>\n      </div>\n      <div className=\"py-12\">\n        <h1 className=\"text-6xl md:text-8xl font-bold tracking-tighter leading-[0.85] uppercase break-words\">\n          Digital<br/>Archival<br/>Systems\n        </h1>\n      </div>\n      <div className=\"flex justify-between items-start border-t border-black pt-4\">\n        <p className=\"font-mono text-xs max-w-[200px]\">\n          EXPLORING THE INTERSECTION OF UTILITARIAN DESIGN AND DIGITAL EPHEMERA.\n        </p>\n        <button className=\"bg-black text-white px-6 py-2 font-mono text-xs uppercase hover:bg-transparent hover:text-black border border-black transition-colors cursor-pointer\">\n          Read Manifesto\n        </button>\n      </div>\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "loading-progress-bar",
+    "title": "Determinate Progress Bar",
+    "description": "Labeled progress bar with percentage, step count, and smooth fill animation. Useful for multi-step flows, file uploads, and onboarding sequences.",
+    "category": "Loading",
+    "tags": [
+      "progress",
+      "loading",
+      "bar",
+      "upload",
+      "steps"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/loading-progress-bar.tsx",
+    "code": "export default function DeterminateProgressBar() {\n  const steps = [\n    { label: \"Uploading files\", pct: 100 },\n    { label: \"Processing images\", pct: 67 },\n    { label: \"Generating previews\", pct: 0 },\n  ];\n  return (\n    <div className=\"bg-white p-6 rounded-xl border border-neutral-100 space-y-5 max-w-sm\">\n      <div className=\"text-sm font-semibold text-neutral-900\">Importing project...</div>\n      {steps.map((s, i) => (\n        <div key={i}>\n          <div className=\"flex justify-between text-xs text-neutral-500 mb-1.5\">\n            <span>{s.label}</span>\n            <span>{s.pct}%</span>\n          </div>\n          <div className=\"h-1.5 bg-neutral-100 rounded-full overflow-hidden\">\n            <div className=\"h-full bg-neutral-900 rounded-full transition-all\" style={{ width: `${s.pct}%` }} />\n          </div>\n        </div>\n      ))}\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "loading-dots-spinner",
+    "title": "Loading Dots",
+    "description": "Three animated dots for inline loading states — button loading, content placeholders, or async feedback. Minimal, no library dependencies.",
+    "category": "Loading",
+    "tags": [
+      "loading",
+      "dots",
+      "spinner",
+      "animation",
+      "inline"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/loading-dots-spinner.tsx",
+    "code": "export default function LoadingDots() {\n  return (\n    <div className=\"flex flex-col items-center gap-8 p-10\">\n      <div className=\"flex gap-1.5 items-center\">\n        {[0, 1, 2].map(i => (\n          <div key={i} className=\"w-2 h-2 rounded-full bg-neutral-900 animate-bounce\" style={{ animationDelay: `${i * 0.15}s` }} />\n        ))}\n      </div>\n      <button className=\"flex items-center gap-2 px-4 py-2 bg-neutral-900 text-white text-sm rounded-lg\">\n        <div className=\"flex gap-1\">\n          {[0, 1, 2].map(i => (\n            <div key={i} className=\"w-1.5 h-1.5 rounded-full bg-white animate-bounce\" style={{ animationDelay: `${i * 0.15}s` }} />\n          ))}\n        </div>\n        Saving...\n      </button>\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "skeleton-card",
+    "title": "Skeleton Card",
+    "description": "Animated shimmer skeleton for a content card with avatar, title, subtitle, and a stat row. Replaces loading spinners with shape-preserving placeholders.",
+    "category": "Loading",
+    "tags": [
+      "skeleton",
+      "loading",
+      "shimmer",
+      "placeholder",
+      "content"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/skeleton-card.tsx",
+    "code": "export default function SkeletonCard() {\n  return (\n    <div className=\"p-5 bg-white border border-neutral-100 rounded-xl space-y-4 max-w-sm\">\n      <div className=\"flex items-center gap-3\">\n        <div className=\"w-10 h-10 rounded-full bg-neutral-100 animate-pulse\" />\n        <div className=\"flex-1 space-y-1.5\">\n          <div className=\"h-3 bg-neutral-100 rounded-full w-3/4 animate-pulse\" />\n          <div className=\"h-2.5 bg-neutral-100 rounded-full w-1/2 animate-pulse\" />\n        </div>\n      </div>\n      <div className=\"space-y-2\">\n        <div className=\"h-2.5 bg-neutral-100 rounded-full animate-pulse\" />\n        <div className=\"h-2.5 bg-neutral-100 rounded-full w-5/6 animate-pulse\" />\n        <div className=\"h-2.5 bg-neutral-100 rounded-full w-4/6 animate-pulse\" />\n      </div>\n      <div className=\"flex gap-3\">\n        {[...Array(3)].map((_, i) => (\n          <div key={i} className=\"flex-1 h-14 bg-neutral-100 rounded-lg animate-pulse\" />\n        ))}\n      </div>\n    </div>\n  );\n}"
   },
   {
     "slug": "skeleton-loading-cards",
@@ -1326,6 +2140,38 @@
     "code": "export default function SkeletonLoadingCards() {\n  return (\n    <div className=\"p-8 bg-neutral-50 min-h-[300px] flex items-center\">\n      <div className=\"grid grid-cols-3 gap-6 w-full\">\n        {[0, 1, 2].map((i) => (\n          <div key={i} className=\"bg-white rounded-xl border border-neutral-200 overflow-hidden\">\n            <div className=\"h-40 bg-gradient-to-r from-neutral-200 via-neutral-100 to-neutral-200 animate-pulse\" />\n            <div className=\"p-5 space-y-3\">\n              <div className=\"h-4 bg-neutral-200 rounded animate-pulse w-3/4\" />\n              <div className=\"h-3 bg-neutral-100 rounded animate-pulse w-full\" />\n              <div className=\"flex items-center gap-3 pt-2\">\n                <div className=\"w-8 h-8 rounded-full bg-neutral-200 animate-pulse\" />\n                <div className=\"h-3 bg-neutral-200 rounded animate-pulse w-20\" />\n              </div>\n            </div>\n          </div>\n        ))}\n      </div>\n    </div>\n  );\n}"
   },
   {
+    "slug": "skeleton-profile-header",
+    "title": "Skeleton Profile Header",
+    "description": "Skeleton loading state for a creator profile header — cover image area, avatar, name, bio, and stats row all shimmer in sync.",
+    "category": "Loading",
+    "tags": [
+      "skeleton",
+      "profile",
+      "loading",
+      "shimmer",
+      "header"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/skeleton-profile-header.tsx",
+    "code": "export default function SkeletonProfileHeader() {\n  return (\n    <div className=\"bg-white border border-neutral-100 rounded-xl overflow-hidden max-w-lg\">\n      <div className=\"h-24 bg-neutral-100 animate-pulse\" />\n      <div className=\"px-5 pb-5\">\n        <div className=\"flex items-end justify-between -mt-8 mb-4\">\n          <div className=\"w-16 h-16 rounded-full border-4 border-white bg-neutral-200 animate-pulse\" />\n          <div className=\"h-8 w-24 bg-neutral-100 rounded-lg animate-pulse mb-1\" />\n        </div>\n        <div className=\"h-3 bg-neutral-100 rounded-full w-36 animate-pulse mb-2\" />\n        <div className=\"h-2.5 bg-neutral-100 rounded-full animate-pulse mb-1\" />\n        <div className=\"h-2.5 bg-neutral-100 rounded-full w-4/5 animate-pulse mb-4\" />\n        <div className=\"flex gap-4\">\n          {[...Array(3)].map((_, i) => (\n            <div key={i} className=\"flex-1 h-10 bg-neutral-100 rounded-lg animate-pulse\" />\n          ))}\n        </div>\n      </div>\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "skeleton-table-rows",
+    "title": "Skeleton Table Rows",
+    "description": "Skeleton loading state for a data table. Five rows of animated shimmer placeholders maintain the table's column structure while data loads.",
+    "category": "Loading",
+    "tags": [
+      "skeleton",
+      "table",
+      "loading",
+      "shimmer",
+      "rows"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/skeleton-table-rows.tsx",
+    "code": "export default function SkeletonTableRows() {\n  return (\n    <div className=\"bg-white border border-neutral-100 rounded-xl overflow-hidden\">\n      <div className=\"grid grid-cols-4 gap-4 px-4 py-2.5 border-b border-neutral-100 bg-neutral-50\">\n        {[\"Name\",\"Status\",\"Date\",\"Actions\"].map(h => (\n          <div key={h} className=\"text-xs font-medium text-neutral-400 uppercase tracking-wide\">{h}</div>\n        ))}\n      </div>\n      {[...Array(5)].map((_, i) => (\n        <div key={i} className=\"grid grid-cols-4 gap-4 px-4 py-3.5 border-b border-neutral-50 items-center\">\n          <div className=\"flex items-center gap-2.5\">\n            <div className=\"w-7 h-7 rounded-full bg-neutral-100 animate-pulse shrink-0\" />\n            <div className=\"h-2.5 bg-neutral-100 rounded-full w-24 animate-pulse\" />\n          </div>\n          <div className=\"h-5 bg-neutral-100 rounded-full w-16 animate-pulse\" />\n          <div className=\"h-2.5 bg-neutral-100 rounded-full w-20 animate-pulse\" />\n          <div className=\"h-2.5 bg-neutral-100 rounded-full w-12 animate-pulse\" />\n        </div>\n      ))}\n    </div>\n  );\n}"
+  },
+  {
     "slug": "creator-storefront-profile",
     "title": "Creator Storefront",
     "description": "A creator profile storefront with cover gradient, avatar, verified badge, bio, stats row, and featured pack cards for marketplace sellers.",
@@ -1340,6 +2186,22 @@
     "style": "",
     "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/creator-storefront-profile.tsx",
     "code": "export default function CreatorStorefront() {\n  const packs = [\n    { name: \"Dashboard Kit\", price: \"$18\", downloads: \"1.2k\" },\n    { name: \"Auth Components\", price: \"$8\", downloads: \"934\" },\n    { name: \"Chart Widgets\", price: \"$14\", downloads: \"612\" },\n  ];\n  return (\n    <div className=\"bg-white min-h-[300px] overflow-hidden rounded-xl border border-neutral-200\">\n      <div className=\"h-28 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500\" />\n      <div className=\"px-6 pb-6\">\n        <div className=\"flex items-end gap-4 -mt-8 mb-4\">\n          <div className=\"w-16 h-16 rounded-full bg-white border-4 border-white shadow-md flex items-center justify-center text-xl font-bold text-indigo-600\">JD</div>\n          <div>\n            <div className=\"flex items-center gap-1.5\">\n              <span className=\"font-bold text-lg\">Jane Doe</span>\n              <span className=\"text-blue-500 text-sm\">✓</span>\n            </div>\n            <span className=\"text-sm text-neutral-500\">@janedoe</span>\n          </div>\n        </div>\n        <p className=\"text-sm text-neutral-600 mb-4\">Full-stack designer crafting production-ready UI kits and component systems for modern web apps.</p>\n        <div className=\"flex gap-6 text-sm mb-6 pb-4 border-b border-neutral-100\">\n          <div><span className=\"font-bold\">12</span> <span className=\"text-neutral-500\">packs</span></div>\n          <div><span className=\"font-bold\">847</span> <span className=\"text-neutral-500\">downloads</span></div>\n          <div><span className=\"font-bold\">4.9</span> <span className=\"text-neutral-500\">rating</span></div>\n        </div>\n        <div className=\"text-sm font-semibold mb-3\">Featured Packs</div>\n        <div className=\"grid grid-cols-3 gap-3\">\n          {packs.map(p => (\n            <div key={p.name} className=\"border border-neutral-200 rounded-lg p-3 hover:shadow-sm transition-shadow\">\n              <div className=\"font-medium text-sm\">{p.name}</div>\n              <div className=\"flex justify-between items-center mt-2\">\n                <span className=\"text-indigo-600 font-bold text-sm\">{p.price}</span>\n                <span className=\"text-xs text-neutral-400\">{p.downloads}</span>\n              </div>\n            </div>\n          ))}\n        </div>\n      </div>\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "marketplace-filter-sidebar",
+    "title": "Marketplace Filter Sidebar",
+    "description": "Category filter sidebar with checkbox groups for type, price range, and sort. Clean section headers, tight spacing, and an Apply button.",
+    "category": "Marketplace",
+    "tags": [
+      "filter",
+      "sidebar",
+      "marketplace",
+      "checkbox",
+      "search refinement"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/marketplace-filter-sidebar.tsx",
+    "code": "export default function MarketplaceFilterSidebar() {\n  return (\n    <div className=\"bg-white border border-neutral-100 rounded-xl p-4 w-52 text-sm space-y-5\">\n      <div>\n        <div className=\"text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-2\">Category</div>\n        {[\"Buttons\",\"Cards\",\"Forms\",\"Navigation\",\"Layout\"].map(c => (\n          <label key={c} className=\"flex items-center gap-2 py-1 cursor-pointer\">\n            <input type=\"checkbox\" className=\"rounded\" defaultChecked={c === \"Buttons\"} />\n            <span className=\"text-neutral-700\">{c}</span>\n          </label>\n        ))}\n      </div>\n      <div>\n        <div className=\"text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-2\">Price</div>\n        {[\"Free\",\"Under $10\",\"$10–$50\",\"$50+\"].map(p => (\n          <label key={p} className=\"flex items-center gap-2 py-1 cursor-pointer\">\n            <input type=\"radio\" name=\"price\" className=\"rounded-full\" defaultChecked={p === \"Free\"} />\n            <span className=\"text-neutral-700\">{p}</span>\n          </label>\n        ))}\n      </div>\n      <button className=\"w-full py-2 bg-neutral-900 text-white rounded-lg text-xs font-medium\">Apply filters</button>\n    </div>\n  );\n}"
   },
   {
     "slug": "product-detail-page",
@@ -1390,6 +2252,38 @@
     "code": "export default function PurchaseSuccessPage() {\n  return (\n    <div className=\"p-8 bg-neutral-50 min-h-[300px] flex items-center justify-center\">\n      <div className=\"bg-white rounded-2xl shadow-sm border border-neutral-200 p-8 max-w-sm w-full text-center\">\n        <div className=\"w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4\">\n          <span className=\"text-emerald-600 text-2xl\">✓</span>\n        </div>\n        <h2 className=\"text-xl font-bold mb-2\">Purchase Complete!</h2>\n        <p className=\"text-sm text-neutral-500 mb-6\">You now have access to Pro Component Pack</p>\n        <div className=\"bg-neutral-50 rounded-lg p-4 mb-6 text-sm\">\n          <div className=\"flex justify-between mb-2\">\n            <span className=\"text-neutral-500\">License</span>\n            <span className=\"font-medium\">Personal</span>\n          </div>\n          <div className=\"flex justify-between\">\n            <span className=\"text-neutral-500\">Expires</span>\n            <span className=\"font-medium\">Never</span>\n          </div>\n        </div>\n        <button className=\"w-full py-2.5 bg-indigo-600 text-white rounded-lg font-medium text-sm hover:bg-indigo-700 transition-colors mb-3\">Go to Downloads</button>\n        <a href=\"#\" className=\"text-sm text-indigo-600 hover:underline\">View Receipt</a>\n      </div>\n    </div>\n  );\n}"
   },
   {
+    "slug": "review-summary",
+    "title": "Review Summary",
+    "description": "Star rating summary card with average score, total count, and a breakdown bar chart per star level. Standard e-commerce/marketplace pattern.",
+    "category": "Marketplace",
+    "tags": [
+      "reviews",
+      "ratings",
+      "stars",
+      "marketplace",
+      "summary"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/review-summary.tsx",
+    "code": "export default function ReviewSummary() {\n  const breakdown = [\n    { stars: 5, count: 84, pct: 84 },\n    { stars: 4, count: 10, pct: 10 },\n    { stars: 3, count: 4, pct: 4 },\n    { stars: 2, count: 1, pct: 1 },\n    { stars: 1, count: 1, pct: 1 },\n  ];\n  return (\n    <div className=\"bg-white border border-neutral-100 rounded-xl p-5 max-w-xs\">\n      <div className=\"flex items-center gap-4 mb-4\">\n        <div className=\"text-center\">\n          <div className=\"text-4xl font-black text-neutral-900\">4.8</div>\n          <div className=\"text-amber-400 text-base mt-0.5\">★★★★★</div>\n          <div className=\"text-xs text-neutral-400 mt-0.5\">100 reviews</div>\n        </div>\n        <div className=\"flex-1 space-y-1\">\n          {breakdown.map(b => (\n            <div key={b.stars} className=\"flex items-center gap-2\">\n              <span className=\"text-xs text-neutral-400 w-2\">{b.stars}</span>\n              <div className=\"flex-1 h-1.5 bg-neutral-100 rounded-full overflow-hidden\">\n                <div className=\"h-full bg-amber-400 rounded-full\" style={{ width: `${b.pct}%` }} />\n              </div>\n            </div>\n          ))}\n        </div>\n      </div>\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "breadcrumbs",
+    "title": "Breadcrumb Navigation",
+    "description": "Three-level breadcrumb trail with chevron separators. Active/inactive color distinction, hover state on links, and truncation at depth.",
+    "category": "Navigation",
+    "tags": [
+      "breadcrumbs",
+      "navigation",
+      "path",
+      "hierarchy",
+      "links"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/breadcrumbs.tsx",
+    "code": "export default function Breadcrumbs() {\n  const crumbs = [\n    { label: \"Settings\", href: \"#\" },\n    { label: \"API Keys\", href: \"#\" },\n    { label: \"Production\", href: null },\n  ];\n  return (\n    <nav className=\"flex items-center gap-1.5 text-sm\">\n      {crumbs.map((c, i) => (\n        <div key={i} className=\"flex items-center gap-1.5\">\n          {i > 0 && <span className=\"text-neutral-300\">›</span>}\n          {c.href ? (\n            <a href={c.href} className=\"text-neutral-500 hover:text-neutral-900 transition-colors\">{c.label}</a>\n          ) : (\n            <span className=\"text-neutral-900 font-medium\">{c.label}</span>\n          )}\n        </div>\n      ))}\n    </nav>\n  );\n}"
+  },
+  {
     "slug": "brutalist-navigation",
     "title": "Brutalist Navigation Bar",
     "description": "Tactile navigation with hard shadows, numbered entries, and bold hover states.",
@@ -1437,6 +2331,38 @@
     "code": "export default function MinimalSidebar() {\n  const items = [\n    { icon: \"⌂\", label: \"Home\", active: true },\n    { icon: \"◎\", label: \"Dashboard\" },\n    { icon: \"☰\", label: \"Projects\" },\n    { icon: \"♡\", label: \"Favorites\" },\n    { icon: \"⚙\", label: \"Settings\" },\n  ];\n\n  return (\n    <div className=\"p-4 bg-neutral-100 flex justify-start min-h-[400px]\">\n      <div className=\"w-16 bg-white rounded-2xl border border-neutral-200 shadow-sm flex flex-col items-center py-4 gap-1\">\n        <div className=\"w-8 h-8 bg-black rounded-lg flex items-center justify-center text-white text-sm font-bold mb-4\">A</div>\n        {items.map((item) => (\n          <button\n            key={item.label}\n            className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg transition-all ${\n              item.active\n                ? \"bg-blue-50 text-blue-600\"\n                : \"text-neutral-400 hover:bg-neutral-100 hover:text-neutral-600\"\n            }`}\n            title={item.label}\n          >\n            {item.icon}\n          </button>\n        ))}\n        <div className=\"flex-1\" />\n        <div className=\"w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 border-2 border-white shadow-sm\" />\n      </div>\n    </div>\n  );\n}"
   },
   {
+    "slug": "pagination-controls",
+    "title": "Pagination Controls",
+    "description": "Classic prev/next pagination with visible page numbers, ellipsis for skipped ranges, and current-page highlight. No external library.",
+    "category": "Navigation",
+    "tags": [
+      "pagination",
+      "navigation",
+      "pages",
+      "next",
+      "prev"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/pagination-controls.tsx",
+    "code": "import { useState } from \"react\";\nexport default function PaginationControls() {\n  const [page, setPage] = useState(4);\n  const total = 12;\n  const pages = [1, 2, \"...\", 3, 4, 5, \"...\", 11, 12];\n  return (\n    <div className=\"flex items-center gap-1\">\n      <button onClick={() => setPage(p => Math.max(1, p - 1))} className=\"px-3 py-1.5 text-sm border border-neutral-200 rounded-lg text-neutral-600 hover:bg-neutral-50 disabled:opacity-40\" disabled={page === 1}>← Prev</button>\n      {pages.map((p, i) => (\n        typeof p === \"string\"\n          ? <span key={i} className=\"w-8 text-center text-sm text-neutral-400\">…</span>\n          : <button key={i} onClick={() => setPage(p)} className={`w-8 h-8 text-sm rounded-lg ${page === p ? \"bg-neutral-900 text-white\" : \"text-neutral-600 hover:bg-neutral-100\"}`}>{p}</button>\n      ))}\n      <button onClick={() => setPage(p => Math.min(total, p + 1))} className=\"px-3 py-1.5 text-sm border border-neutral-200 rounded-lg text-neutral-600 hover:bg-neutral-50 disabled:opacity-40\" disabled={page === total}>Next →</button>\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "tab-navigation",
+    "title": "Tab Navigation",
+    "description": "Horizontal underline-style tab bar — solid bottom border on active, neutral hover. Ideal for switching between views within a page section.",
+    "category": "Navigation",
+    "tags": [
+      "tabs",
+      "navigation",
+      "underline",
+      "horizontal",
+      "switcher"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/tab-navigation.tsx",
+    "code": "import { useState } from \"react\";\nexport default function TabNavigation() {\n  const [active, setActive] = useState(\"Overview\");\n  const tabs = [\"Overview\",\"Analytics\",\"Deployments\",\"Settings\"];\n  return (\n    <div>\n      <div className=\"border-b border-neutral-200\">\n        <div className=\"flex gap-0\">\n          {tabs.map(tab => (\n            <button\n              key={tab}\n              onClick={() => setActive(tab)}\n              className={`px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors ${\n                active === tab\n                  ? \"border-neutral-900 text-neutral-900\"\n                  : \"border-transparent text-neutral-500 hover:text-neutral-800 hover:border-neutral-300\"\n              }`}\n            >\n              {tab}\n            </button>\n          ))}\n        </div>\n      </div>\n      <div className=\"pt-4 text-sm text-neutral-500\">{active} content</div>\n    </div>\n  );\n}"
+  },
+  {
     "slug": "connect-tools-screen",
     "title": "Connect Your Tools",
     "description": "Integration grid showing connected and available third-party services with status indicators and connect actions.",
@@ -1451,6 +2377,38 @@
     "style": "",
     "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/connect-tools-screen.tsx",
     "code": "export default function ConnectTools() {\n  const tools = [\n    { name: \"Slack\", icon: \"💬\", desc: \"Get notified in your channels\", connected: true },\n    { name: \"GitHub\", icon: \"🐙\", desc: \"Sync repos and pull requests\", connected: false },\n    { name: \"Figma\", icon: \"🎨\", desc: \"Import designs and assets\", connected: false },\n    { name: \"Notion\", icon: \"📝\", desc: \"Sync docs and wikis\", connected: true },\n  ];\n\n  return (\n    <div className=\"min-h-[400px] bg-gray-50 p-8 flex flex-col items-center justify-center\">\n      <div className=\"w-full max-w-2xl\">\n        <h2 className=\"text-2xl font-bold text-gray-900 mb-2 text-center\">Connect Your Tools</h2>\n        <p className=\"text-gray-500 text-center mb-8\">Integrate with the tools you already use.</p>\n        <div className=\"grid grid-cols-2 gap-4\">\n          {tools.map(tool => (\n            <div key={tool.name} className=\"bg-white rounded-xl border border-gray-200 p-5 flex flex-col gap-3\">\n              <div className=\"text-3xl\">{tool.icon}</div>\n              <div>\n                <div className=\"font-semibold text-gray-900\">{tool.name}</div>\n                <div className=\"text-sm text-gray-500\">{tool.desc}</div>\n              </div>\n              {tool.connected ? (\n                <div className=\"flex items-center gap-1.5 text-sm text-emerald-600 font-medium\">\n                  <span>●</span> Connected\n                </div>\n              ) : (\n                <button className=\"px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50\">Connect</button>\n              )}\n            </div>\n          ))}\n        </div>\n      </div>\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "feature-highlight-tooltip",
+    "title": "Feature Highlight",
+    "description": "Product tour spotlight card that calls attention to a new feature. Pulsing indicator, label, description, and Got it / Next step actions.",
+    "category": "Onboarding",
+    "tags": [
+      "product tour",
+      "feature highlight",
+      "tooltip",
+      "onboarding",
+      "spotlight"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/feature-highlight-tooltip.tsx",
+    "code": "export default function FeatureHighlight() {\n  return (\n    <div className=\"relative max-w-xs p-10\">\n      <div className=\"bg-white border border-neutral-100 rounded-xl p-4 text-sm text-neutral-600\">\n        Some feature UI here\n      </div>\n      <div className=\"absolute -top-1 -right-1 flex items-center justify-center\">\n        <div className=\"absolute w-6 h-6 rounded-full bg-blue-400/30 animate-ping\" />\n        <div className=\"w-4 h-4 rounded-full bg-blue-500 border-2 border-white\" />\n      </div>\n      <div className=\"mt-3 bg-neutral-950 text-white rounded-xl p-4 shadow-xl\">\n        <div className=\"text-xs font-semibold text-blue-400 uppercase tracking-wider mb-1\">New</div>\n        <div className=\"text-sm font-semibold mb-1\">AI prompt export</div>\n        <div className=\"text-xs text-neutral-400 mb-4\">Copy any component as a prompt your AI assistant can reproduce exactly.</div>\n        <div className=\"flex gap-2\">\n          <button className=\"flex-1 py-1.5 bg-white text-neutral-900 text-xs font-medium rounded-lg\">Got it</button>\n          <button className=\"px-3 py-1.5 text-xs text-neutral-400 hover:text-white\">Next →</button>\n        </div>\n      </div>\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "trial-banner",
+    "title": "Free Trial Banner",
+    "description": "Countdown banner showing days remaining on a free trial. Progress dots, upgrade CTA, and a dismiss link. Inline, non-modal pattern.",
+    "category": "Onboarding",
+    "tags": [
+      "trial",
+      "banner",
+      "countdown",
+      "onboarding",
+      "upgrade"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/trial-banner.tsx",
+    "code": "export default function TrialBanner() {\n  const daysLeft = 7;\n  return (\n    <div className=\"bg-neutral-950 text-white rounded-xl px-5 py-4 flex items-center gap-4 max-w-lg\">\n      <div className=\"flex gap-1 shrink-0\">\n        {[...Array(14)].map((_, i) => (\n          <div key={i} className={`w-1.5 h-5 rounded-full ${i < 14 - daysLeft ? \"bg-neutral-700\" : \"bg-amber-400\"}`} />\n        ))}\n      </div>\n      <div className=\"flex-1 min-w-0\">\n        <div className=\"text-sm font-semibold\">{daysLeft} days left in your trial</div>\n        <div className=\"text-xs text-neutral-400 mt-0.5\">Upgrade to keep access to all features</div>\n      </div>\n      <button className=\"shrink-0 px-3 py-1.5 bg-amber-400 text-amber-900 text-xs font-bold rounded-lg hover:bg-amber-300\">Upgrade</button>\n    </div>\n  );\n}"
   },
   {
     "slug": "multi-step-wizard",
@@ -1483,6 +2441,54 @@
     "style": "",
     "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/stepper-onboarding-flow.tsx",
     "code": "export default function StepperOnboarding() {\n  const steps = [\n    { num: 1, label: \"Account\" },\n    { num: 2, label: \"Profile\" },\n    { num: 3, label: \"Workspace\" },\n    { num: 4, label: \"Integrations\" },\n    { num: 5, label: \"Review\" },\n  ];\n\n  return (\n    <div className=\"min-h-[400px] bg-gray-50 p-8 flex flex-col items-center\">\n      <div className=\"w-full max-w-2xl\">\n        <div className=\"flex items-center justify-between mb-10\">\n          {steps.map((step, i) => (\n            <div key={step.num} className=\"flex items-center flex-1 last:flex-none\">\n              <div className=\"flex flex-col items-center\">\n                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold border-2 ${\n                  step.num <= 2\n                    ? \"bg-emerald-500 border-emerald-500 text-white\"\n                    : step.num === 3\n                    ? \"bg-blue-600 border-blue-600 text-white\"\n                    : \"bg-white border-gray-300 text-gray-400\"\n                }`}>\n                  {step.num <= 2 ? \"✓\" : step.num}\n                </div>\n                <span className={`mt-2 text-xs font-medium ${\n                  step.num <= 2 ? \"text-emerald-600\" : step.num === 3 ? \"text-blue-600\" : \"text-gray-400\"\n                }`}>{step.label}</span>\n              </div>\n              {i < steps.length - 1 && (\n                <div className={`flex-1 h-0.5 mx-3 mt-[-1rem] ${\n                  step.num < 3 ? \"bg-emerald-500\" : \"bg-gray-300\"\n                }`} />\n              )}\n            </div>\n          ))}\n        </div>\n        <div className=\"bg-white rounded-xl shadow-sm border border-gray-200 p-8\">\n          <h2 className=\"text-xl font-semibold text-gray-900 mb-1\">Connect Your Workspace</h2>\n          <p className=\"text-sm text-gray-500 mb-6\">Link your workspace to get started with collaboration.</p>\n          <div className=\"space-y-4\">\n            <div>\n              <label className=\"block text-sm font-medium text-gray-700 mb-1\">Workspace Name</label>\n              <input type=\"text\" placeholder=\"My Workspace\" className=\"w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm\" />\n            </div>\n            <div>\n              <label className=\"block text-sm font-medium text-gray-700 mb-1\">Workspace URL</label>\n              <input type=\"text\" placeholder=\"https://workspace.example.com\" className=\"w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm\" />\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "welcome-checklist",
+    "title": "Welcome Checklist",
+    "description": "Setup checklist for new users. Checkable steps, completion percentage, and a completion state when all are done. Classic first-run pattern.",
+    "category": "Onboarding",
+    "tags": [
+      "onboarding",
+      "checklist",
+      "setup",
+      "welcome",
+      "steps"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/welcome-checklist.tsx",
+    "code": "import { useState } from \"react\";\nconst STEPS = [\"Complete your profile\",\"Publish your first exhibit\",\"Join a challenge\",\"Follow 3 creators\"];\nexport default function WelcomeChecklist() {\n  const [done, setDone] = useState(new Set([0]));\n  const toggle = (i: number) => setDone(s => { const n = new Set(s); n.has(i) ? n.delete(i) : n.add(i); return n; });\n  const pct = Math.round((done.size / STEPS.length) * 100);\n  return (\n    <div className=\"bg-white border border-neutral-100 rounded-xl p-5 max-w-sm\">\n      <div className=\"flex items-center justify-between mb-3\">\n        <div className=\"text-sm font-semibold text-neutral-900\">Getting started</div>\n        <div className=\"text-xs text-neutral-500\">{done.size}/{STEPS.length} done</div>\n      </div>\n      <div className=\"h-1 bg-neutral-100 rounded-full mb-4 overflow-hidden\">\n        <div className=\"h-full bg-neutral-900 rounded-full transition-all\" style={{ width: `${pct}%` }} />\n      </div>\n      {STEPS.map((s, i) => (\n        <button key={i} onClick={() => toggle(i)} className=\"w-full flex items-center gap-3 py-2.5 text-left group\">\n          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${done.has(i) ? \"border-neutral-900 bg-neutral-900\" : \"border-neutral-200 group-hover:border-neutral-400\"}`}>\n            {done.has(i) && <span className=\"text-white text-xs\">✓</span>}\n          </div>\n          <span className={`text-sm ${done.has(i) ? \"line-through text-neutral-400\" : \"text-neutral-700\"}`}>{s}</span>\n        </button>\n      ))}\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "feature-comparison-table",
+    "title": "Feature Comparison Table",
+    "description": "Side-by-side feature matrix comparing Free, Pro, and Team plans. Check marks, dashes, and custom values per cell. Standard SaaS pricing pattern.",
+    "category": "Pricing",
+    "tags": [
+      "pricing",
+      "comparison",
+      "features",
+      "table",
+      "plans"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/feature-comparison-table.tsx",
+    "code": "export default function FeatureComparisonTable() {\n  const features = [\n    { name: \"Exhibits\", free: \"10\", pro: \"Unlimited\", team: \"Unlimited\" },\n    { name: \"Collections\", free: \"2\", pro: \"20\", team: \"Unlimited\" },\n    { name: \"AI export\", free: \"—\", pro: \"✓\", team: \"✓\" },\n    { name: \"Team seats\", free: \"1\", pro: \"1\", team: \"Up to 20\" },\n    { name: \"Priority support\", free: \"—\", pro: \"—\", team: \"✓\" },\n  ];\n  return (\n    <div className=\"bg-white border border-neutral-100 rounded-xl overflow-hidden max-w-md text-sm\">\n      <div className=\"grid grid-cols-4 gap-0 border-b border-neutral-100 bg-neutral-50\">\n        <div className=\"p-3 text-xs font-medium text-neutral-400\">Feature</div>\n        {[\"Free\",\"Pro\",\"Team\"].map(p => <div key={p} className=\"p-3 text-xs font-semibold text-neutral-900 text-center\">{p}</div>)}\n      </div>\n      {features.map(f => (\n        <div key={f.name} className=\"grid grid-cols-4 border-b border-neutral-50 last:border-0\">\n          <div className=\"p-3 text-xs text-neutral-600\">{f.name}</div>\n          {[f.free, f.pro, f.team].map((v, i) => (\n            <div key={i} className={`p-3 text-xs text-center ${v === \"✓\" ? \"text-green-600 font-bold\" : v === \"—\" ? \"text-neutral-300\" : \"text-neutral-700\"}`}>{v}</div>\n          ))}\n        </div>\n      ))}\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "billing-toggle",
+    "title": "Monthly / Annual Toggle",
+    "description": "Pill toggle that switches between monthly and annual pricing, showing the discount percentage on annual. Affects displayed prices below.",
+    "category": "Pricing",
+    "tags": [
+      "pricing",
+      "toggle",
+      "annual",
+      "monthly",
+      "billing cycle"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/billing-toggle.tsx",
+    "code": "import { useState } from \"react\";\nexport default function BillingToggle() {\n  const [annual, setAnnual] = useState(false);\n  return (\n    <div className=\"flex flex-col items-center gap-6 py-8\">\n      <div className=\"flex items-center gap-3 bg-neutral-100 p-1 rounded-full\">\n        {[\"Monthly\",\"Annual\"].map(opt => (\n          <button key={opt} onClick={() => setAnnual(opt === \"Annual\")} className={`px-5 py-1.5 text-sm rounded-full font-medium transition-all ${(opt === \"Annual\") === annual ? \"bg-white shadow text-neutral-900\" : \"text-neutral-500\"}`}>\n            {opt}{opt === \"Annual\" && <span className=\"ml-1.5 text-xs text-green-600 font-semibold\">-20%</span>}\n          </button>\n        ))}\n      </div>\n      <div className=\"flex gap-4\">\n        {[{ name: \"Pro\", mo: 49, yr: 39 },{ name: \"Team\", mo: 99, yr: 79 }].map(p => (\n          <div key={p.name} className=\"bg-white border border-neutral-100 rounded-xl p-5 text-center w-36\">\n            <div className=\"text-sm font-semibold text-neutral-900 mb-2\">{p.name}</div>\n            <div className=\"text-2xl font-bold text-neutral-900\">{annual ? p.yr : p.mo}</div>\n            <div className=\"text-xs text-neutral-400\">/month</div>\n          </div>\n        ))}\n      </div>\n    </div>\n  );\n}"
   },
   {
     "slug": "pricing-comparison-grid",
@@ -1531,6 +2537,22 @@
     "style": "",
     "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/usage-based-pricing.tsx",
     "code": "export default function UsageBasedPricing() {\n  const tiers = [\n    { range: \"0 – 1,000\", rate: \"Free\" },\n    { range: \"1,001 – 10,000\", rate: \"$0.01 / req\" },\n    { range: \"10,001 – 100,000\", rate: \"$0.005 / req\" },\n    { range: \"100,001+\", rate: \"$0.002 / req\" },\n  ];\n\n  return (\n    <div className=\"p-8 bg-slate-50 min-h-[500px] flex items-center justify-center\">\n      <div className=\"bg-white rounded-2xl border border-slate-200 shadow-sm max-w-lg w-full p-8\">\n        <h3 className=\"text-xl font-bold text-slate-900 mb-1\">Usage-Based Pricing</h3>\n        <p className=\"text-sm text-slate-400 mb-6\">Pay only for what you use. Volume discounts included.</p>\n        <div className=\"border border-slate-200 rounded-xl overflow-hidden mb-8\">\n          <table className=\"w-full text-sm\">\n            <thead>\n              <tr className=\"bg-slate-50\">\n                <th className=\"text-left p-3 text-xs font-medium text-slate-500 uppercase tracking-wider\">Requests</th>\n                <th className=\"text-right p-3 text-xs font-medium text-slate-500 uppercase tracking-wider\">Rate</th>\n              </tr>\n            </thead>\n            <tbody>\n              {tiers.map((tier, i) => (\n                <tr key={i} className=\"border-t border-slate-100\">\n                  <td className=\"p-3 text-slate-700\">{tier.range}</td>\n                  <td className=\"p-3 text-right font-medium text-slate-900\">{tier.rate}</td>\n                </tr>\n              ))}\n            </tbody>\n          </table>\n        </div>\n        <div className=\"bg-slate-50 rounded-xl p-6\">\n          <div className=\"text-xs font-medium text-slate-500 uppercase tracking-wider mb-3\">Cost Calculator</div>\n          <div className=\"flex items-center gap-3 mb-4\">\n            <div className=\"flex-1 bg-white border border-slate-200 rounded-lg px-4 py-2.5 text-sm text-slate-700 font-medium\">~9,500 requests/month</div>\n          </div>\n          <div className=\"flex justify-between items-baseline\">\n            <span className=\"text-sm text-slate-500\">Estimated monthly</span>\n            <span className=\"text-2xl font-bold text-slate-900\">~$45</span>\n          </div>\n        </div>\n      </div>\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "usage-pricing-calculator",
+    "title": "Usage-Based Pricing Calculator",
+    "description": "Pay-as-you-go pricing display with a slider, computed cost, and tier breakdown. Common for API and storage billing models.",
+    "category": "Pricing",
+    "tags": [
+      "pricing",
+      "usage",
+      "pay-as-you-go",
+      "calculator",
+      "tiers"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/usage-pricing-calculator.tsx",
+    "code": "import { useState } from \"react\";\nexport default function UsageBasedPricing() {\n  const [calls, setCalls] = useState(50);\n  const cost = calls <= 100 ? 0 : ((calls - 100) * 0.001).toFixed(2);\n  return (\n    <div className=\"bg-white border border-neutral-100 rounded-xl p-6 max-w-xs space-y-5\">\n      <div>\n        <div className=\"text-sm font-semibold text-neutral-900\">API calls / month</div>\n        <div className=\"text-3xl font-bold text-neutral-900 mt-1\">{calls}k</div>\n      </div>\n      <input type=\"range\" min={10} max={500} step={10} value={calls} onChange={e => setCalls(+e.target.value)} className=\"w-full accent-neutral-900\" />\n      <div className=\"bg-neutral-50 rounded-xl p-4 space-y-2 text-sm\">\n        <div className=\"flex justify-between\"><span className=\"text-neutral-500\">First 100k</span><span className=\"text-neutral-900 font-medium\">Free</span></div>\n        <div className=\"flex justify-between\"><span className=\"text-neutral-500\">Over 100k</span><span className=\"text-neutral-900 font-medium\">$0.001 / call</span></div>\n        <div className=\"pt-1 border-t border-neutral-200 flex justify-between font-semibold\"><span>Estimated cost</span><span>{calls <= 100 ? \"Free\" : `$${cost}`}</span></div>\n      </div>\n    </div>\n  );\n}"
   },
   {
     "slug": "style-bold-editorial",
@@ -1619,6 +2641,22 @@
     "code": "export default function GlassFrostStyle() {\n  return (\n    <div className=\"min-h-[400px] bg-gradient-to-br from-violet-600 via-purple-600 to-blue-700 p-10 flex items-center justify-center gap-6\">\n      <div className=\"w-72 rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl p-6 text-white\">\n        <p className=\"text-xs uppercase tracking-widest opacity-70 mb-1\">Total Users</p>\n        <p className=\"text-4xl font-bold tracking-tight\">12,847</p>\n        <p className=\"text-sm opacity-80 mt-3 leading-relaxed\">Active users across all platforms with 98.2% uptime this month.</p>\n      </div>\n      <div className=\"w-80 rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl p-6 text-white\">\n        <h3 className=\"text-lg font-semibold mb-1\">Confirm Action</h3>\n        <p className=\"text-sm opacity-70 mb-5\">Are you sure you want to deploy to production?</p>\n        <div className=\"flex gap-3\">\n          <button className=\"flex-1 py-2.5 bg-white/20 rounded-xl text-sm font-medium border border-white/10\">Cancel</button>\n          <button className=\"flex-1 py-2.5 bg-white text-purple-700 rounded-xl text-sm font-semibold\">Deploy</button>\n        </div>\n      </div>\n    </div>\n  );\n}"
   },
   {
+    "slug": "table-checkbox-select",
+    "title": "Checkbox Select Table",
+    "description": "Table with a header 'select all' checkbox and per-row checkboxes. Selection count shown in a contextual action bar that appears when rows are checked.",
+    "category": "Tables",
+    "tags": [
+      "table",
+      "checkbox",
+      "select",
+      "bulk actions",
+      "multi-select"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/table-checkbox-select.tsx",
+    "code": "import { useState } from \"react\";\nconst ITEMS = [\"Homepage copy\",\"Product images\",\"Pricing page\",\"About section\",\"Legal docs\"];\nexport default function CheckboxTable() {\n  const [sel, setSel] = useState<Set<number>>(new Set());\n  const toggle = (i: number) => setSel(s => { const n = new Set(s); n.has(i) ? n.delete(i) : n.add(i); return n; });\n  const allSel = sel.size === ITEMS.length;\n  return (\n    <div className=\"bg-white border border-neutral-100 rounded-xl overflow-hidden text-sm\">\n      {sel.size > 0 && (\n        <div className=\"flex items-center gap-3 px-4 py-2.5 bg-blue-50 border-b border-blue-100\">\n          <span className=\"text-xs font-medium text-blue-700\">{sel.size} selected</span>\n          <button className=\"text-xs text-blue-600 hover:underline\">Delete</button>\n          <button className=\"text-xs text-blue-600 hover:underline\">Archive</button>\n        </div>\n      )}\n      <table className=\"w-full\"><thead className=\"bg-neutral-50 border-b border-neutral-100\"><tr>\n        <th className=\"px-4 py-2.5 w-10\"><input type=\"checkbox\" checked={allSel} onChange={() => setSel(allSel ? new Set() : new Set(ITEMS.map((_,i)=>i)))} className=\"rounded\" /></th>\n        <th className=\"text-left px-3 py-2.5 text-xs font-medium text-neutral-400 uppercase tracking-wide\">Item</th>\n        <th className=\"text-left px-3 py-2.5 text-xs font-medium text-neutral-400 uppercase tracking-wide\">Status</th>\n      </tr></thead>\n      <tbody>{ITEMS.map((item, i) => (\n        <tr key={i} className={`border-b border-neutral-50 ${sel.has(i) ? \"bg-blue-50/40\" : \"hover:bg-neutral-50\"}`}>\n          <td className=\"px-4 py-3\"><input type=\"checkbox\" checked={sel.has(i)} onChange={() => toggle(i)} className=\"rounded\" /></td>\n          <td className=\"px-3 py-3 text-neutral-700\">{item}</td>\n          <td className=\"px-3 py-3\"><span className=\"px-2 py-0.5 bg-neutral-100 text-neutral-500 text-xs rounded-full\">Draft</span></td>\n        </tr>\n      ))}</tbody></table>\n    </div>\n  );\n}"
+  },
+  {
     "slug": "data-table-with-actions",
     "title": "Data Table with Actions",
     "description": "A sortable data table with checkboxes, status badges, action menus, and pagination. Essential for any admin or CRM dashboard.",
@@ -1634,5 +2672,69 @@
     "style": "",
     "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/data-table-with-actions.tsx",
     "code": "export default function DataTableWithActions() {\n  const users = [\n    { name: \"Sarah Chen\", email: \"sarah.chen@company.com\", role: \"Admin\", status: \"Active\" },\n    { name: \"Marcus Johnson\", email: \"m.johnson@company.com\", role: \"Editor\", status: \"Active\" },\n    { name: \"Emily Rodriguez\", email: \"e.rodriguez@company.com\", role: \"Viewer\", status: \"Inactive\" },\n    { name: \"David Kim\", email: \"d.kim@company.com\", role: \"Editor\", status: \"Active\" },\n  ];\n\n  return (\n    <div className=\"p-6 bg-neutral-50 min-h-[300px]\">\n      <div className=\"bg-white rounded-xl border border-neutral-200 overflow-hidden\">\n        <table className=\"w-full text-sm\">\n          <thead>\n            <tr className=\"border-b border-neutral-200 bg-neutral-50\">\n              <th className=\"w-12 p-3\"><input type=\"checkbox\" /></th>\n              <th className=\"text-left p-3 font-medium text-neutral-500\">Name</th>\n              <th className=\"text-left p-3 font-medium text-neutral-500\">Email</th>\n              <th className=\"text-left p-3 font-medium text-neutral-500\">Role</th>\n              <th className=\"text-left p-3 font-medium text-neutral-500\">Status</th>\n              <th className=\"w-12 p-3\"></th>\n            </tr>\n          </thead>\n          <tbody>\n            {users.map((user, i) => (\n              <tr key={i} className=\"border-b border-neutral-100 hover:bg-neutral-50 transition-colors\">\n                <td className=\"p-3 text-center\"><input type=\"checkbox\" /></td>\n                <td className=\"p-3 font-medium text-neutral-900\">{user.name}</td>\n                <td className=\"p-3 text-neutral-500\">{user.email}</td>\n                <td className=\"p-3 text-neutral-700\">{user.role}</td>\n                <td className=\"p-3\">\n                  <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${\n                    user.status === \"Active\" ? \"bg-emerald-50 text-emerald-700\" : \"bg-neutral-100 text-neutral-500\"\n                  }`}>{user.status}</span>\n                </td>\n                <td className=\"p-3 text-center text-neutral-400 cursor-pointer\">⋯</td>\n              </tr>\n            ))}\n          </tbody>\n        </table>\n        <div className=\"px-4 py-3 border-t border-neutral-200 flex items-center justify-between text-sm text-neutral-500\">\n          <span>Showing 1-4 of 24</span>\n          <div className=\"flex gap-2\">\n            <button className=\"px-3 py-1 border border-neutral-200 rounded text-xs\">Previous</button>\n            <button className=\"px-3 py-1 border border-neutral-200 rounded text-xs bg-blue-600 text-white border-blue-600\">1</button>\n            <button className=\"px-3 py-1 border border-neutral-200 rounded text-xs\">2</button>\n            <button className=\"px-3 py-1 border border-neutral-200 rounded text-xs\">Next</button>\n          </div>\n        </div>\n      </div>\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "table-pagination",
+    "title": "Paginated Table",
+    "description": "Table with a fully-wired pagination footer — page count, previous/next buttons, and current page display. Self-contained with local state.",
+    "category": "Tables",
+    "tags": [
+      "table",
+      "pagination",
+      "pages",
+      "data",
+      "navigation"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/table-pagination.tsx",
+    "code": "import { useState } from \"react\";\nconst ALL = Array.from({ length: 18 }, (_, i) => ({ id: i + 1, name: `Component ${i + 1}`, views: Math.floor(Math.random() * 2000 + 100) }));\nexport default function PaginatedTable() {\n  const [page, setPage] = useState(1);\n  const per = 5;\n  const total = Math.ceil(ALL.length / per);\n  const rows = ALL.slice((page - 1) * per, page * per);\n  return (\n    <div className=\"bg-white border border-neutral-100 rounded-xl overflow-hidden text-sm\">\n      <table className=\"w-full\"><thead className=\"bg-neutral-50 border-b border-neutral-100\"><tr>\n        <th className=\"text-left px-4 py-2.5 text-xs font-medium text-neutral-400 uppercase tracking-wide\">ID</th>\n        <th className=\"text-left px-4 py-2.5 text-xs font-medium text-neutral-400 uppercase tracking-wide\">Name</th>\n        <th className=\"text-left px-4 py-2.5 text-xs font-medium text-neutral-400 uppercase tracking-wide\">Views</th>\n      </tr></thead>\n      <tbody>{rows.map(r => (\n        <tr key={r.id} className=\"border-b border-neutral-50 hover:bg-neutral-50\">\n          <td className=\"px-4 py-3 font-mono text-xs text-neutral-400\">#{r.id}</td>\n          <td className=\"px-4 py-3 text-neutral-700\">{r.name}</td>\n          <td className=\"px-4 py-3 text-neutral-500\">{r.views.toLocaleString()}</td>\n        </tr>\n      ))}</tbody></table>\n      <div className=\"flex items-center justify-between px-4 py-3 border-t border-neutral-100 bg-neutral-50\">\n        <div className=\"text-xs text-neutral-400\">Page {page} of {total}</div>\n        <div className=\"flex gap-1\">\n          <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className=\"px-3 py-1.5 text-xs border border-neutral-200 rounded text-neutral-600 disabled:opacity-40 hover:bg-neutral-100\">← Prev</button>\n          <button onClick={() => setPage(p => Math.min(total, p + 1))} disabled={page === total} className=\"px-3 py-1.5 text-xs border border-neutral-200 rounded text-neutral-600 disabled:opacity-40 hover:bg-neutral-100\">Next →</button>\n        </div>\n      </div>\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "table-sortable-headers",
+    "title": "Sortable Column Table",
+    "description": "Table with clickable sort-arrow headers. Active column shows filled arrow, others show paired up/down arrows. Clean column sort pattern.",
+    "category": "Tables",
+    "tags": [
+      "table",
+      "sortable",
+      "sort",
+      "columns",
+      "data"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/table-sortable-headers.tsx",
+    "code": "import { useState } from \"react\";\nexport default function SortableTable() {\n  const [sort, setSort] = useState<{ col: string; dir: \"asc\" | \"desc\" }>({ col: \"name\", dir: \"asc\" });\n  const cols = [\"Name\",\"Revenue\",\"Signups\",\"Date\"];\n  const Arrow = ({ col }: { col: string }) => {\n    const active = sort.col === col.toLowerCase();\n    return <span className=\"ml-1 text-neutral-300 text-xs\">{active ? (sort.dir === \"asc\" ? \"↑\" : \"↓\") : \"↕\"}</span>;\n  };\n  return (\n    <div className=\"bg-white border border-neutral-100 rounded-xl overflow-hidden text-sm\">\n      <table className=\"w-full\"><thead className=\"bg-neutral-50 border-b border-neutral-100\"><tr>\n        {cols.map(c => (\n          <th key={c} onClick={() => setSort(s => ({ col: c.toLowerCase(), dir: s.col === c.toLowerCase() && s.dir === \"asc\" ? \"desc\" : \"asc\" }))} className=\"text-left px-4 py-2.5 text-xs font-medium text-neutral-500 uppercase tracking-wide cursor-pointer select-none hover:text-neutral-800\">\n            {c}<Arrow col={c} />\n          </th>\n        ))}\n      </tr></thead>\n      <tbody>\n        {[[\"Acme Corp\",\"$12,400\",\"341\",\"Apr 2\"],[\"Globex Inc\",\"$8,900\",\"218\",\"Apr 1\"],[\"Initech\",\"$5,200\",\"99\",\"Mar 30\"]].map((r, i) => (\n          <tr key={i} className=\"border-b border-neutral-50 hover:bg-neutral-50\">\n            {r.map((cell, j) => <td key={j} className=\"px-4 py-3 text-neutral-700\">{cell}</td>)}\n          </tr>\n        ))}\n      </tbody></table>\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "table-with-status-badges",
+    "title": "Status Badge Table",
+    "description": "Data table with colored status badges, avatar + name cells, and monospace ID column. Clean row hover states and column alignment.",
+    "category": "Tables",
+    "tags": [
+      "table",
+      "status",
+      "badge",
+      "data",
+      "list"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/table-with-status-badges.tsx",
+    "code": "const STATUS = { active: \"#dcfce7|#16a34a\", pending: \"#fef9c3|#ca8a04\", failed: \"#fee2e2|#dc2626\" } as const;\nexport default function StatusBadgeTable() {\n  const rows = [\n    { id: \"dep_001\", name: \"Mia Chen\", email: \"mia@acme.com\", status: \"active\", date: \"Apr 2\" },\n    { id: \"dep_002\", name: \"Leo Park\", email: \"leo@acme.com\", status: \"pending\", date: \"Apr 1\" },\n    { id: \"dep_003\", name: \"Sam Torres\", email: \"sam@co.io\", status: \"failed\", date: \"Mar 30\" },\n    { id: \"dep_004\", name: \"Ava Kim\", email: \"ava@design.co\", status: \"active\", date: \"Mar 28\" },\n  ];\n  return (\n    <div className=\"bg-white border border-neutral-100 rounded-xl overflow-hidden text-sm\">\n      <table className=\"w-full\">\n        <thead className=\"bg-neutral-50 border-b border-neutral-100\">\n          <tr>{[\"Name\",\"ID\",\"Status\",\"Date\"].map(h => <th key={h} className=\"text-left px-4 py-2.5 text-xs font-medium text-neutral-400 uppercase tracking-wide\">{h}</th>)}</tr>\n        </thead>\n        <tbody>\n          {rows.map(r => {\n            const [bg, color] = STATUS[r.status as keyof typeof STATUS].split(\"|\");\n            return (\n              <tr key={r.id} className=\"border-b border-neutral-50 hover:bg-neutral-50 transition-colors\">\n                <td className=\"px-4 py-3\"><div className=\"font-medium text-neutral-900\">{r.name}</div><div className=\"text-xs text-neutral-400\">{r.email}</div></td>\n                <td className=\"px-4 py-3 font-mono text-xs text-neutral-400\">{r.id}</td>\n                <td className=\"px-4 py-3\"><span className=\"px-2 py-0.5 rounded-full text-xs font-medium\" style={{ background: bg, color }}>{r.status}</span></td>\n                <td className=\"px-4 py-3 text-neutral-400 text-xs\">{r.date}</td>\n              </tr>\n            );\n          })}\n        </tbody>\n      </table>\n    </div>\n  );\n}"
+  },
+  {
+    "slug": "table-row-actions",
+    "title": "Table with Row Actions",
+    "description": "Table where each row exposes contextual action buttons — Edit, View, and a red Delete — on hover. Ghost buttons in a tight inline group.",
+    "category": "Tables",
+    "tags": [
+      "table",
+      "actions",
+      "edit",
+      "delete",
+      "row actions"
+    ],
+    "style": "",
+    "sourceUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/table-row-actions.tsx",
+    "code": "export default function TableRowActions() {\n  const rows = [\n    { name: \"Homepage Redesign\", owner: \"Mia Chen\", updated: \"2h ago\" },\n    { name: \"API Documentation\", owner: \"Leo Park\", updated: \"Yesterday\" },\n    { name: \"Mobile App v2\", owner: \"Sam Torres\", updated: \"3 days ago\" },\n    { name: \"Design System\", owner: \"Ava Kim\", updated: \"1 week ago\" },\n  ];\n  return (\n    <div className=\"bg-white border border-neutral-100 rounded-xl overflow-hidden text-sm\">\n      <table className=\"w-full\">\n        <thead className=\"bg-neutral-50 border-b border-neutral-100\">\n          <tr>{[\"Project\",\"Owner\",\"Updated\",\"\"].map((h,i) => <th key={i} className=\"text-left px-4 py-2.5 text-xs font-medium text-neutral-400 uppercase tracking-wide\">{h}</th>)}</tr>\n        </thead>\n        <tbody>\n          {rows.map((r, i) => (\n            <tr key={i} className=\"group border-b border-neutral-50 hover:bg-neutral-50 transition-colors\">\n              <td className=\"px-4 py-3 font-medium text-neutral-900\">{r.name}</td>\n              <td className=\"px-4 py-3 text-neutral-500\">{r.owner}</td>\n              <td className=\"px-4 py-3 text-neutral-400 text-xs\">{r.updated}</td>\n              <td className=\"px-4 py-3\">\n                <div className=\"flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity justify-end\">\n                  <button className=\"px-2 py-1 text-xs border border-neutral-200 rounded text-neutral-600 hover:bg-neutral-100\">Edit</button>\n                  <button className=\"px-2 py-1 text-xs border border-neutral-200 rounded text-neutral-600 hover:bg-neutral-100\">View</button>\n                  <button className=\"px-2 py-1 text-xs border border-red-100 rounded text-red-500 hover:bg-red-50\">Delete</button>\n                </div>\n              </td>\n            </tr>\n          ))}\n        </tbody>\n      </table>\n    </div>\n  );\n}"
   }
 ]

@@ -1,20 +1,26 @@
 [
   {
     "name": "Account",
-    "count": 2,
+    "count": 6,
     "slugs": [
       "account-settings-layout",
+      "connected-apps",
+      "notification-preferences",
+      "profile-edit-form",
+      "security-settings",
       "team-members-list"
     ]
   },
   {
     "name": "Admin",
-    "count": 4,
+    "count": 6,
     "slugs": [
       "report-detail-page",
       "review-queue-list",
       "role-permissions-editor",
-      "user-admin-profile"
+      "system-health-panel",
+      "user-admin-profile",
+      "user-management-row"
     ]
   },
   {
@@ -40,18 +46,25 @@
   },
   {
     "name": "Authentication",
-    "count": 3,
+    "count": 6,
     "slugs": [
       "two-factor-setup",
       "magic-link-flow",
-      "sign-in-form-clean"
+      "magic-link-sent",
+      "oauth-button-group",
+      "sign-in-form-clean",
+      "two-factor-input"
     ]
   },
   {
     "name": "Billing",
-    "count": 2,
+    "count": 6,
     "slugs": [
+      "invoice-list",
       "invoice-list-pattern",
+      "payment-method-card",
+      "plan-upgrade-cta",
+      "usage-meter",
       "usage-meter-pattern"
     ]
   },
@@ -79,43 +92,59 @@
   },
   {
     "name": "Cards",
-    "count": 4,
+    "count": 6,
     "slugs": [
       "dark-pricing-card",
       "glassmorphism-card",
       "gradient-border-card",
+      "image-preview-card",
+      "notification-card",
       "testimonial-card"
     ]
   },
   {
     "name": "Commerce",
-    "count": 2,
+    "count": 6,
     "slugs": [
+      "cart-line-item",
       "checkout-summary-card",
+      "order-confirmation",
+      "product-listing-card",
+      "review-card",
       "upgrade-modal-pattern"
     ]
   },
   {
     "name": "Communication",
-    "count": 2,
+    "count": 6,
     "slugs": [
+      "chat-message-bubbles",
+      "email-composer",
       "inbox-thread-layout",
-      "structured-proposal-card"
+      "notification-bell-dropdown",
+      "structured-proposal-card",
+      "thread-list-item"
     ]
   },
   {
     "name": "Dashboard",
-    "count": 2,
+    "count": 6,
     "slugs": [
+      "activity-feed-panel",
       "dashboard-header-pattern",
+      "kpi-stats-row",
+      "metric-trend-card",
+      "quick-actions-grid",
       "stat-cards-with-trends"
     ]
   },
   {
     "name": "Data Density",
-    "count": 4,
+    "count": 6,
     "slugs": [
       "activity-log-timeline",
+      "compact-settings-list",
+      "dense-activity-log",
       "export-pattern-ui",
       "filter-bar-chips",
       "kpi-grid-tabular"
@@ -123,18 +152,26 @@
   },
   {
     "name": "Data Display",
-    "count": 3,
+    "count": 6,
     "slugs": [
       "minimal-stats-grid",
       "modern-table",
-      "minimal-avatar-stack"
+      "minimal-avatar-stack",
+      "progress-bar-list",
+      "stats-grid",
+      "vertical-timeline"
     ]
   },
   {
     "name": "Empty States",
-    "count": 1,
+    "count": 6,
     "slugs": [
-      "empty-state-first-run"
+      "empty-state-activity",
+      "empty-state-billing",
+      "empty-state-notifications",
+      "empty-state-search",
+      "empty-state-first-run",
+      "empty-state-team"
     ]
   },
   {
@@ -164,71 +201,98 @@
   },
   {
     "name": "Gamification",
-    "count": 3,
+    "count": 6,
     "slugs": [
+      "achievement-badge-card",
       "challenge-submission-card",
       "leaderboard-weekly",
-      "profile-credibility-badges"
+      "leaderboard-rows",
+      "profile-credibility-badges",
+      "xp-level-bar"
     ]
   },
   {
     "name": "Inputs",
-    "count": 2,
+    "count": 6,
     "slugs": [
       "command-palette",
-      "swiss-inputs"
+      "date-range-input",
+      "file-upload-zone",
+      "search-with-clear",
+      "swiss-inputs",
+      "tag-input"
     ]
   },
   {
     "name": "Layout",
-    "count": 2,
+    "count": 6,
     "slugs": [
       "bento-grid",
+      "sidebar-content-layout",
+      "split-pane-layout",
+      "sticky-page-header",
+      "tab-content-switcher",
       "typographic-hero"
     ]
   },
   {
     "name": "Loading",
-    "count": 1,
+    "count": 6,
     "slugs": [
-      "skeleton-loading-cards"
+      "loading-progress-bar",
+      "loading-dots-spinner",
+      "skeleton-card",
+      "skeleton-loading-cards",
+      "skeleton-profile-header",
+      "skeleton-table-rows"
     ]
   },
   {
     "name": "Marketplace",
-    "count": 4,
+    "count": 6,
     "slugs": [
       "creator-storefront-profile",
+      "marketplace-filter-sidebar",
       "product-detail-page",
       "product-listing-grid",
-      "purchase-success-page"
+      "purchase-success-page",
+      "review-summary"
     ]
   },
   {
     "name": "Navigation",
-    "count": 3,
+    "count": 6,
     "slugs": [
+      "breadcrumbs",
       "brutalist-navigation",
       "floating-action-menu",
-      "minimal-sidebar"
+      "minimal-sidebar",
+      "pagination-controls",
+      "tab-navigation"
     ]
   },
   {
     "name": "Onboarding",
-    "count": 3,
+    "count": 6,
     "slugs": [
       "connect-tools-screen",
+      "feature-highlight-tooltip",
+      "trial-banner",
       "multi-step-wizard",
-      "stepper-onboarding-flow"
+      "stepper-onboarding-flow",
+      "welcome-checklist"
     ]
   },
   {
     "name": "Pricing",
-    "count": 3,
+    "count": 6,
     "slugs": [
+      "feature-comparison-table",
+      "billing-toggle",
       "pricing-comparison-grid",
       "three-tier-pricing",
-      "usage-based-pricing"
+      "usage-based-pricing",
+      "usage-pricing-calculator"
     ]
   },
   {
@@ -244,9 +308,14 @@
   },
   {
     "name": "Tables",
-    "count": 1,
+    "count": 6,
     "slugs": [
-      "data-table-with-actions"
+      "table-checkbox-select",
+      "data-table-with-actions",
+      "table-pagination",
+      "table-sortable-headers",
+      "table-with-status-badges",
+      "table-row-actions"
     ]
   }
 ]
