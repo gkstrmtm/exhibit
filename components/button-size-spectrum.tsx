@@ -24,18 +24,7 @@ export default function ButtonSizeSpectrum() {
         <div className="flex flex-wrap items-end gap-3">
           {sizes.map(s => (
             <div key={s.label} className="flex flex-col items-center gap-1.5">
-              <button className={`${s.cls} bg-blue-600 text-white hover:bg-blue-700 transition-colors`}>Button</button>
-              <span className="text-[10px] font-mono text-neutral-400">{s.label}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="flex flex-col gap-3">
-        <div className="text-xs font-mono text-neutral-400 uppercase tracking-wider">Ghost</div>
-        <div className="flex flex-wrap items-end gap-3">
-          {sizes.map(s => (
-            <div key={s.label} className="flex flex-col items-center gap-1.5">
-              <button className={`${s.cls} border border-neutral-200 text-neutral-700 hover:bg-neutral-50 transition-colors`}>Button</button>
+              <button className={`${s.cls} bg-blue-600 text-white hover:bg-blue-700 active:scale-95 transition-all`}>Button</button>
               <span className="text-[10px] font-mono text-neutral-400">{s.label}</span>
             </div>
           ))}
