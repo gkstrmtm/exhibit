@@ -40,7 +40,9 @@ type AgentIntentName =
   | "queue-ops"
   | "admin-dashboard"
   | "audit-log"
-  | "case-management";
+  | "case-management"
+  | "editorial-brand"
+  | "precision-tool";
 
 type AgentIntentProfile = {
   label: string;
@@ -535,6 +537,37 @@ const intentProfiles: Record<AgentIntentName, AgentIntentProfile> = {
     },
     patternBoosts: ["reviewQueuePattern", "decisionFlowPattern"],
     structuralBias: ["case-list", "detail-rail", "decision-form", "activity-history"],
+  },
+  "editorial-brand": {
+    label: "Editorial / Brand Surface",
+    description: "Optimize for typographic hierarchy, warm editorial posture, reading columns, and print-derived visual structure.",
+    matchers: [/editorial/i, /warm/i, /serif/i, /magazine/i, /print/i, /brand.forward/i, /storytell/i, /publication/i, /literary/i, /reading/i, /substack/i, /narrative/i],
+    categoryBoosts: { Layout: 10, Navigation: 7, "Data Display": 6, Buttons: 5, "Empty States": 4 },
+    slugBoosts: {
+      "bento-grid": 14,
+      "docs-writing-shell": 10,
+      "creator-storefront-profile": 8,
+      "breadcrumbs": 5,
+      "minimal-text-buttons": 6,
+    },
+    patternBoosts: [],
+    structuralBias: ["reading-column", "editorial-hero", "section-anchors", "warm-neutrals"],
+  },
+  "precision-tool": {
+    label: "Precision Tool Surface",
+    description: "Optimize for command-first interfaces, tight spacing, zero decoration, and power-user density.",
+    matchers: [/precise/i, /sleek/i, /minimal/i, /tool.first/i, /power.user/i, /zero decoration/i, /vercel/i, /linear/i, /figma/i, /raycast/i, /no decoration/i, /no fluff/i],
+    categoryBoosts: { "App Shells": 10, Navigation: 8, "Data Density": 8, Tables: 6, Inputs: 5 },
+    slugBoosts: {
+      "dark-vscode-shell": 14,
+      "command-palette-shell": 12,
+      "command-palette": 10,
+      "ide-three-panel-shell": 8,
+      "compact-settings-list": 7,
+      "api-key-panel": 6,
+    },
+    patternBoosts: [],
+    structuralBias: ["command-surface", "panel-grid", "status-strip", "mono-data"],
   },
 };
 
@@ -5146,6 +5179,25 @@ function buildQuestionResponse(questionRequest: AgentQuestionRequest): Record<st
     },
     designProfile,
   });
+
+  // ── Style-family profile override ──────────────────────────────────────────
+  // When buildFoundationCommunication detects a confirmed style family (≥2 signal
+  // buckets) and the archetype is compatible, swap the design profile to the
+  // matching style-family profile so typography/spacing/color posture is correct.
+  const detectedStyleFamilyHint = routedFoundationCommunication?.detectedStyleFamily as "editorial-serif" | "precision-minimal" | null;
+  const styleFamilyCompatibleArchetypes: Record<string, string[]> = {
+    "editorial-serif": ["landing-page", "docs-knowledge", "commerce-marketplace", "product-application", "conversion-funnel"],
+    "precision-minimal": ["developer-tool", "product-application", "landing-page"],
+  };
+  const canApplyStyleFamilyProfile = Boolean(
+    detectedStyleFamilyHint
+    && designProfiles[detectedStyleFamilyHint]
+    && styleFamilyCompatibleArchetypes[detectedStyleFamilyHint]?.includes(classification.archetype.id),
+  );
+  const effectiveDesignProfile = canApplyStyleFamilyProfile && detectedStyleFamilyHint
+    ? designProfiles[detectedStyleFamilyHint]!
+    : designProfile;
+
   const adaptedBundle = getOperationalWorkbenchBundle({
     scenario: questionPrompt || primaryQuestion,
     taskType: "audit",
@@ -5279,21 +5331,31 @@ function buildQuestionResponse(questionRequest: AgentQuestionRequest): Record<st
           ? "The question is too broad or mixed, so the endpoint cannot safely choose a narrow route yet."
           : `The question most closely matches ${classification.archetype.label}.`,
     },
-    designProfile: designProfile
+    designProfile: effectiveDesignProfile
       ? {
-          id: designProfile.id,
-          label: designProfile.label,
-          summary: designProfile.summary,
-          layoutMood: designProfile.layoutMood,
-          spacing: designProfile.spacing,
-          typography: designProfile.typography,
-          iconSystem: designProfile.iconSystem,
-          colorAndElevation: designProfile.colorAndElevation,
-          motion: designProfile.motion,
-          grouping: designProfile.grouping,
+          id: effectiveDesignProfile.id,
+          label: effectiveDesignProfile.label,
+          summary: effectiveDesignProfile.summary,
+          layoutMood: effectiveDesignProfile.layoutMood,
+          spacing: effectiveDesignProfile.spacing,
+          typography: effectiveDesignProfile.typography,
+          iconSystem: effectiveDesignProfile.iconSystem,
+          colorAndElevation: effectiveDesignProfile.colorAndElevation,
+          motion: effectiveDesignProfile.motion,
+          grouping: effectiveDesignProfile.grouping,
         }
       : null,
     foundationCommunication: routedFoundationCommunication,
+    ...(routedFoundationCommunication?.styleFamilyProbe
+      ? {
+          clarifyBeforeBuilding: {
+            ask: (routedFoundationCommunication.styleFamilyProbe as Record<string, unknown>).ask,
+            why: (routedFoundationCommunication.styleFamilyProbe as Record<string, unknown>).why,
+            instruction: "Ask this question before generating any layout, component selection, or visual foundation. The answer changes type family, spacing posture, color palette, and motion posture — not just visual polish.",
+            leaningFamilyId: (routedFoundationCommunication.styleFamilyProbe as Record<string, unknown>).leaningFamilyId,
+          },
+        }
+      : {}),
     resourcePull: {
       route: classification.sector?.route || classification.archetype.id,
       categories: selectedCategories,
@@ -6512,6 +6574,22 @@ function buildResolutionResponse(request: AgentResolutionRequest): Record<string
     },
     designProfile,
   });
+
+  // ── Style-family profile override (resolution path) ──────────────────────
+  const resolutionDetectedStyleFamily = foundationCommunication?.detectedStyleFamily as "editorial-serif" | "precision-minimal" | null;
+  const resolutionStyleFamilyCompatibleArchetypes: Record<string, string[]> = {
+    "editorial-serif": ["landing-page", "docs-knowledge", "commerce-marketplace", "product-application", "conversion-funnel"],
+    "precision-minimal": ["developer-tool", "product-application", "landing-page"],
+  };
+  const canApplyResolutionStyleFamily = Boolean(
+    resolutionDetectedStyleFamily
+    && designProfiles[resolutionDetectedStyleFamily]
+    && resolutionStyleFamilyCompatibleArchetypes[resolutionDetectedStyleFamily]?.includes(classification.archetype.id),
+  );
+  const effectiveResolutionDesignProfile = canApplyResolutionStyleFamily && resolutionDetectedStyleFamily
+    ? designProfiles[resolutionDetectedStyleFamily]!
+    : designProfile;
+
   const iconAndInteractionIntelligence = buildIconAndInteractionIntelligence({
     request,
     classification,
@@ -6638,20 +6716,30 @@ function buildResolutionResponse(request: AgentResolutionRequest): Record<string
       route: classification.route,
       confidence: classification.confidence,
     },
-    designProfile: buildDesignProfileResponse(designProfile),
-    tokenPosture: outputPreferences.includeTokenPosture && designProfile
+    designProfile: buildDesignProfileResponse(effectiveResolutionDesignProfile),
+    tokenPosture: outputPreferences.includeTokenPosture && effectiveResolutionDesignProfile
       ? {
-          typography: designProfile.typography,
-          spacing: designProfile.spacing,
-          iconSystem: designProfile.iconSystem,
-          elevation: designProfile.colorAndElevation,
-          motion: designProfile.motion,
+          typography: effectiveResolutionDesignProfile.typography,
+          spacing: effectiveResolutionDesignProfile.spacing,
+          iconSystem: effectiveResolutionDesignProfile.iconSystem,
+          elevation: effectiveResolutionDesignProfile.colorAndElevation,
+          motion: effectiveResolutionDesignProfile.motion,
         }
       : null,
     contextIntelligence,
     operationalTruthIntelligence,
     discoveryIntelligence,
     foundationCommunication,
+    ...(foundationCommunication?.styleFamilyProbe
+      ? {
+          clarifyBeforeBuilding: {
+            ask: (foundationCommunication.styleFamilyProbe as Record<string, unknown>).ask,
+            why: (foundationCommunication.styleFamilyProbe as Record<string, unknown>).why,
+            instruction: "Ask this question before generating any layout, component selection, or visual foundation. The answer changes type family, spacing posture, color palette, and motion posture — not just visual polish.",
+            leaningFamilyId: (foundationCommunication.styleFamilyProbe as Record<string, unknown>).leaningFamilyId,
+          },
+        }
+      : {}),
     transitionStateIntelligence,
     implementationReadiness,
     approvalPrompt,
