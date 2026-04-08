@@ -15,7 +15,7 @@ type SaveState = "idle" | "saving" | "saved" | "failed";
 
 function SaveButton({ shouldFail }: { shouldFail: boolean }) {
   const [state, setState] = useState<SaveState>("idle");
-  const timer = useRef<ReturnType<typeof setTimeout>>();
+  const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => () => clearTimeout(timer.current), []);
 

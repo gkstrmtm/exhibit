@@ -38,7 +38,7 @@ export default function RightRailStableRefresh() {
   const [items, setItems] = useState(ITEMS_A);
   const [selected, setSelected] = useState<Item>(ITEMS_A[0]);
   const [refreshing, setRefreshing] = useState(false);
-  const timer = useRef<ReturnType<typeof setTimeout>>();
+  const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => () => clearTimeout(timer.current), []);
 

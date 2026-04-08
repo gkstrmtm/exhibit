@@ -9,11 +9,11 @@
  */
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
-function Bone({ className = "" }: { className?: string }) {
+function Bone({ className = "", style }: { className?: string; style?: React.CSSProperties }) {
   return (
-    <div className={`bg-neutral-200 rounded-md overflow-hidden relative ${className}`}>
+    <div className={`bg-neutral-200 rounded-md overflow-hidden relative ${className}`} style={style}>
       <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.4s_infinite] bg-gradient-to-r from-transparent via-white/60 to-transparent" />
     </div>
   );

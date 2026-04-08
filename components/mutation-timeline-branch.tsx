@@ -51,7 +51,7 @@ function Arrow() {
 
 function Branch({ title, delay, fails }: { title: string; delay: number; fails: boolean }) {
   const [state, setState] = useState<BranchState>("before");
-  const timer = useRef<ReturnType<typeof setTimeout>>();
+  const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => () => clearTimeout(timer.current), []);
 

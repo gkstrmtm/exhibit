@@ -22,8 +22,8 @@ interface StepperConfig {
 
 function Stepper({ config }: { config: StepperConfig }) {
   const [value, setValue] = useState(config.initial);
-  const intervalRef = useRef<ReturnType<typeof setInterval>>();
-  const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const intervalRef = useRef<ReturnType<typeof setInterval>>(undefined);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => () => { clearInterval(intervalRef.current); clearTimeout(timeoutRef.current); }, []);
 

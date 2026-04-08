@@ -48,7 +48,7 @@ const SLOTS: SlotConfig[] = [
 
 function LoadingSlot({ config }: { config: SlotConfig }) {
   const [state, setState] = useState<SlotState>("idle");
-  const timer = useRef<ReturnType<typeof setTimeout>>();
+  const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   function trigger() {
     setState("loading");

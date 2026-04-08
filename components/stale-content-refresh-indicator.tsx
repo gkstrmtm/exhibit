@@ -33,8 +33,8 @@ export default function StaleContentRefreshIndicator() {
   const [dataset, setDataset] = useState(DATASET_A);
   const [freshState, setFreshState] = useState<FreshState>("fresh");
   const [ageSeconds, setAgeSeconds] = useState(0);
-  const refreshTimer = useRef<ReturnType<typeof setTimeout>>();
-  const ageTick = useRef<ReturnType<typeof setInterval>>();
+  const refreshTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const ageTick = useRef<ReturnType<typeof setInterval>>(undefined);
 
   // Tick age counter every second
   useEffect(() => {

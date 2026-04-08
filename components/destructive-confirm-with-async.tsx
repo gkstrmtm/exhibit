@@ -23,7 +23,7 @@ const ITEMS: Item[] = [
 
 function ItemRow({ item, onDelete }: { item: Item; onDelete: (id: number) => void }) {
   const [state, setState] = useState<ItemState>("idle");
-  const timer = useRef<ReturnType<typeof setTimeout>>();
+  const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => () => clearTimeout(timer.current), []);
 

@@ -24,7 +24,7 @@ function FileRow({ item, onPhaseChange }: {
   onPhaseChange: (id: number, phase: Phase) => void;
 }) {
   const [phase, setPhase] = useState<Phase>("idle");
-  const timer = useRef<ReturnType<typeof setTimeout>>();
+  const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => () => clearTimeout(timer.current), []);
   useEffect(() => onPhaseChange(item.id, phase), [phase]);

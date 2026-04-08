@@ -19,7 +19,7 @@ export default function TypedConfirmation() {
   const [phase, setPhase] = useState<Phase>("idle");
   const [typed, setTyped] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
-  const timer = useRef<ReturnType<typeof setTimeout>>();
+  const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const matches = typed === WORKSPACE_NAME;
 

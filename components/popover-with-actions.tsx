@@ -60,13 +60,13 @@ export default function PopoverWithActions() {
                 <button
                   key={action.label}
                   onMouseDown={() => { setLastClicked(action.label); setOpen(false); }}
-                  className={`w-full flex items-center justify-between px-3 py-1.5 text-[11px] transition-colors ${action.danger ? "text-red-500 hover:bg-red-50" : "text-neutral-700 hover:bg-neutral-50"}`}
+                  className={`w-full flex items-center justify-between px-3 py-1.5 text-[11px] transition-colors ${("danger" in action && action.danger) ? "text-red-500 hover:bg-red-50" : "text-neutral-700 hover:bg-neutral-50"}`}
                 >
                   <span className="flex items-center gap-2">
                     <Icon size={11} strokeWidth={1.5} />
                     {action.label}
                   </span>
-                  <kbd className={`text-[9px] font-mono ${action.danger ? "text-red-400" : "text-neutral-400"}`}>{action.shortcut}</kbd>
+                  <kbd className={`text-[9px] font-mono ${("danger" in action && action.danger) ? "text-red-400" : "text-neutral-400"}`}>{action.shortcut}</kbd>
                 </button>
               );
             })}
