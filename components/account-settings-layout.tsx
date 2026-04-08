@@ -40,11 +40,11 @@ export default function AccountSettings() {
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Display Name</label>
-            <input type="text" value="John Doe" className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm" />
+            <input type="text" defaultValue="John Doe" className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <input type="email" value="john@example.com" className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm" />
+            <input type="email" defaultValue="john@example.com" className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Bio</label>

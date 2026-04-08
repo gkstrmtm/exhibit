@@ -1,0 +1,16 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Run Exhibit Locally",
+			"type": "shell",
+			"command": "npx",
+			"args": [
+				"tsx",
+				"server/index.ts"
+			],
+			"isBackground": true,
+			"group": "build"
+		}
+	]
+}

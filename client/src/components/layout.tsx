@@ -2,6 +2,7 @@ import { Link, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth";
+import { BrandWordmark } from "@/components/brand-wordmark";
 import { LayoutGrid, Type, MousePointer2, Component, Box, Layers, Navigation, CreditCard, Menu, Trophy, ShoppingBag, Users, Shield, LogOut, User, PanelLeft, BarChart3, Table2, FileQuestion, Loader2, Footprints, Lock, UserCog, DollarSign, Receipt, Database, ShieldCheck, Store, Gamepad2, MessageSquare, AlertTriangle, Palette, Bot } from "lucide-react";
 import { useState } from "react";
 
@@ -60,6 +61,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     { label: "Marketplace", href: "/marketplace", icon: ShoppingBag },
     { label: "Scout Talent", href: "/scout", icon: Users },
     { label: "For AI / LLMs", href: "/for-ai", icon: Bot },
+    { label: "Prompt Builder", href: "/prompts", icon: MessageSquare },
     ...(user?.role === "admin" ? [{ label: "Admin", href: "/admin", icon: Shield }] : []),
   ];
 
@@ -69,8 +71,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <div className="md:hidden fixed top-0 left-0 right-0 h-14 border-b border-border bg-card/80 backdrop-blur-md z-50 flex items-center justify-between px-4">
         <Link href="/">
           <h1 className="font-display font-bold text-lg tracking-tight flex items-center gap-2 cursor-pointer">
-            <img src="/images/brand/exhibit-logo.png" alt="EXHIBIT" className="w-6 h-6 object-contain" />
-            EXHIBIT
+            <BrandWordmark size="sm" />
           </h1>
         </Link>
         <button 
@@ -111,8 +112,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <div className="p-6 border-b border-border">
           <Link href="/">
             <h1 className="font-display font-bold text-xl tracking-tight flex items-center gap-2.5 cursor-pointer">
-              <img src="/images/brand/exhibit-logo.png" alt="EXHIBIT" className="w-7 h-7 object-contain" />
-              EXHIBIT
+              <BrandWordmark size="md" />
             </h1>
           </Link>
           <p className="text-xs text-muted-foreground mt-1">Proof-First UI Library</p>
@@ -170,11 +170,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </button>
             </div>
           ) : (
-            <Link href="/auth?mode=login">
-              <div className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-primary hover:bg-secondary/50 rounded-md cursor-pointer transition-all">
-                <User className="w-4 h-4" />Sign In
+            <div className="rounded-lg border border-border bg-muted/30 px-3 py-3 text-sm">
+              <div className="flex items-center gap-2 font-medium text-foreground">
+                <User className="w-4 h-4 text-muted-foreground" />Public beta
               </div>
-            </Link>
+              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                Browse exhibits and use Prompt Builder without an account. Auth is offline until the live backend is wired up.
+              </p>
+            </div>
           )}
         </div>
       </aside>

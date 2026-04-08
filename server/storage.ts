@@ -17,16 +17,69 @@ import {
   type Testimonial, type InsertTestimonial, testimonials,
   reputationSignals,
   follows, blocks, auditLogs, badges, exhibitBadges,
-} from "@shared/schema";
+} from "../shared/schema.js";
 import { eq, ilike, or, sql, and, desc, asc, inArray, count } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/node-postgres";
 import pg from "pg";
+import {
+  getLocalCatalogCategories,
+  getLocalCatalogExhibitById,
+  getLocalCatalogExhibitBySlug,
+  getLocalCatalogExhibits,
+  getLocalCatalogExhibitsByCategory,
+  searchLocalCatalogExhibits,
+} from "./local-catalog.js";
 
 const pool = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
 });
 
 export const db = drizzle(pool);
+
+let hasLoggedCatalogFallback = false;
+
+function shouldUseCatalogFallback(error: unknown): boolean {
+  if (!process.env.DATABASE_URL) {
+    return true;
+  }
+
+  const message = error instanceof Error ? error.message : String(error ?? "");
+  const code =
+    error && typeof error === "object" && "code" in error
+      ? String((error as { code?: unknown }).code ?? "")
+      : "";
+
+  return ["ECONNREFUSED", "ENOTFOUND", "3D000", "42P01", "57P01"].includes(code)
+    || /ECONNREFUSED|connection refused|database .* does not exist|relation .* does not exist|password authentication failed/i.test(message);
+}
+
+function logCatalogFallback(operation: string, error: unknown) {
+  if (hasLoggedCatalogFallback) {
+    return;
+  }
+
+  hasLoggedCatalogFallback = true;
+  const message = error instanceof Error ? error.message : String(error ?? "unknown error");
+  console.warn(`Database unavailable during ${operation}; serving the bundled local catalog instead.`);
+  console.warn(message);
+}
+
+async function withCatalogFallback<T>(
+  operation: string,
+  run: () => Promise<T>,
+  fallback: () => T | Promise<T>
+): Promise<T> {
+  try {
+    return await run();
+  } catch (error) {
+    if (!shouldUseCatalogFallback(error)) {
+      throw error;
+    }
+
+    logCatalogFallback(operation, error);
+    return await fallback();
+  }
+}
 
 export interface IStorage {
   // Users
@@ -199,40 +252,68 @@ export class DatabaseStorage implements IStorage {
 
   // ─── Exhibits ────────────────────────────────────────
   async getAllExhibits(): Promise<Exhibit[]> {
-    return db.select().from(exhibits).where(eq(exhibits.status, "published")).orderBy(desc(exhibits.createdAt));
+    return withCatalogFallback(
+      "getAllExhibits",
+      () => db.select().from(exhibits).where(eq(exhibits.status, "published")).orderBy(desc(exhibits.createdAt)),
+      () => getLocalCatalogExhibits()
+    );
   }
 
   async getExhibitById(id: number): Promise<Exhibit | undefined> {
-    const [result] = await db.select().from(exhibits).where(eq(exhibits.id, id));
-    return result;
+    return withCatalogFallback(
+      "getExhibitById",
+      async () => {
+        const [result] = await db.select().from(exhibits).where(eq(exhibits.id, id));
+        return result;
+      },
+      () => getLocalCatalogExhibitById(id)
+    );
   }
 
   async getExhibitBySlug(slug: string): Promise<Exhibit | undefined> {
-    const [result] = await db.select().from(exhibits).where(eq(exhibits.slug, slug));
-    return result;
+    return withCatalogFallback(
+      "getExhibitBySlug",
+      async () => {
+        const [result] = await db.select().from(exhibits).where(eq(exhibits.slug, slug));
+        return result;
+      },
+      () => getLocalCatalogExhibitBySlug(slug)
+    );
   }
 
   async getExhibitsByCategory(category: string): Promise<Exhibit[]> {
-    return db.select().from(exhibits).where(and(ilike(exhibits.category, category), eq(exhibits.status, "published"))).orderBy(desc(exhibits.createdAt));
+    return withCatalogFallback(
+      "getExhibitsByCategory",
+      () => db.select().from(exhibits).where(and(ilike(exhibits.category, category), eq(exhibits.status, "published"))).orderBy(desc(exhibits.createdAt)),
+      () => getLocalCatalogExhibitsByCategory(category)
+    );
   }
 
   async getExhibitsByCreator(creatorId: number): Promise<Exhibit[]> {
-    return db.select().from(exhibits).where(eq(exhibits.creatorId, creatorId)).orderBy(desc(exhibits.createdAt));
+    return withCatalogFallback(
+      "getExhibitsByCreator",
+      () => db.select().from(exhibits).where(eq(exhibits.creatorId, creatorId)).orderBy(desc(exhibits.createdAt)),
+      () => getLocalCatalogExhibits().filter((entry) => entry.creatorId === creatorId)
+    );
   }
 
   async searchExhibits(query: string): Promise<Exhibit[]> {
     const pattern = `%${query}%`;
-    return db.select().from(exhibits).where(
-      and(
-        eq(exhibits.status, "published"),
-        or(
-          ilike(exhibits.title, pattern),
-          ilike(exhibits.description, pattern),
-          ilike(exhibits.category, pattern),
-          sql`array_to_string(${exhibits.tags}, ',') ILIKE ${pattern}`
+    return withCatalogFallback(
+      "searchExhibits",
+      () => db.select().from(exhibits).where(
+        and(
+          eq(exhibits.status, "published"),
+          or(
+            ilike(exhibits.title, pattern),
+            ilike(exhibits.description, pattern),
+            ilike(exhibits.category, pattern),
+            sql`array_to_string(${exhibits.tags}, ',') ILIKE ${pattern}`
+          )
         )
-      )
-    ).orderBy(desc(exhibits.createdAt));
+      ).orderBy(desc(exhibits.createdAt)),
+      () => searchLocalCatalogExhibits(query)
+    );
   }
 
   async createExhibit(exhibit: InsertExhibit): Promise<Exhibit> {
@@ -251,16 +332,30 @@ export class DatabaseStorage implements IStorage {
   }
 
   async incrementViewCount(id: number): Promise<void> {
-    await db.update(exhibits).set({ viewCount: sql`${exhibits.viewCount} + 1` }).where(eq(exhibits.id, id));
+    await withCatalogFallback(
+      "incrementViewCount",
+      () => db.update(exhibits).set({ viewCount: sql`${exhibits.viewCount} + 1` }).where(eq(exhibits.id, id)),
+      () => undefined
+    );
   }
 
   async getCategories(): Promise<string[]> {
-    const rows = await db.selectDistinct({ category: exhibits.category }).from(exhibits).where(eq(exhibits.status, "published")).orderBy(exhibits.category);
-    return rows.map(r => r.category);
+    return withCatalogFallback(
+      "getCategories",
+      async () => {
+        const rows = await db.selectDistinct({ category: exhibits.category }).from(exhibits).where(eq(exhibits.status, "published")).orderBy(exhibits.category);
+        return rows.map(r => r.category);
+      },
+      () => getLocalCatalogCategories()
+    );
   }
 
   async getExhibitRemixes(parentId: number): Promise<Exhibit[]> {
-    return db.select().from(exhibits).where(eq(exhibits.parentExhibitId, parentId)).orderBy(desc(exhibits.createdAt));
+    return withCatalogFallback(
+      "getExhibitRemixes",
+      () => db.select().from(exhibits).where(eq(exhibits.parentExhibitId, parentId)).orderBy(desc(exhibits.createdAt)),
+      () => []
+    );
   }
 
   // ─── Exhibit Versions ────────────────────────────────
@@ -270,7 +365,11 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getExhibitVersions(exhibitId: number): Promise<ExhibitVersion[]> {
-    return db.select().from(exhibitVersions).where(eq(exhibitVersions.exhibitId, exhibitId)).orderBy(desc(exhibitVersions.createdAt));
+    return withCatalogFallback(
+      "getExhibitVersions",
+      () => db.select().from(exhibitVersions).where(eq(exhibitVersions.exhibitId, exhibitId)).orderBy(desc(exhibitVersions.createdAt)),
+      () => []
+    );
   }
 
   // ─── Collections ─────────────────────────────────────

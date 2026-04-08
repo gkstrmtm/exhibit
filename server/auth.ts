@@ -2,10 +2,11 @@ import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import session from "express-session";
 import connectPgSimple from "connect-pg-simple";
+import MemoryStoreFactory from "memorystore";
 import bcrypt from "bcryptjs";
 import type { Express, Request, Response, NextFunction } from "express";
-import { db } from "./storage";
-import { users } from "@shared/schema";
+import { db } from "./storage.js";
+import { users } from "../shared/schema.js";
 import { eq } from "drizzle-orm";
 
 declare global {
@@ -22,21 +23,40 @@ declare global {
 
 export function setupAuth(app: Express) {
   const PgSession = connectPgSimple(session);
+  const MemoryStore = MemoryStoreFactory(session);
+  const isProduction = process.env.NODE_ENV === "production";
+  const sessionSecret = process.env.SESSION_SECRET?.trim();
+  const databaseUrl = process.env.DATABASE_URL?.trim();
+
+  if (!sessionSecret && isProduction) {
+    throw new Error("Missing SESSION_SECRET. Set it in the Vercel project environment variables before deploying.");
+  }
+
+  if (!databaseUrl && isProduction) {
+    throw new Error("Missing DATABASE_URL. Production auth requires a PostgreSQL database for session storage.");
+  }
+
+  const store = databaseUrl
+    ? new PgSession({
+        conString: databaseUrl,
+        tableName: "session",
+        createTableIfMissing: false,
+      })
+    : new MemoryStore({
+        checkPeriod: 24 * 60 * 60 * 1000,
+      });
 
   app.use(
     session({
-      store: new PgSession({
-        conString: process.env.DATABASE_URL,
-        tableName: "session",
-        createTableIfMissing: false,
-      }),
-      secret: process.env.SESSION_SECRET || "ui-atelier-dev-secret-change-in-prod",
+      proxy: isProduction,
+      store,
+      secret: sessionSecret || "ui-atelier-dev-secret-change-in-prod",
       resave: false,
       saveUninitialized: false,
       cookie: {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
-        secure: false,
+        secure: isProduction,
         sameSite: "lax",
       },
     })

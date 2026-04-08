@@ -1,0 +1,380 @@
+{
+  "_meta": {
+    "name": "Exhibit Opportunity Map",
+    "version": "0.1.0",
+    "purpose": "Priority map for new exhibit families ranked by agent design difficulty, user articulation difficulty, and strategic leverage for EXHIBIT."
+  },
+  "selectionLens": [
+    {
+      "id": "agent-construction-difficulty",
+      "label": "Agent Construction Difficulty",
+      "definition": "How hard the pattern is for an agent to design correctly without strong precedent."
+    },
+    {
+      "id": "user-articulation-difficulty",
+      "label": "User Articulation Difficulty",
+      "definition": "How hard the need is for users to describe clearly without already knowing UI system language."
+    },
+    {
+      "id": "product-leverage",
+      "label": "Product Leverage",
+      "definition": "How much the exhibit family improves /api/agent, the coherence auditor, and EXHIBIT as a system."
+    }
+  ],
+  "families": [
+    {
+      "id": "async-tab-transition-patterns",
+      "tier": 1,
+      "title": "Async Tab Transition Patterns",
+      "agentConstructionDifficulty": "high",
+      "userArticulationDifficulty": "high",
+      "productLeverage": "high",
+      "whyItMatters": [
+        "Users describe blanking, jank, or weird refresh behavior without naming transition structure.",
+        "Agents routinely fail to specify stale-vs-skeleton-vs-blocking behavior for tab switches."
+      ],
+      "candidateExhibits": [
+        "segmented tabs with stale-content preservation",
+        "segmented tabs with panel skeleton replacement",
+        "async tab rail with focus preservation",
+        "wrong-vs-right tab loading comparison"
+      ],
+      "strategicUse": ["agent-api", "coherence-auditor", "assistant-workspace", "queue-workbench"]
+    },
+    {
+      "id": "dropdown-vs-segmented-decision-patterns",
+      "tier": 1,
+      "title": "Dropdown vs Segmented Control Decision Patterns",
+      "agentConstructionDifficulty": "high",
+      "userArticulationDifficulty": "high",
+      "productLeverage": "high",
+      "whyItMatters": [
+        "This is one of the clearest recurring coherence failures in AI-generated UI.",
+        "Users feel it immediately but usually describe it only as clunky or too many clicks."
+      ],
+      "candidateExhibits": [
+        "anti-pattern comparison for dropdown over visible mode switching",
+        "segmented control for high-frequency state switching",
+        "visible filter ownership patterns",
+        "compact decision matrix for when dropdowns are still justified"
+      ],
+      "strategicUse": ["coherence-auditor", "agent-api", "interaction-guidance"]
+    },
+    {
+      "id": "loading-transition-timing-systems",
+      "tier": 1,
+      "title": "Loading Transition Timing Systems",
+      "agentConstructionDifficulty": "high",
+      "userArticulationDifficulty": "medium",
+      "productLeverage": "high",
+      "whyItMatters": [
+        "Agents rarely know when to use instant swap, skeleton, stale-preserving refresh, or blocking spinner.",
+        "This is a major hidden quality gap in otherwise polished output."
+      ],
+      "candidateExhibits": [
+        "timing ladder exhibit: instant, light delay, sustained load, failed load",
+        "stale-content plus refresh indicator pattern",
+        "skeleton threshold examples for table, inspector, and thread surfaces",
+        "blocking vs non-blocking loading comparison"
+      ],
+      "strategicUse": ["agent-api", "loading-intelligence", "transition-guidance"]
+    },
+    {
+      "id": "optimistic-ui-and-rollback-patterns",
+      "tier": 1,
+      "title": "Optimistic UI and Rollback Patterns",
+      "agentConstructionDifficulty": "high",
+      "userArticulationDifficulty": "high",
+      "productLeverage": "high",
+      "whyItMatters": [
+        "Users describe trust failure, not rollback structure.",
+        "Agents often skip temporary state communication and failure reversal."
+      ],
+      "candidateExhibits": [
+        "optimistic row update with rollback",
+        "optimistic save button with pending and failure states",
+        "async approval with status reversal",
+        "mutation timeline showing pending, committed, and failed branches"
+      ],
+      "strategicUse": ["agent-api", "mutation-modeling", "feedback-systems"]
+    },
+    {
+      "id": "focus-and-scroll-preservation-systems",
+      "tier": 1,
+      "title": "Focus and Scroll Preservation Systems",
+      "agentConstructionDifficulty": "high",
+      "userArticulationDifficulty": "high",
+      "productLeverage": "high",
+      "whyItMatters": [
+        "Users say the UI jumps around or loses their place.",
+        "Agents rarely specify focus return and viewport stability."
+      ],
+      "candidateExhibits": [
+        "right rail refresh with preserved scroll",
+        "list-to-detail interaction with stable viewport",
+        "modal close focus return pattern",
+        "async panel replacement without context loss"
+      ],
+      "strategicUse": ["agent-api", "coherence-auditor", "scan-path-discipline"]
+    },
+    {
+      "id": "duplicate-control-anti-pattern-gallery",
+      "tier": 1,
+      "title": "Duplicate Control Anti-Pattern Gallery",
+      "agentConstructionDifficulty": "medium",
+      "userArticulationDifficulty": "high",
+      "productLeverage": "high",
+      "whyItMatters": [
+        "This is central to the UI coherence auditor.",
+        "Agents need explicit negative references, not only polished references."
+      ],
+      "candidateExhibits": [
+        "duplicate scope controls",
+        "repeated filter meaning across chips and dropdowns",
+        "redundant status language across header, chip, and footer",
+        "conflicting global vs local sort or mode controls"
+      ],
+      "strategicUse": ["coherence-auditor", "repair-targets", "negative-reference-library"]
+    },
+    {
+      "id": "async-state-machine-exhibits",
+      "tier": 2,
+      "title": "Async State Machine Exhibits",
+      "agentConstructionDifficulty": "high",
+      "userArticulationDifficulty": "high",
+      "productLeverage": "high",
+      "candidateExhibits": [
+        "queue review state machine",
+        "thread loading and send state machine",
+        "form submit and retry state machine",
+        "export generation state machine"
+      ],
+      "strategicUse": ["agent-training", "transition-reasoning", "implementation-clarity"]
+    },
+    {
+      "id": "inline-editing-systems",
+      "tier": 2,
+      "title": "Inline Editing Systems",
+      "agentConstructionDifficulty": "high",
+      "userArticulationDifficulty": "medium",
+      "productLeverage": "high",
+      "candidateExhibits": [
+        "editable data row",
+        "editable detail rail section",
+        "inline title edit with save and rollback",
+        "inline field validation under live constraints"
+      ],
+      "strategicUse": ["product-application", "operational-workbench", "agent-training"]
+    },
+    {
+      "id": "async-confirmation-flows",
+      "tier": 2,
+      "title": "Async Confirmation Flows",
+      "agentConstructionDifficulty": "medium",
+      "userArticulationDifficulty": "medium",
+      "productLeverage": "high",
+      "candidateExhibits": [
+        "destructive confirmation with submitting state",
+        "bulk approve confirmation with async outcome",
+        "irreversible action with typed confirmation",
+        "post-confirm failure recovery path"
+      ],
+      "strategicUse": ["feedback-systems", "mutation-clarity", "agent-api"]
+    },
+    {
+      "id": "error-recovery-systems-beyond-toasts",
+      "tier": 2,
+      "title": "Error Recovery Systems Beyond Toasts",
+      "agentConstructionDifficulty": "high",
+      "userArticulationDifficulty": "high",
+      "productLeverage": "high",
+      "candidateExhibits": [
+        "inline recoverable form error",
+        "partial table failure with row-level retry",
+        "failed background sync with manual retry",
+        "fatal panel error with preserved context and escape path"
+      ],
+      "strategicUse": ["coherence-auditor", "product-language-quality", "agent-training"]
+    },
+    {
+      "id": "bulk-operation-coordination-patterns",
+      "tier": 2,
+      "title": "Bulk Operation Coordination Patterns",
+      "agentConstructionDifficulty": "high",
+      "userArticulationDifficulty": "medium",
+      "productLeverage": "medium",
+      "candidateExhibits": [
+        "selection bar with multi-state feedback",
+        "bulk reassignment flow",
+        "bulk export flow with progress",
+        "partial success after batch operation"
+      ],
+      "strategicUse": ["tables", "operational-workbench", "selection-patterns"]
+    },
+    {
+      "id": "lazy-loading-and-pagination-systems",
+      "tier": 2,
+      "title": "Lazy Loading and Pagination Systems",
+      "agentConstructionDifficulty": "medium",
+      "userArticulationDifficulty": "medium",
+      "productLeverage": "medium",
+      "candidateExhibits": [
+        "infinite scroll with append skeletons",
+        "load-more list pattern",
+        "strict pagination for auditable tables",
+        "hybrid pattern for search results"
+      ],
+      "strategicUse": ["list-patterns", "search-results", "table-systems"]
+    },
+    {
+      "id": "search-results-and-relevance-surfaces",
+      "tier": 3,
+      "title": "Search Results and Relevance Surfaces",
+      "agentConstructionDifficulty": "high",
+      "userArticulationDifficulty": "high",
+      "productLeverage": "medium",
+      "candidateExhibits": [
+        "relevance-ranked result list",
+        "grouped results by object type",
+        "faceted refinement sidebar",
+        "no-result and low-confidence result states"
+      ],
+      "strategicUse": ["marketplace", "discovery-surfaces", "agent-training"]
+    },
+    {
+      "id": "multi-step-form-systems-with-async-friction",
+      "tier": 3,
+      "title": "Multi-Step Form Systems With Async Friction",
+      "agentConstructionDifficulty": "high",
+      "userArticulationDifficulty": "medium",
+      "productLeverage": "medium",
+      "candidateExhibits": [
+        "step-by-step setup flow with async validation",
+        "interrupted step recovery",
+        "permission-dependent step gating",
+        "review step with missing requirements"
+      ],
+      "strategicUse": ["onboarding", "auth", "form-systems"]
+    },
+    {
+      "id": "permission-shaped-surfaces",
+      "tier": 3,
+      "title": "Permission-Shaped Surfaces",
+      "agentConstructionDifficulty": "medium",
+      "userArticulationDifficulty": "high",
+      "productLeverage": "medium",
+      "candidateExhibits": [
+        "same route, different role surface",
+        "hidden vs disabled vs explanatory permission treatment",
+        "admin-overrides-member comparison",
+        "partial access workbench"
+      ],
+      "strategicUse": ["permission-gated-ui", "role-based-layouts", "coherence-auditor"]
+    },
+    {
+      "id": "cross-surface-hand-off-patterns",
+      "tier": 3,
+      "title": "Cross-Surface Hand-Off Patterns",
+      "agentConstructionDifficulty": "high",
+      "userArticulationDifficulty": "high",
+      "productLeverage": "high",
+      "candidateExhibits": [
+        "queue to inspector to confirm flow",
+        "assistant prompt to routed workspace flow",
+        "alert to exact failing object flow",
+        "export setup to result artifact flow"
+      ],
+      "strategicUse": ["agent-api", "assistant-workspace", "operational-hand-off"]
+    },
+    {
+      "id": "header-composition-patterns",
+      "tier": 4,
+      "title": "Header Composition Patterns",
+      "agentConstructionDifficulty": "medium",
+      "userArticulationDifficulty": "high",
+      "productLeverage": "high",
+      "candidateExhibits": [
+        "strong task-owned operational header",
+        "broken redundant header comparison",
+        "summary plus action balance patterns",
+        "title, status, scope, and cta ownership rules"
+      ],
+      "strategicUse": ["coherence-auditor", "composition-integrity", "repair-targets"]
+    },
+    {
+      "id": "persistent-text-value-tests",
+      "tier": 4,
+      "title": "Persistent Text Value Tests",
+      "agentConstructionDifficulty": "medium",
+      "userArticulationDifficulty": "high",
+      "productLeverage": "high",
+      "candidateExhibits": [
+        "useless footer copy vs useful state copy",
+        "redundant helper text vs clarifying helper text",
+        "internal system language vs productized language",
+        "status narration vs action-supporting guidance"
+      ],
+      "strategicUse": ["coherence-auditor", "product-language-quality", "copy-discipline"]
+    },
+    {
+      "id": "density-discipline-comparisons",
+      "tier": 4,
+      "title": "Density Discipline Comparisons",
+      "agentConstructionDifficulty": "medium",
+      "userArticulationDifficulty": "medium",
+      "productLeverage": "high",
+      "candidateExhibits": [
+        "one task in compact, default, and broken mixed-density form",
+        "dense queue with correct rhythm",
+        "bloated card-heavy version of the same screen",
+        "density decisions by task class"
+      ],
+      "strategicUse": ["coherence-auditor", "density-modes", "scanability"]
+    },
+    {
+      "id": "surface-bloat-reduction-patterns",
+      "tier": 4,
+      "title": "Surface Bloat Reduction Patterns",
+      "agentConstructionDifficulty": "medium",
+      "userArticulationDifficulty": "high",
+      "productLeverage": "high",
+      "candidateExhibits": [
+        "too many panels vs one dominant work surface",
+        "excessive summary cards vs compressed status line",
+        "noisy label stacks vs semantic economy pass",
+        "fragmented modules vs recomposed shell"
+      ],
+      "strategicUse": ["coherence-auditor", "surface-economy", "repair-targets"]
+    }
+  ],
+  "recommendedBuildSequence": {
+    "phase1": [
+      "async-tab-transition-patterns",
+      "dropdown-vs-segmented-decision-patterns",
+      "loading-transition-timing-systems",
+      "optimistic-ui-and-rollback-patterns",
+      "focus-and-scroll-preservation-systems",
+      "duplicate-control-anti-pattern-gallery"
+    ],
+    "phase2": [
+      "async-state-machine-exhibits",
+      "inline-editing-systems",
+      "async-confirmation-flows",
+      "error-recovery-systems-beyond-toasts"
+    ],
+    "phase3": [
+      "bulk-operation-coordination-patterns",
+      "lazy-loading-and-pagination-systems",
+      "search-results-and-relevance-surfaces",
+      "multi-step-form-systems-with-async-friction",
+      "permission-shaped-surfaces",
+      "cross-surface-hand-off-patterns"
+    ],
+    "phase4": [
+      "header-composition-patterns",
+      "persistent-text-value-tests",
+      "density-discipline-comparisons",
+      "surface-bloat-reduction-patterns"
+    ]
+  }
+}

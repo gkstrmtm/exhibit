@@ -1,0 +1,104 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET, POST, HEAD, OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization" }
+      ]
+    },
+    {
+      "source": "/llms.txt",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/openapi.json",
+      "destination": "/api/openapi"
+    },
+    {
+      "source": "/api/agent/health",
+      "destination": "/api/health"
+    },
+    {
+      "source": "/api/exhibits/:slug/remixes",
+      "destination": "/api/exhibit-remixes?slug=:slug"
+    },
+    {
+      "source": "/api/exhibits/:slug",
+      "destination": "/api/exhibit-detail?slug=:slug"
+    },
+    {
+      "source": "/api/llm/components/:slug",
+      "destination": "/api/llm-component?slug=:slug"
+    },
+    {
+      "source": "/llms.txt",
+      "destination": "/api/llms-txt"
+    },
+    {
+      "source": "/browse",
+      "destination": "/"
+    },
+    {
+      "source": "/welcome",
+      "destination": "/"
+    },
+    {
+      "source": "/category/:category",
+      "destination": "/"
+    },
+    {
+      "source": "/exhibit/:slug",
+      "destination": "/"
+    },
+    {
+      "source": "/auth",
+      "destination": "/"
+    },
+    {
+      "source": "/profile/:userId",
+      "destination": "/"
+    },
+    {
+      "source": "/challenges",
+      "destination": "/"
+    },
+    {
+      "source": "/marketplace",
+      "destination": "/"
+    },
+    {
+      "source": "/scout",
+      "destination": "/"
+    },
+    {
+      "source": "/admin",
+      "destination": "/"
+    },
+    {
+      "source": "/onboarding",
+      "destination": "/"
+    },
+    {
+      "source": "/settings/profile",
+      "destination": "/"
+    },
+    {
+      "source": "/for-ai",
+      "destination": "/"
+    },
+    {
+      "source": "/prompts",
+      "destination": "/"
+    }
+  ],
+  "cleanUrls": true
+}

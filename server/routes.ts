@@ -1,15 +1,20 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
-import { setupAuth, requireAuth, requireRole, hashPassword } from "./auth";
+import { storage } from "./storage.js";
+import { setupAuth, requireAuth, requireRole, hashPassword } from "./auth.js";
 import {
   insertExhibitSchema, registerSchema, loginSchema,
   insertCollectionSchema, insertReportSchema, insertScoutRequestSchema,
   insertChallengeSchema, insertPackSchema,
   creatorOnboardingSchema, founderOnboardingSchema, profileUpdateSchema,
   insertTestimonialSchema,
-} from "@shared/schema";
+} from "../shared/schema.js";
 import passport from "passport";
+import { getAiStatus, runUiAnalysis, uiAnalysisRequestSchema } from "./ai.js";
+import { buildLlmsText } from "./llms.js";
+import { agentBundleRequestSchema, agentQuestionRequestSchema, agentResolutionRequestSchema, getAgentQuestionResponse, getAgentResolutionResponse, getOperationalWorkbenchBundle } from "./operational-workbench-bundle.js";
+import { buildAgentHandlerHealthPayload, buildPublicHealthPayload } from "./public-api.js";
+import { openapiSpec } from "./openapi-spec.js";
 
 function paramStr(val: string | string[] | undefined): string {
   if (Array.isArray(val)) return val[0] || "";
@@ -103,7 +108,7 @@ export async function registerRoutes(
         results = await storage.getAllExhibits();
       }
 
-      const creatorIds = [...new Set(results.filter(e => e.creatorId).map(e => e.creatorId!))];
+      const creatorIds = Array.from(new Set(results.filter(e => e.creatorId).map(e => e.creatorId!)));
       const creatorMap: Record<number, string> = {};
       for (const cid of creatorIds) {
         const u = await storage.getUserById(cid);
@@ -745,102 +750,45 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/ai/status", (_req, res) => {
+    res.json(getAiStatus());
+  });
+
+  app.get("/api/health", (req, res) => {
+    res.setHeader("Cache-Control", "no-store");
+    res.json(buildPublicHealthPayload(req, "/api/health"));
+  });
+
+  app.get("/api/agent/health", (req, res) => {
+    res.setHeader("Cache-Control", "no-store");
+    res.json(buildPublicHealthPayload(req, "/api/agent/health"));
+  });
+
+  app.post("/api/ai/ui-analysis", async (req, res) => {
+    try {
+      const parsed = uiAnalysisRequestSchema.safeParse(req.body);
+
+      if (!parsed.success) {
+        return res.status(400).json({
+          message: "Invalid AI analysis request payload",
+          errors: parsed.error.flatten(),
+        });
+      }
+
+      const result = await runUiAnalysis(parsed.data);
+      return res.json(result);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "AI analysis failed";
+      const status = message.includes("OPENAI_API_KEY") ? 503 : 500;
+      return res.status(status).json({ message });
+    }
+  });
+
   // ─── AI / LLM Accessible Routes ─────────────────────
   // Discovery file — drop this URL into Cursor, VS Code, or any AI assistant
   app.get("/llms.txt", async (_req, res) => {
     try {
-      const categories = await storage.getCategories();
-      const allExhibits = await storage.getAllExhibits();
-
-      const categorySummary = categories.map(cat => {
-        const count = allExhibits.filter(e => e.category === cat).length;
-        const slug = cat.toLowerCase().replace(/\s+/g, "-");
-        return `- ${cat} (${count} components): /api/llm/components?category=${encodeURIComponent(cat)}`;
-      }).join("\n");
-
-      const txt = `# EXHIBIT — UI Component Library for AI Assistants
-
-> EXHIBIT is a proof-first UI component library with ${allExhibits.length} production-ready React components across ${categories.length} categories.
-> All components are self-contained React + TypeScript + Tailwind CSS. No external UI library required.
-
-## STEP 1 — Fetch design foundations first (always do this before building any UI)
-
-Before writing a single component, fetch the design rulebook. It defines typography, color, spacing,
-layout, component sizing, density modes, and the anti-patterns to avoid.
-
-  https://raw.githubusercontent.com/gkstrmtm/exhibit/main/design-foundations.json
-
-Human-readable version:
-  https://raw.githubusercontent.com/gkstrmtm/exhibit/main/design-foundations.md
-
-The design foundations include:
-- Font families: Inter (body), Space Grotesk (display), JetBrains Mono (code/data)
-- Full type scale with pixel sizes, weights, and usage rules
-- Color system: neutral palette, semantic states (success/warning/error/info), interactive variants
-- 4px spacing grid with correct values for cards, pages, and components
-- Layout dimensions: sidebar widths, nav heights, max-widths for content and reading columns
-- Elevation levels (shadow-sm through shadow-2xl) with correct use cases
-- Component sizing: buttons, inputs, tables, avatars, badges
-- Density modes: compact / default / comfortable — when to use each
-- Anti-patterns list: the most common AI UI mistakes and how to fix them
-
-Reference exhibits (fetch for visual anchors):
-  https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/full-reference-dashboard.tsx
-  https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/design-token-reference.tsx
-  https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/anti-pattern-contrast.tsx
-
-## STEP 2 — Fetch components
-
-Full index with all component code:
-  https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components.json
-
-Single component by slug:
-  https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/{slug}.tsx
-
-Category list with slugs:
-  https://raw.githubusercontent.com/gkstrmtm/exhibit/main/categories.json
-
-## Live API (requires server)
-
-### Get all components in a category
-GET /api/llm/components?category=<CategoryName>
-
-### Search for components by keyword
-GET /api/llm/components?q=<search term>
-
-### Get a single component with full code
-GET /api/llm/components/<slug>
-
-### List all categories with component counts
-GET /api/llm/categories
-
-## Component Categories (${categories.length} total)
-
-${categorySummary}
-
-## Response Format (components.json)
-
-Each entry includes:
-- slug: unique identifier  e.g. "command-palette-shell"
-- title: component name
-- description: what it does
-- category: which category it belongs to
-- tags: relevant keywords
-- code: full React/TypeScript source code ready to paste
-- sourceUrl: raw GitHub URL for this component's .tsx file
-
-## Example prompts for AI assistants
-
-"First fetch https://raw.githubusercontent.com/gkstrmtm/exhibit/main/design-foundations.json, then fetch https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components.json and build me a polished admin dashboard"
-"Get https://raw.githubusercontent.com/gkstrmtm/exhibit/main/design-foundations.json and use it as the design system for this entire project"
-"Fetch https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/full-reference-dashboard.tsx as the visual target for this dashboard"
-"Get https://raw.githubusercontent.com/gkstrmtm/exhibit/main/components/command-palette-shell.tsx and use it in my app"
-
-## GitHub
-
-Source: https://github.com/gkstrmtm/exhibit
-`;
-
+      const txt = await buildLlmsText();
       res.setHeader("Content-Type", "text/plain; charset=utf-8");
       res.setHeader("Cache-Control", "public, max-age=3600");
       res.send(txt);
@@ -942,6 +890,133 @@ Source: https://github.com/gkstrmtm/exhibit
     } catch (err) {
       console.error("LLM categories error:", err);
       res.status(500).json({ message: "Failed to fetch categories" });
+    }
+  });
+
+  app.get("/api/llm/operational-workbench", (req, res) => {
+    try {
+      res.setHeader("Cache-Control", "public, max-age=300");
+      const scenario = typeof req.query.scenario === "string" ? req.query.scenario : undefined;
+      if (!scenario) {
+        res.json(getOperationalWorkbenchBundle());
+        return;
+      }
+
+      res.json(getOperationalWorkbenchBundle(agentBundleRequestSchema.parse({
+        scenario,
+        interfaceType: typeof req.query.interfaceType === "string" ? req.query.interfaceType : undefined,
+        taskType: typeof req.query.taskType === "string" ? req.query.taskType : undefined,
+        desiredOutcome: typeof req.query.desiredOutcome === "string" ? req.query.desiredOutcome : undefined,
+        platform: typeof req.query.platform === "string" ? req.query.platform : undefined,
+        densityPreference: typeof req.query.density === "string" ? req.query.density : undefined,
+      })));
+    } catch (err) {
+      console.error("Operational workbench bundle error:", err);
+      res.status(500).json({ message: "Failed to build operational workbench bundle" });
+    }
+  });
+
+  app.get("/api/agent", (req, res) => {
+    try {
+      if (req.query.health === "1") {
+        res.setHeader("Cache-Control", "no-store");
+        res.json(buildAgentHandlerHealthPayload());
+        return;
+      }
+
+      res.setHeader("Cache-Control", "public, max-age=300");
+      const question = typeof req.query.question === "string"
+        ? req.query.question
+        : typeof req.query.scenario === "string"
+          ? req.query.scenario
+          : typeof req.query.prompt === "string"
+            ? req.query.prompt
+          : undefined;
+      if (!question) {
+        res.json(getAgentQuestionResponse());
+        return;
+      }
+
+      res.json(getAgentQuestionResponse(agentQuestionRequestSchema.parse({
+        question,
+        platform: typeof req.query.platform === "string" ? req.query.platform : undefined,
+        goal: typeof req.query.goal === "string" ? req.query.goal : undefined,
+        routeHint: typeof req.query.routeHint === "string" ? req.query.routeHint : undefined,
+        context: typeof req.query.context === "string" ? req.query.context : undefined,
+        agentContextSummary: typeof req.query.agentContextSummary === "string" ? req.query.agentContextSummary : undefined,
+      })));
+    } catch (err) {
+      console.error("Agent bundle error:", err);
+      res.status(500).json({ message: "Failed to build agent bundle" });
+    }
+  });
+
+  app.get("/api/openapi.json", (_req, res) => {
+    res.setHeader("Cache-Control", "public, max-age=3600");
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.json(openapiSpec);
+  });
+
+  app.head("/api/agent", (req, res) => {
+    if (req.query.health === "1") {
+      res.setHeader("Cache-Control", "no-store");
+    } else {
+      res.setHeader("Cache-Control", "public, max-age=300");
+    }
+
+    res.setHeader("Content-Type", "application/json; charset=utf-8");
+    res.status(200).end();
+  });
+
+  app.options("/api/agent", (_req, res) => {
+    const allow = "GET, POST, HEAD, OPTIONS";
+    res.setHeader("Allow", allow);
+    res.setHeader("Access-Control-Allow-Methods", allow);
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    res.setHeader("Cache-Control", "no-store");
+    res.sendStatus(204);
+  });
+
+  app.post("/api/agent", async (req, res) => {
+    try {
+      res.setHeader("Cache-Control", "public, max-age=300");
+      const isWorkflowAuditRequest = req.body?.stage === "workflow-audit-and-iteration";
+      const isResolutionRequest = typeof req.body?.surfaceType === "string"
+        || typeof req.body?.sector === "string"
+        || typeof req.body?.route === "string"
+        || typeof req.body?.goal === "string"
+        || Array.isArray(req.body?.screenshots)
+        || typeof req.body?.context === "object"
+        || typeof req.body?.output === "object"
+        || Array.isArray(req.body?.layoutNeeds)
+        || Array.isArray(req.body?.workspaceModules)
+        || isWorkflowAuditRequest;
+
+      if (isResolutionRequest) {
+        const parsed = agentResolutionRequestSchema.parse(req.body);
+        res.json(await getAgentResolutionResponse(parsed));
+        return;
+      }
+
+      const question = typeof req.body?.question === "string"
+        ? req.body.question
+        : typeof req.body?.scenario === "string"
+          ? req.body.scenario
+          : typeof req.body?.prompt === "string"
+            ? req.body.prompt
+          : undefined;
+      res.json(getAgentQuestionResponse(question ? agentQuestionRequestSchema.parse({
+        question,
+        prompt: typeof req.body?.prompt === "string" ? req.body.prompt : undefined,
+        platform: typeof req.body?.platform === "string" ? req.body.platform : undefined,
+        goal: typeof req.body?.goal === "string" ? req.body.goal : undefined,
+        routeHint: typeof req.body?.routeHint === "string" ? req.body.routeHint : undefined,
+        context: typeof req.body?.context === "string" ? req.body.context : undefined,
+        agentContextSummary: typeof req.body?.agentContextSummary === "string" ? req.body.agentContextSummary : undefined,
+      }) : undefined));
+    } catch (err) {
+      console.error("Adaptive agent bundle error:", err);
+      res.status(500).json({ message: "Failed to build adaptive agent bundle" });
     }
   });
 

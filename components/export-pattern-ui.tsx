@@ -16,7 +16,7 @@ export default function ExportPatternUI() {
         <div>
           <label className="text-xs font-medium text-neutral-500 uppercase tracking-wide mb-2 block">Format</label>
           <div className="flex gap-4">
-            <label className="flex items-center gap-2 text-sm"><input type="radio" name="fmt" checked className="accent-blue-600" /> CSV</label>
+            <label className="flex items-center gap-2 text-sm"><input type="radio" name="fmt" defaultChecked className="accent-blue-600" /> CSV</label>
             <label className="flex items-center gap-2 text-sm"><input type="radio" name="fmt" /> JSON</label>
             <label className="flex items-center gap-2 text-sm"><input type="radio" name="fmt" /> PDF</label>
           </div>
@@ -24,18 +24,18 @@ export default function ExportPatternUI() {
         <div>
           <label className="text-xs font-medium text-neutral-500 uppercase tracking-wide mb-2 block">Date Range</label>
           <div className="flex items-center gap-2">
-            <input type="date" value="2024-01-01" className="border rounded-md px-3 py-1.5 text-sm" />
+            <input type="date" defaultValue="2024-01-01" className="border rounded-md px-3 py-1.5 text-sm" />
             <span className="text-sm text-neutral-400">to</span>
-            <input type="date" value="2024-01-31" className="border rounded-md px-3 py-1.5 text-sm" />
+            <input type="date" defaultValue="2024-01-31" className="border rounded-md px-3 py-1.5 text-sm" />
           </div>
         </div>
         <div>
           <label className="text-xs font-medium text-neutral-500 uppercase tracking-wide mb-2 block">Columns</label>
           <div className="grid grid-cols-2 gap-2">
-            <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked /> Name</label>
-            <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked /> Email</label>
-            <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked /> Status</label>
-            <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked /> Created</label>
+            <label className="flex items-center gap-2 text-sm"><input type="checkbox" defaultChecked /> Name</label>
+            <label className="flex items-center gap-2 text-sm"><input type="checkbox" defaultChecked /> Email</label>
+            <label className="flex items-center gap-2 text-sm"><input type="checkbox" defaultChecked /> Status</label>
+            <label className="flex items-center gap-2 text-sm"><input type="checkbox" defaultChecked /> Created</label>
             <label className="flex items-center gap-2 text-sm"><input type="checkbox" /> Phone</label>
             <label className="flex items-center gap-2 text-sm"><input type="checkbox" /> Address</label>
           </div>

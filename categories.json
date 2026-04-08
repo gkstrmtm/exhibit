@@ -13,31 +13,41 @@
   },
   {
     "name": "Admin",
-    "count": 6,
+    "count": 10,
     "slugs": [
+      "agent-run-log-row",
+      "api-key-panel",
+      "data-source-connection-card",
       "report-detail-page",
       "review-queue-list",
       "role-permissions-editor",
       "system-health-panel",
       "user-admin-profile",
-      "user-management-row"
+      "user-management-row",
+      "webhook-config-row"
     ]
   },
   {
     "name": "App Shells",
-    "count": 15,
+    "count": 21,
     "slugs": [
       "analytics-dashboard-shell",
+      "artifact-collaboration-shell",
+      "assistant-handoff-review-shell",
+      "assistant-triage-queue-shell",
       "chat-messaging-shell",
       "command-palette-shell",
+      "context-aware-assistant-console",
       "dark-vscode-shell",
       "docs-writing-shell",
       "ecommerce-storefront-shell",
+      "general-assistant-chat-workspace",
       "ide-three-panel-shell",
       "kanban-board-shell",
       "marketing-hero-shell",
       "master-detail-shell",
       "mobile-bottom-tab-shell",
+      "model-comparison-workspace",
       "settings-preferences-shell",
       "sidebar-app-shell",
       "split-nav-shell",
@@ -48,12 +58,12 @@
     "name": "Authentication",
     "count": 6,
     "slugs": [
-      "two-factor-setup",
       "magic-link-flow",
       "magic-link-sent",
       "oauth-button-group",
       "sign-in-form-clean",
-      "two-factor-input"
+      "two-factor-input",
+      "two-factor-setup"
     ]
   },
   {
@@ -154,9 +164,9 @@
     "name": "Data Display",
     "count": 6,
     "slugs": [
+      "minimal-avatar-stack",
       "minimal-stats-grid",
       "modern-table",
-      "minimal-avatar-stack",
       "progress-bar-list",
       "stats-grid",
       "vertical-timeline"
@@ -164,13 +174,14 @@
   },
   {
     "name": "Empty States",
-    "count": 6,
+    "count": 7,
     "slugs": [
+      "assistant-workspace-empty",
       "empty-state-activity",
       "empty-state-billing",
+      "empty-state-first-run",
       "empty-state-notifications",
       "empty-state-search",
-      "empty-state-first-run",
       "empty-state-team"
     ]
   },
@@ -205,8 +216,8 @@
     "slugs": [
       "achievement-badge-card",
       "challenge-submission-card",
-      "leaderboard-weekly",
       "leaderboard-rows",
+      "leaderboard-weekly",
       "profile-credibility-badges",
       "xp-level-bar"
     ]
@@ -237,10 +248,11 @@
   },
   {
     "name": "Loading",
-    "count": 6,
+    "count": 7,
     "slugs": [
-      "loading-progress-bar",
+      "assistant-workspace-loading",
       "loading-dots-spinner",
+      "loading-progress-bar",
       "skeleton-card",
       "skeleton-loading-cards",
       "skeleton-profile-header",
@@ -277,9 +289,9 @@
     "slugs": [
       "connect-tools-screen",
       "feature-highlight-tooltip",
-      "trial-banner",
       "multi-step-wizard",
       "stepper-onboarding-flow",
+      "trial-banner",
       "welcome-checklist"
     ]
   },
@@ -287,8 +299,8 @@
     "name": "Pricing",
     "count": 6,
     "slugs": [
-      "feature-comparison-table",
       "billing-toggle",
+      "feature-comparison-table",
       "pricing-comparison-grid",
       "three-tier-pricing",
       "usage-based-pricing",
@@ -310,12 +322,12 @@
     "name": "Tables",
     "count": 6,
     "slugs": [
-      "table-checkbox-select",
       "data-table-with-actions",
+      "table-checkbox-select",
       "table-pagination",
+      "table-row-actions",
       "table-sortable-headers",
-      "table-with-status-badges",
-      "table-row-actions"
+      "table-with-status-badges"
     ]
   }
 ]

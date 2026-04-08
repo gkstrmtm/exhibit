@@ -1,0 +1,236 @@
+{
+  "_meta": {
+    "name": "UI Coherence Auditor Spec",
+    "version": "0.1.0",
+    "purpose": "Machine-readable audit model for detecting interface coherence failure and signal-to-noise collapse across product surfaces."
+  },
+  "umbrellaProblem": {
+    "primaryName": "Interface Coherence Failure",
+    "symptomName": "Signal-to-Noise Collapse",
+    "definition": "A product-quality failure where a screen exposes more competing structure, controls, labels, and persistent text than the task can justify, while failing to compose them into one legible product surface."
+  },
+  "dimensions": [
+    {
+      "id": "composition-integrity",
+      "label": "Composition Integrity",
+      "weight": 20,
+      "definition": "Whether headers, controls, labels, and actions read as one composed unit rather than bolted-together fragments.",
+      "signals": [
+        "duplicate scope controls",
+        "unclear ownership between label and value",
+        "flat action hierarchy",
+        "overloaded header region"
+      ],
+      "detectFrom": ["dom", "layout", "copy", "interaction-map"],
+      "exampleRules": [
+        "flag when more than one header control targets the same scope dimension",
+        "flag when more than one primary-looking action appears in the same control band"
+      ]
+    },
+    {
+      "id": "hierarchy-clarity",
+      "label": "Hierarchy Clarity",
+      "weight": 15,
+      "definition": "Whether the screen clearly communicates primary task, secondary context, and tertiary metadata.",
+      "signals": [
+        "multiple primary-looking regions above the fold",
+        "equal-weight headings",
+        "primary surface visually smaller than surrounding chrome"
+      ],
+      "detectFrom": ["layout", "screenshot", "token-usage"]
+    },
+    {
+      "id": "semantic-economy",
+      "label": "Semantic Economy",
+      "weight": 15,
+      "definition": "Whether the UI avoids duplicate meaning across labels, statuses, helper text, and controls.",
+      "signals": [
+        "adjacent lexical overlap",
+        "duplicate domain nouns in one region",
+        "multiple controls bound to one semantic job",
+        "repeated copy with low informational delta"
+      ],
+      "detectFrom": ["copy", "dom", "interaction-map"]
+    },
+    {
+      "id": "surface-economy",
+      "label": "Surface Economy",
+      "weight": 15,
+      "definition": "Whether visible structure is justified by the task instead of inflated by container, card, and chip bloat.",
+      "signals": [
+        "too many containers above the fold",
+        "too many summary surfaces relative to action objects",
+        "fragmented sections for one job",
+        "too many decorative labels and chips"
+      ],
+      "detectFrom": ["layout", "dom", "screenshot"]
+    },
+    {
+      "id": "interaction-appropriateness",
+      "label": "Interaction Appropriateness",
+      "weight": 15,
+      "definition": "Whether controls reduce work instead of forcing unnecessary manual decisions.",
+      "signals": [
+        "dropdowns with tiny option sets",
+        "filters with low behavioral effect",
+        "controls repeating route or role defaults",
+        "manual steps the system should infer"
+      ],
+      "detectFrom": ["interaction-map", "analytics", "dom"]
+    },
+    {
+      "id": "design-system-conformance",
+      "label": "Design System Conformance",
+      "weight": 10,
+      "definition": "Whether spacing, type, sizing, radius, and component treatments remain consistent with approved system rules.",
+      "signals": [
+        "token drift",
+        "mixed control variants for same role",
+        "inconsistent typography for same semantic level",
+        "broken spacing rhythm"
+      ],
+      "detectFrom": ["token-usage", "dom", "screenshot"]
+    },
+    {
+      "id": "product-language-quality",
+      "label": "Product Language Quality",
+      "weight": 5,
+      "definition": "Whether visible copy sounds productized and task-oriented instead of internal, placeholder-like, or mechanically generated.",
+      "signals": [
+        "internal implementation nouns",
+        "container-based section labels",
+        "persistent low-value copy",
+        "raw system phrasing"
+      ],
+      "detectFrom": ["copy", "context"]
+    },
+    {
+      "id": "scanability-density",
+      "label": "Scanability and Density Discipline",
+      "weight": 5,
+      "definition": "Whether the screen is easy to scan without overload, mixed density, or fragmented attention.",
+      "signals": [
+        "mixed density modes",
+        "too many focal points above the fold",
+        "weak whitespace boundaries",
+        "too many small visual stops"
+      ],
+      "detectFrom": ["layout", "screenshot", "token-usage"]
+    }
+  ],
+  "severityModel": {
+    "levels": [
+      {
+        "id": "critical",
+        "definition": "Blocks shipping. Causes direct task confusion, contradictory meaning, strong product-language leakage, or severe bloat."
+      },
+      {
+        "id": "major",
+        "definition": "Should block merge unless explicitly waived. Meaningfully harms clarity, speed, or trust."
+      },
+      {
+        "id": "moderate",
+        "definition": "Should be fixed in the next pass. Adds real friction but is not immediately blocking alone."
+      },
+      {
+        "id": "minor",
+        "definition": "Visible issue with lower structural impact."
+      }
+    ],
+    "releaseGates": {
+      "pass": { "min": 85, "max": 100 },
+      "review": { "min": 70, "max": 84 },
+      "hold": { "min": 50, "max": 69 },
+      "block": { "min": 0, "max": 49 },
+      "criticalViolationOverridesScore": true
+    }
+  },
+  "ruleCandidates": [
+    {
+      "id": "duplicate-scope-controls",
+      "dimension": "composition-integrity",
+      "severity": "critical",
+      "logic": "Two or more visible controls in the same header region target the same scope or time dimension.",
+      "examples": ["Month + All months", "Status dropdown + status chip group for the same job"]
+    },
+    {
+      "id": "redundant-helper-text",
+      "dimension": "semantic-economy",
+      "severity": "major",
+      "logic": "Helper text overlaps heavily with adjacent label or obvious UI state and adds no decision value."
+    },
+    {
+      "id": "raw-internal-language",
+      "dimension": "product-language-quality",
+      "severity": "major",
+      "logic": "User-facing copy includes internal, implementation, QA, or schema-sounding phrasing."
+    },
+    {
+      "id": "surface-bloat-above-fold",
+      "dimension": "surface-economy",
+      "severity": "major",
+      "logic": "Container, card, chip, or summary count exceeds a defined threshold before the primary task surface begins."
+    },
+    {
+      "id": "token-rhythm-break",
+      "dimension": "design-system-conformance",
+      "severity": "moderate",
+      "logic": "Spacing, sizing, or radius values deviate from approved token scales without exemption."
+    },
+    {
+      "id": "wrong-control-model",
+      "dimension": "interaction-appropriateness",
+      "severity": "major",
+      "logic": "The control pattern adds manual work or choice overhead relative to the task and option count."
+    }
+  ],
+  "recommendedInputs": {
+    "required": [
+      "route or screen id",
+      "dom or component snapshot",
+      "copy inventory",
+      "design-token usage",
+      "interaction model map"
+    ],
+    "preferred": [
+      "rendered screenshot",
+      "surface context: primary actor, task, object",
+      "analytics for usage and control effect"
+    ]
+  },
+  "outputContract": {
+    "topLevel": [
+      "score",
+      "outcome",
+      "dimensions",
+      "violations",
+      "repairPlan",
+      "shipBlockers"
+    ],
+    "violationFields": [
+      "id",
+      "severity",
+      "title",
+      "evidence",
+      "whyItMatters",
+      "recommendation",
+      "confidence"
+    ]
+  },
+  "workflowFit": {
+    "design": [
+      "Figma preflight",
+      "design review preparation"
+    ],
+    "engineering": [
+      "Storybook checks",
+      "pull request audit",
+      "staging route crawl"
+    ],
+    "release": [
+      "quality gate",
+      "regression tracking",
+      "waiver workflow"
+    ]
+  }
+}

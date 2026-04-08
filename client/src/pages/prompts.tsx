@@ -1,5 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import Layout from "@/components/layout";
+import PromptStudio from "@/components/prompt-studio";
+import { DEFAULT_HOUSE_CRITIQUE, HOUSE_CRITIQUE_STORAGE_KEY, buildLibraryPrompt } from "@/lib/prompt-knowledge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 
 type Severity = "critical" | "high" | "medium";
@@ -252,11 +255,26 @@ function BadExample({ html, goodHtml, hotspots, onPinClick }: { html: string; go
 }
 
 // ─── Prompt Panel ─────────────────────────────────────────────────────────────
-function PromptPanel({ prompt, id, pulseKey }: { prompt: string; id: string; pulseKey?: number }) {
+function PromptPanel({ title, prompt, id, pulseKey }: { title: string; prompt: string; id: string; pulseKey?: number }) {
   const [copied, setCopied] = useState(false);
   const [glowing, setGlowing] = useState(false);
+  const [houseCritique, setHouseCritique] = useState(DEFAULT_HOUSE_CRITIQUE);
+
+  useEffect(() => {
+    try {
+      const storedProfile = window.localStorage.getItem(HOUSE_CRITIQUE_STORAGE_KEY);
+      if (storedProfile?.trim()) {
+        setHouseCritique(storedProfile);
+      }
+    } catch {
+      // Ignore storage access failures.
+    }
+  }, []);
+
+  const intelligentPrompt = buildLibraryPrompt(title, prompt, houseCritique);
+
   const copy = () => {
-    navigator.clipboard.writeText(prompt);
+    navigator.clipboard.writeText(intelligentPrompt);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -270,7 +288,7 @@ function PromptPanel({ prompt, id, pulseKey }: { prompt: string; id: string; pul
     <div className="w-full lg:flex-1" style={{ display: "flex", flexDirection: "column", gap: 6 }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div style={{ fontSize: 9, fontFamily: "monospace", color: glowing ? "#2563eb" : "#525252", textTransform: "uppercase", letterSpacing: "0.08em", transition: "color 200ms ease" }}>
-          {glowing ? "→ use this prompt" : "The fix — paste into any AI assistant"}
+          {glowing ? "→ use this prompt" : "Enhanced fix prompt — includes foundations + house critique"}
         </div>
         <button
           onClick={copy}
@@ -313,7 +331,7 @@ function PromptPanel({ prompt, id, pulseKey }: { prompt: string; id: string; pul
           transition: "border-color 200ms ease, box-shadow 200ms ease",
         }}
       >
-        {prompt}
+        {intelligentPrompt}
       </pre>
     </div>
   );
@@ -1058,7 +1076,7 @@ function PromptCard({ p }: { p: Prompt }) {
           <div className="border-t border-border pt-4">
             <div className="flex flex-col lg:flex-row gap-5">
               <BadExample html={p.badExample} goodHtml={p.goodExample} hotspots={p.hotspots} onPinClick={() => setPulseKey(k => k + 1)} />
-              <PromptPanel prompt={p.prompt} id={p.id} pulseKey={pulseKey} />
+              <PromptPanel title={p.title} prompt={p.prompt} id={p.id} pulseKey={pulseKey} />
             </div>
           </div>
         </div>
@@ -1079,27 +1097,44 @@ export default function PromptsPage() {
         }
       `}</style>
 
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">Prompt Library</h1>
-        <p className="text-sm text-muted-foreground mt-1.5 max-w-2xl">
-          8 broad umbrella prompts that each cover an entire category of UI anti-patterns. Expand any card to see the broken UI live — hover the glowing pins to see what's wrong and why. Copy the full fix prompt and paste it directly into Cursor, Claude, Copilot, or any AI assistant.
-        </p>
-      </div>
+      <Tabs defaultValue="create" className="space-y-4">
+        <div className="rounded-[28px] border border-border bg-card px-5 py-4 shadow-sm md:px-6">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">Prompt Builder</h1>
+              <p className="mt-1 text-sm text-muted-foreground">Build from screenshots or HTML, then lock the brief.</p>
+            </div>
 
-      {/* Cards */}
-      <div className="space-y-2.5">
-        {PROMPTS.map(p => (
-          <PromptCard key={p.id} p={p} />
-        ))}
-      </div>
-
-      {/* Footer */}
-      <div className="mt-12 pt-8 border-t border-border text-center">
-        <div className="text-sm text-muted-foreground max-w-lg mx-auto">
-          Principles from Nielsen Norman Group, WCAG 2.1, Material Design 3, Apple HIG, and Refactoring UI.
+            <TabsList className="grid w-full max-w-[320px] grid-cols-2">
+              <TabsTrigger value="create">Create Prompt</TabsTrigger>
+              <TabsTrigger value="library">Prompt Library</TabsTrigger>
+            </TabsList>
+          </div>
         </div>
-      </div>
+
+        <TabsContent value="create" className="mt-0">
+          <PromptStudio />
+        </TabsContent>
+
+        <TabsContent value="library" className="mt-0 space-y-8">
+          <div>
+            <h2 className="font-display text-xl font-semibold tracking-tight text-foreground">Prompt Library</h2>
+            <p className="mt-1 text-sm text-muted-foreground">Reusable repair prompts with the same foundation rules and local house critique.</p>
+          </div>
+
+          <div className="space-y-2.5">
+            {PROMPTS.map(p => (
+              <PromptCard key={p.id} p={p} />
+            ))}
+          </div>
+
+          <div className="border-t border-border pt-8 text-center">
+            <div className="mx-auto max-w-lg text-sm text-muted-foreground">
+              Principles from Nielsen Norman Group, WCAG 2.1, Material Design 3, Apple HIG, and Refactoring UI.
+            </div>
+          </div>
+        </TabsContent>
+      </Tabs>
     </Layout>
   );
 }

@@ -5,10 +5,13 @@
   "license": "MIT",
   "scripts": {
     "dev:client": "vite dev --port 5000",
-    "dev": "NODE_ENV=development tsx server/index.ts",
+    "dev": "tsx server/index.ts",
     "build": "tsx script/build.ts",
-    "start": "NODE_ENV=production node dist/index.cjs",
+    "start": "NODE_ENV=production node dist-server/index.cjs",
     "check": "tsc",
+    "verify:agent": "tsx scripts/verify-agent-pipeline.ts",
+    "verify:agent:remote": "tsx scripts/verify-agent-live.ts",
+    "catalog:sync": "tsx scripts/sync-local-catalog.ts",
     "db:push": "drizzle-kit push"
   },
   "dependencies": {

@@ -1,27 +1,39 @@
+import { Suspense, lazy } from "react";
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/lib/auth";
-import NotFound from "@/pages/not-found";
-import Landing from "@/pages/landing";
-import Home from "@/pages/home";
-import AuthPage from "@/pages/auth";
-import ExhibitDetail from "@/pages/exhibit-detail";
-import ProfilePage from "@/pages/profile";
-import ChallengesPage from "@/pages/challenges";
-import MarketplacePage from "@/pages/marketplace";
-import ScoutPage from "@/pages/scout";
-import AdminPage from "@/pages/admin";
-import OnboardingPage from "@/pages/onboarding";
-import ProfileSettingsPage from "@/pages/profile-settings";
-import AiDocsPage from "@/pages/ai-docs";
+
+const NotFound = lazy(() => import("@/pages/not-found"));
+const Landing = lazy(() => import("@/pages/landing"));
+const Home = lazy(() => import("@/pages/home"));
+const AuthPage = lazy(() => import("@/pages/auth"));
+const ExhibitDetail = lazy(() => import("@/pages/exhibit-detail"));
+const ProfilePage = lazy(() => import("@/pages/profile"));
+const ChallengesPage = lazy(() => import("@/pages/challenges"));
+const MarketplacePage = lazy(() => import("@/pages/marketplace"));
+const ScoutPage = lazy(() => import("@/pages/scout"));
+const AdminPage = lazy(() => import("@/pages/admin"));
+const OnboardingPage = lazy(() => import("@/pages/onboarding"));
+const ProfileSettingsPage = lazy(() => import("@/pages/profile-settings"));
+const AiDocsPage = lazy(() => import("@/pages/ai-docs"));
+const PromptsPage = lazy(() => import("@/pages/prompts"));
+
+function RouteFallback() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-background px-6">
+      <div className="text-sm font-medium text-muted-foreground">Loading page...</div>
+    </div>
+  );
+}
 
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Landing} />
+      <Route path="/welcome" component={Landing} />
+      <Route path="/" component={Home} />
       <Route path="/browse" component={Home} />
       <Route path="/category/:category" component={Home} />
       <Route path="/auth" component={AuthPage} />
@@ -34,6 +46,7 @@ function Router() {
       <Route path="/onboarding" component={OnboardingPage} />
       <Route path="/settings/profile" component={ProfileSettingsPage} />
       <Route path="/for-ai" component={AiDocsPage} />
+      <Route path="/prompts" component={PromptsPage} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -45,7 +58,9 @@ function App() {
       <AuthProvider>
         <TooltipProvider>
           <Toaster />
-          <Router />
+          <Suspense fallback={<RouteFallback />}>
+            <Router />
+          </Suspense>
         </TooltipProvider>
       </AuthProvider>
     </QueryClientProvider>

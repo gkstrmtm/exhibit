@@ -1,5 +1,6 @@
 import { Link } from "wouter";
 import { useAuth } from "@/lib/auth";
+import { BrandWordmark } from "@/components/brand-wordmark";
 import { ArrowRight, Code2, Eye, Users, Trophy, ShoppingBag, Sparkles } from "lucide-react";
 
 export default function Landing() {
@@ -12,8 +13,7 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
           <Link href="/">
             <div className="font-display font-bold text-lg tracking-tight flex items-center gap-2.5 cursor-pointer">
-              <img src="/images/brand/exhibit-logo.png" alt="EXHIBIT" className="w-6 h-6 object-contain" />
-              EXHIBIT
+              <BrandWordmark size="sm" />
             </div>
           </Link>
           <nav className="hidden md:flex items-center gap-6 text-sm text-muted-foreground">
@@ -170,8 +170,7 @@ export default function Landing() {
       <footer className="border-t border-border py-8 px-6">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="font-display font-bold text-sm tracking-tight flex items-center gap-2">
-            <img src="/images/brand/exhibit-logo.png" alt="EXHIBIT" className="w-5 h-5 object-contain" />
-            EXHIBIT
+            <BrandWordmark size="xs" />
           </div>
           <div className="text-xs text-muted-foreground">
             Built for creators who ship.

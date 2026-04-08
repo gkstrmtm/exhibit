@@ -44,10 +44,10 @@ export default function TeamMembersList() {
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <select className="border border-gray-300 rounded px-2 py-1 text-sm">
-                      <option selected={m.role === "Owner"}>Owner</option>
-                      <option selected={m.role === "Admin"}>Admin</option>
-                      <option selected={m.role === "Member"}>Member</option>
+                    <select defaultValue={m.role} className="border border-gray-300 rounded px-2 py-1 text-sm">
+                      <option value="Owner">Owner</option>
+                      <option value="Admin">Admin</option>
+                      <option value="Member">Member</option>
                     </select>
                   </td>
                   <td className="px-6 py-4">

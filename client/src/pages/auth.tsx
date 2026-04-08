@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/lib/auth";
+import { BrandWordmark } from "@/components/brand-wordmark";
 import { Link } from "wouter";
 import { Loader2, Eye, EyeOff } from "lucide-react";
 
@@ -48,8 +49,7 @@ export default function AuthPage() {
         <div className="w-full max-w-sm">
           <Link href="/">
             <div className="font-display font-bold text-xl tracking-tight flex items-center gap-2.5 mb-8 cursor-pointer">
-              <img src="/images/brand/exhibit-logo.png" alt="EXHIBIT" className="w-7 h-7 object-contain" />
-              EXHIBIT
+              <BrandWordmark size="md" />
             </div>
           </Link>
 

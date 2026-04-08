@@ -37,8 +37,56 @@ export default defineConfig({
   },
   root: path.resolve(import.meta.dirname, "client"),
   build: {
-    outDir: path.resolve(import.meta.dirname, "dist/public"),
+    outDir: path.resolve(import.meta.dirname, "dist"),
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes("node_modules")) {
+            return;
+          }
+
+          if (id.includes("recharts")) {
+            return "vendor-charts";
+          }
+
+          if (
+            id.includes("react-day-picker") ||
+            id.includes("date-fns")
+          ) {
+            return "vendor-dates";
+          }
+
+          if (
+            id.includes("framer-motion") ||
+            id.includes("embla-carousel-react")
+          ) {
+            return "vendor-motion";
+          }
+
+          if (id.includes("@radix-ui")) {
+            return "vendor-radix";
+          }
+
+          if (id.includes("@tanstack/react-query")) {
+            return "vendor-query";
+          }
+
+          if (id.includes("lucide-react")) {
+            return "vendor-icons";
+          }
+
+          if (
+            id.includes("react") ||
+            id.includes("react-dom") ||
+            id.includes("scheduler") ||
+            id.includes("wouter")
+          ) {
+            return "vendor-react";
+          }
+        },
+      },
+    },
   },
   server: {
     host: "0.0.0.0",

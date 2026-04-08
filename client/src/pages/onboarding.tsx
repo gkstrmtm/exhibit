@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useLocation } from "wouter";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/lib/auth";
+import { BrandWordmark } from "@/components/brand-wordmark";
 import { ArrowLeft, ArrowRight, Check, Loader2, Sparkles, Code2, Palette, Layers } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -247,8 +248,7 @@ function CreatorOnboarding() {
       {/* Header */}
       <div className="flex items-center justify-between p-6">
         <div className="font-display font-bold text-lg tracking-tight flex items-center gap-2.5">
-          <img src="/images/brand/exhibit-logo.png" alt="EXHIBIT" className="w-6 h-6 object-contain" />
-          EXHIBIT
+          <BrandWordmark size="sm" />
         </div>
         <button onClick={() => setLocation("/browse")} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
           Skip for now
@@ -447,8 +447,7 @@ function FounderOnboarding() {
 
       <div className="flex items-center justify-between p-6">
         <div className="font-display font-bold text-lg tracking-tight flex items-center gap-2.5">
-          <img src="/images/brand/exhibit-logo.png" alt="EXHIBIT" className="w-6 h-6 object-contain" />
-          EXHIBIT
+          <BrandWordmark size="sm" />
         </div>
         <button onClick={() => setLocation("/scout")} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
           Skip for now
