@@ -4,6 +4,11 @@
 
   ## For AI Assistants (Cursor, VS Code Copilot, etc.)
 
+  For funnel-building and blueprint-first agent context, start with:
+
+  - [FUNNEL_INTELLIGENCE_PLAYBOOK.md](FUNNEL_INTELLIGENCE_PLAYBOOK.md)
+  - [EXHIBIT_AGENT_HANDOFF.md](EXHIBIT_AGENT_HANDOFF.md)
+
   Use the structured agent endpoint first when the client can make real HTTP calls:
 
   ```

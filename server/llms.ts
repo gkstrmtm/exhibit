@@ -58,6 +58,9 @@ Category list with slugs:
 ### Get all components in a category
 GET /api/llm/components?category=<CategoryName>
 
+### Narrow a category by tag
+GET /api/llm/components?category=Funnels&tag=vsl
+
 ### Search for components by keyword
 GET /api/llm/components?q=<search term>
 

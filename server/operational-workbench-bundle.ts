@@ -9,6 +9,11 @@ import {
   mergeAiReasoningIntoResponse,
 } from "./agent-resolution-postprocessing.js";
 import { aiImageSchema, runAgentScreenshotGrounding, runUiAnalysis } from "./ai.js";
+import {
+  type BoostTable,
+  bulkRecordFromVerifyResponse,
+  getRouteBoostsSafe,
+} from "./feedback-intelligence.js";
 
 type ComponentEntry = {
   slug: string;
@@ -61,6 +66,7 @@ type DesignProfile = {
   label: string;
   summary: string;
   layoutMood: string;
+  layoutFamily?: string;
   spacing: {
     density: "compact" | "default" | "comfortable";
     baseGrid: string;
@@ -145,7 +151,7 @@ export const agentQuestionRequestSchema = z.object({
 
 export type AgentQuestionRequest = z.infer<typeof agentQuestionRequestSchema>;
 
-const agentResolutionStageSchema = z.enum(["workflow-audit-and-iteration", "elevation-audit", "funnel-strategy"]);
+const agentResolutionStageSchema = z.enum(["workflow-audit-and-iteration", "elevation-audit", "funnel-strategy", "iteration-verify"]);
 
 const agentResolutionContextSchema = z.object({
   summary: z.string().min(4).max(3200).optional(),
@@ -219,6 +225,16 @@ export const agentResolutionRequestSchema = z.object({
   }).optional(),
   context: agentResolutionContextSchema,
   funnelContext: funnelContextSchema,
+  priorAudit: z.object({
+    whatToFixInThisIteration: z.array(z.string().min(2).max(400)).max(20).default([]),
+    whatToDeferUntilLater: z.array(z.string().min(2).max(400)).max(20).default([]),
+    scopeBoundary: z.array(z.string().min(2).max(400)).max(16).default([]),
+    buildMandate: z.string().min(4).max(600).optional(),
+  }).optional(),
+  shipped: z.object({
+    changes: z.array(z.string().min(2).max(400)).max(30).default([]),
+    description: z.string().min(4).max(2000).optional(),
+  }).optional(),
   platform: z.enum(["web", "desktop-web", "mobile-web", "electron", "unknown"]).optional(),
 }).refine(
   (value) => Boolean(value.question || value.prompt || value.surfaceType || value.sector || value.route || value.goal || value.stage),
@@ -712,7 +728,7 @@ const agentQuestionArchetypes: AgentQuestionArchetype[] = [
         route: "assistant-workspace",
         designProfileId: "product-utility",
         priorityCategories: ["App Shells", "Layout", "Inputs", "Navigation", "Data Display"],
-        componentHints: ["general-assistant-chat-workspace", "artifact-collaboration-shell", "context-aware-assistant-console", "command-palette"],
+        componentHints: ["general-assistant-chat-workspace", "command-palette"],
         patternHints: [],
         notes: ["Keep the conversation lane simple and move durable work into a draft or artifact region.", "Treat prompt context, complaints, and routed resources as first-class inputs rather than hidden metadata."],
         avoid: ["generic messaging-only shells", "operational queue grammar unless the assistant is triaging workflow records"],
@@ -956,6 +972,271 @@ const iconLibraryCatalog = {
 } as const;
 
 const designProfiles: Record<string, DesignProfile> = {
+  "minimal-conversion": {
+    id: "minimal-conversion",
+    label: "Minimal Conversion",
+    summary: "A clarity-first conversion posture with one dominant message, one CTA, and almost no decorative interference.",
+    layoutFamily: "minimal-conversion",
+    layoutMood: "Plain, left-aligned, and brutally clear.",
+    spacing: {
+      density: "comfortable",
+      baseGrid: "4px",
+      sectionGap: "24-40px",
+      cardPadding: "0-16px",
+      controlGap: "12px",
+      rules: [
+        "Prefer open space over extra modules.",
+        "Use one dominant CTA lane and avoid side-quest content.",
+        "Treat decoration as suspect unless it improves clarity.",
+      ],
+    },
+    typography: {
+      display: "Space Grotesk for the single dominant headline only.",
+      body: "Inter for all supporting copy and CTA text.",
+      mono: "JetBrains Mono only for compact factual proof if needed.",
+      rules: [
+        "Keep one obvious hierarchy jump between headline and supporting body.",
+        "Do not introduce secondary display styles.",
+        "Left-align almost everything unless a proof datum genuinely benefits from contrast.",
+      ],
+    },
+    iconSystem: {
+      primaryLibrary: "Lucide",
+      rationale: "Minimal conversion pages should not lean on icons, but Lucide is the least intrusive fallback when one is needed.",
+      defaultSize: "14-16px",
+      strokeStyle: "2px neutral line icons",
+      usageRules: [
+        "Avoid icon-led sections.",
+        "Use icons only when they clarify proof or a single CTA.",
+      ],
+      alternatives: ["Heroicons for a single compact CTA cue"],
+      externalLibraryHandling: [
+        "Normalize decorative or expressive icon sets away from this family.",
+        "If the surface works without icons, keep it icon-free.",
+      ],
+    },
+    colorAndElevation: {
+      posture: "Mostly plain surfaces with one high-contrast CTA treatment.",
+      elevation: "Flat or nearly flat. Borders beat shadows.",
+      rules: [
+        "Do not drift into gradient soup.",
+        "One contrast moment is enough.",
+      ],
+    },
+    motion: {
+      posture: "Near-static.",
+      rules: ["Do not animate decorative elements.", "If motion exists, it should reinforce CTA clarity only."],
+    },
+    grouping: {
+      primarySurface: "Single left-aligned message block with one CTA.",
+      supportingSurfaces: ["short proof strip", "one subordinate note"],
+      avoid: ["multi-panel splits", "feature grids", "gradient-heavy hero shells"],
+    },
+  },
+  "authority-consulting": {
+    id: "authority-consulting",
+    label: "Authority / Consulting",
+    summary: "A credibility-led posture with a strong headline, dark-light panel contrast, and structured proof blocks for premium services.",
+    layoutFamily: "authority-consulting",
+    layoutMood: "Composed, executive, and credibility-first.",
+    spacing: {
+      density: "default",
+      baseGrid: "4px",
+      sectionGap: "24-40px",
+      cardPadding: "20-24px",
+      controlGap: "12-16px",
+      rules: [
+        "Use panel contrast to create structure, not drama.",
+        "Keep proof blocks disciplined and modular.",
+        "Do not let the CTA behave louder than the authority cues supporting it.",
+      ],
+    },
+    typography: {
+      display: "Space Grotesk for strong but restrained headlines.",
+      body: "Inter for consulting copy, proof labels, and CTA support text.",
+      mono: "JetBrains Mono only for structured metrics or named evidence.",
+      rules: [
+        "Keep typography controlled and executive, not playful.",
+        "Use contrast panels and proof blocks before adding decorative typographic tricks.",
+      ],
+    },
+    iconSystem: {
+      primaryLibrary: "Lucide",
+      rationale: "Lucide supports proof blocks and restrained authority surfaces without pulling them into startup-marketecture aesthetics.",
+      defaultSize: "14-16px",
+      strokeStyle: "2px neutral line icons",
+      usageRules: ["Icons support proof and scheduling cues only.", "Avoid ornamental icon collections."],
+      alternatives: ["Tabler for structured business glyph coverage"],
+      externalLibraryHandling: ["Preserve an established brand icon family only if it stays restrained.", "Normalize loud icon usage to Lucide."],
+    },
+    colorAndElevation: {
+      posture: "One dark-light contrast pair with restrained accent use.",
+      elevation: "Moderate depth for the proof or booking rail, otherwise border-first.",
+      rules: ["Do not use atmospheric gradients as a substitute for authority.", "Structured proof should feel deliberate, not crowded."],
+    },
+    motion: {
+      posture: "Minimal and composed.",
+      rules: ["Use motion to reveal proof or booking context, not to dramatize the page."],
+    },
+    grouping: {
+      primarySurface: "Headline and contrast-panel authority block.",
+      supportingSurfaces: ["proof grid", "booking or contact rail", "fit summary"],
+      avoid: ["noisy feature mosaics", "high-chrome SaaS sections"],
+    },
+  },
+  "high-ticket-offer": {
+    id: "high-ticket-offer",
+    label: "High-Ticket Offer",
+    summary: "A spacious, slower conversion posture for premium offers that need strong hierarchy and fewer, more deliberate sections.",
+    layoutFamily: "high-ticket-offer",
+    layoutMood: "Measured, premium, and sequence-driven.",
+    spacing: {
+      density: "comfortable",
+      baseGrid: "4px",
+      sectionGap: "32-56px",
+      cardPadding: "24-32px",
+      controlGap: "12-16px",
+      rules: [
+        "Use whitespace to slow the reader down on purpose.",
+        "Reduce section count before adding new blocks.",
+        "Proof should feel selected, not piled on.",
+      ],
+    },
+    typography: {
+      display: "Space Grotesk for commanding hierarchy and premium cadence.",
+      body: "Inter for supporting narrative and action copy.",
+      mono: "JetBrains Mono only for sparse metrics and schedule details.",
+      rules: [
+        "Push hierarchy harder before adding more sections.",
+        "Let the headline, subhead, and CTA carry the page's pacing.",
+      ],
+    },
+    iconSystem: {
+      primaryLibrary: "Lucide",
+      rationale: "High-ticket pages need restraint; Lucide stays out of the way while still supporting proof and timing cues.",
+      defaultSize: "14-16px",
+      strokeStyle: "2px neutral line icons",
+      usageRules: ["Use icons sparingly around proof, schedule, and trust notes.", "Avoid icon-heavy feature treatment."],
+      alternatives: ["Heroicons for a cleaner scheduling rail if the page is product-adjacent"],
+      externalLibraryHandling: ["Do not let expressive iconography cheapen the offer posture."],
+    },
+    colorAndElevation: {
+      posture: "Premium contrast with controlled warmth or contrast, never muddy indecision.",
+      elevation: "Selective depth around media, booking, or proof anchors.",
+      rules: ["Whitespace should carry premium feel before visual effects.", "Avoid dense stacks of same-looking cards."],
+    },
+    motion: {
+      posture: "Slow and intentional.",
+      rules: ["Use only a few section-level reveals.", "The surface should feel settled, not twitchy."],
+    },
+    grouping: {
+      primarySurface: "Hero and one supporting persuasion lane.",
+      supportingSurfaces: ["selected proof", "booking rail", "fit or readiness cue"],
+      avoid: ["direct-response spam rhythm", "compact utility density"],
+    },
+  },
+  "direct-response": {
+    id: "direct-response",
+    label: "Direct Response",
+    summary: "A tighter, more aggressive conversion posture with compressed spacing, repeated CTA presence, and active proof-to-action pacing.",
+    layoutFamily: "direct-response",
+    layoutMood: "Urgent, compressed, and action-forward.",
+    spacing: {
+      density: "compact",
+      baseGrid: "4px",
+      sectionGap: "16-28px",
+      cardPadding: "16-20px",
+      controlGap: "8-12px",
+      rules: [
+        "Tighten rhythm to keep momentum high.",
+        "Repeat the CTA where the structure earns another ask.",
+        "Do not waste space on decorative atmosphere.",
+      ],
+    },
+    typography: {
+      display: "Space Grotesk for emphatic but legible headline stacks.",
+      body: "Inter for punchy supporting copy and CTA repetition.",
+      mono: "JetBrains Mono only for offer mechanics or hard proof points.",
+      rules: [
+        "Keep hierarchy forceful and obvious.",
+        "Do not soften the flow with slow editorial pacing.",
+      ],
+    },
+    iconSystem: {
+      primaryLibrary: "Lucide",
+      rationale: "Lucide keeps response-first pages clear without turning urgency into cheap decoration.",
+      defaultSize: "14-16px",
+      strokeStyle: "2px neutral line icons",
+      usageRules: ["Use icons to reinforce urgency, proof, or process steps only.", "Avoid ornamental illustration."],
+      alternatives: ["Heroicons for compact CTA arrows and list cues"],
+      externalLibraryHandling: ["Normalize decorative icon language away from this family."],
+    },
+    colorAndElevation: {
+      posture: "High contrast with clear CTA emphasis and active proof cues.",
+      elevation: "Use contrast and repetition more than shadow depth.",
+      rules: ["Keep the page feeling aggressive, not chaotic.", "Do not let every block fight for equal emphasis."],
+    },
+    motion: {
+      posture: "Fast and minimal.",
+      rules: ["No ornamental stagger systems.", "Use motion only when it sharpens conversion flow."],
+    },
+    grouping: {
+      primarySurface: "Offer stack with repeated CTA anchors.",
+      supportingSurfaces: ["proof bars", "urgency blocks", "response-oriented FAQ or objection rail"],
+      avoid: ["magazine pacing", "spacious luxury whitespace"],
+    },
+  },
+  "editorial-premium": {
+    id: "editorial-premium",
+    label: "Editorial / Premium",
+    summary: "A magazine-like premium posture with Fraunces headlines, generous spacing, and low UI chrome.",
+    layoutFamily: "editorial-premium",
+    layoutMood: "Magazine-like, typographic, and low-chrome.",
+    spacing: {
+      density: "comfortable",
+      baseGrid: "4px",
+      sectionGap: "32-64px",
+      cardPadding: "20-28px",
+      controlGap: "12-16px",
+      rules: [
+        "Use long reading rhythm and fewer interface interruptions.",
+        "Strip chrome before adding premium styling.",
+        "Let composition and typography carry atmosphere.",
+      ],
+    },
+    typography: {
+      display: "Fraunces for major headlines and section anchors; never for dense UI labels.",
+      body: "Inter for reading text, utility controls, and metadata.",
+      mono: "JetBrains Mono only for sparse factual proof or technical callouts.",
+      rules: [
+        "Serif belongs only in headline roles here.",
+        "The page should feel like a magazine, not a dashboard with better fonts.",
+      ],
+    },
+    iconSystem: {
+      primaryLibrary: "Lucide",
+      rationale: "Even premium editorial surfaces benefit from a neutral utility icon baseline so typography stays dominant.",
+      defaultSize: "14-16px",
+      strokeStyle: "1.75-2px neutral line icons",
+      usageRules: ["Use icons only in utility rails, not as editorial decoration.", "Typography should do more work than iconography."],
+      alternatives: ["Heroicons for quiet utility cues"],
+      externalLibraryHandling: ["Do not let decorative icon sets overpower the editorial system."],
+    },
+    colorAndElevation: {
+      posture: "Warm or premium neutrals with very restrained interface chrome.",
+      elevation: "Mostly flat with selective paper-like layering.",
+      rules: ["Avoid SaaS gradients and glossy startup effects.", "One or two material contrasts are enough."],
+    },
+    motion: {
+      posture: "Gentle section-level movement only.",
+      rules: ["Motion should feel cinematic and sparse, not app-like.", "No micro-motion spam."],
+    },
+    grouping: {
+      primarySurface: "Reading column or editorial hero with premium proof placement.",
+      supportingSurfaces: ["article-like proof section", "quiet CTA rail", "brand-forward transition bands"],
+      avoid: ["SaaS card soup", "tight direct-response cadence", "random font switching"],
+    },
+  },
   "operational-compact": {
     id: "operational-compact",
     label: "Operational Compact",
@@ -1426,22 +1707,28 @@ const slugOverrides: Record<string, Partial<{
     dataDensityRole: "assistant-thread-layout",
     relevanceDelta: 13,
   },
-  "artifact-collaboration-shell": {
-    bestFor: ["artifact-first assistant flows", "draft review", "conversation plus persistent work product"],
-    actionHierarchyRole: "artifact-workspace",
-    dataDensityRole: "assistant-artifact-pane",
-    relevanceDelta: 14,
-  },
-  "context-aware-assistant-console": {
-    bestFor: ["prompt complaint triage", "context-preserving assistant routing", "resource recommendation control towers"],
-    actionHierarchyRole: "context-intake-shell",
-    dataDensityRole: "prompt-brief-console",
-    relevanceDelta: 12,
-  },
   "modern-table": {
     bestFor: ["transaction tables", "review queues", "bulk selection lists", "finance operations"],
     dataDensityRole: "primary-decision-grid",
     relevanceDelta: 10,
+  },
+  "custom-select-single": {
+    bestFor: ["status fields", "compliance pickers", "any single-value dropdown replacement", "form fields with 2–12 options"],
+    actionHierarchyRole: "field-select-control",
+    dataDensityRole: "single-value-picker",
+    relevanceDelta: 11,
+  },
+  "select-field-group": {
+    bestFor: ["filter bars", "multi-field forms", "3+ selects in a row", "operational filter toolbars"],
+    actionHierarchyRole: "filter-bar-selects",
+    dataDensityRole: "multi-field-select-row",
+    relevanceDelta: 10,
+  },
+  "inline-table-select": {
+    bestFor: ["per-row status columns", "role columns in tables", "cell-level editable fields"],
+    actionHierarchyRole: "inline-cell-select",
+    dataDensityRole: "table-cell-picker",
+    relevanceDelta: 11,
   },
   "filter-bar-chips": {
     bestFor: ["sticky toolbar filters", "saved views", "queue narrowing", "segment switches"],
@@ -3612,17 +3899,21 @@ function buildIconAndInteractionIntelligence(args: {
         ],
       },
       dropdownStrategy: {
-        principle: "Choose the control type based on option count and frequency, not by defaulting to an unstyled select.",
-        preferInsteadOfRawSelect: [
+        principle: "Never render a native unstyled <select> element. The browser-native dropdown is uncontrollable in appearance, inherits OS chrome that breaks visual consistency, and signals that the interface was assembled rather than designed. Always replace it with a custom-built trigger + floating list.",
+        nativeSelectRule: "NEVER use a bare <select> element. This applies everywhere: forms, filter bars, table cells, settings panels, and inline row controls. There are no exceptions for 'simple' or 'low-frequency' fields.",
+        customSelectComponents: [
+          "custom-select-single — single-value drop-in replacement for any <select>. Use for status fields, compliance fields, and any field with 2–12 options.",
+          "select-field-group — multiple custom selects in a filter bar or form row. Use when 3+ fields appear together.",
+          "inline-table-select — compact custom select rendered inside a table cell. Use for per-row status or role columns.",
+          "combobox-multi-select — searchable multi-value select with chip tokens. Use when multiple options can be active simultaneously.",
+        ],
+        preferForModeSwitch: [
           `${segmentedControl?.title || "Segmented controls"} for 2-5 mutually exclusive modes.`,
           `${chipFilter?.title || "Filter chips"} for visible multi-scope queue narrowing.`,
           `${commandPalette?.title || "Command palette patterns"} for long action lists, search-heavy actions, or keyboard-driven flows.`,
         ],
-        nativeSelectIsStillFineWhen: [
-          "The option set is long, low-frequency, and form-oriented rather than mode-defining.",
-          "The field is part of a settings form, not a core operational switch or task filter.",
-        ],
         avoid: [
+          "Never use a native <select> — not even inside a settings form, not even for sort order, not even temporarily.",
           "Do not use raw selects for the main dashboard mode switch.",
           "Do not hide critical filter state inside collapsed controls when chips or segmented controls can keep it visible.",
           "Do not offer the same mode model in both a dropdown and a visible tab or segmented control.",
@@ -3777,10 +4068,34 @@ function buildFoundationCommunication(args: {
   // Catches vague aesthetic signals users express without design vocabulary.
   // Editorial signals: warmth, print, narrative, humanity.
   // Precision signals: sharpness, tools, speed, no decoration.
-  const editorialSerifSignalCount = [
+  const minimalConversionSignalCount = [
+    /minimal|plain background|no decoration|almost no decoration|high clarity|single cta|one cta|left[- ]aligned|clarity first|simple conversion/.test(signalText),
+    /not.*gradient|no.*gradient|not.*decorative|not.*busy|stripped back|reductive/.test(signalText),
+    /clarity|frictionless|simple offer|clean conversion|minimal funnel/.test(signalText),
+  ].filter(Boolean).length;
+
+  const authorityConsultingSignalCount = [
+    /authority|consulting|advisor|consultant|executive|credibility|credibility-led|trusted|premium service|purestay/.test(signalText),
+    /dark.*light|light.*dark|contrast panel|split panel|right side panel|structured proof|proof blocks/.test(signalText),
+    /restrained typography|serious offer|service business|consulting offer/.test(signalText),
+  ].filter(Boolean).length;
+
+  const highTicketOfferSignalCount = [
+    /high ticket|premium offer|premium service|booked call|strategy call|call booking|slower pacing|more whitespace|fewer sections/.test(signalText),
+    /founder led|authority led|considered purchase|consultative sale|premium transformation/.test(signalText),
+    /stronger typography hierarchy|selective proof|premium funnel/.test(signalText),
+  ].filter(Boolean).length;
+
+  const directResponseSignalCount = [
+    /direct response|aggressive flow|tight spacing|repeat.*cta|repeated cta|more cta|hard offer|response first/.test(signalText),
+    /urgency|objection|buy now|act now|performance campaign|aggressive conversion/.test(signalText),
+    /compressed rhythm|tighter spacing|faster pacing/.test(signalText),
+  ].filter(Boolean).length;
+
+  const editorialPremiumSignalCount = [
     /warm|human|editorial|print|magazine|cozy|organic|narrative|literary|inviting|approachable|brand forward|premium brand|artisan|craft|storytell|reading|feel.*person|person.*feel/.test(signalText),
     /serif|typograph|type.*driv|type.*led|font.*important|font.*matter/.test(signalText),
-    /substack|stripe.*old|NYT|new york times|medium|loom.*old|notion.*brand/.test(signalText),
+    /substack|stripe.*old|NYT|new york times|medium|loom.*old|notion.*brand|fraunces/.test(signalText),
     /not.*generic|not.*saas|not.*dashboard|not.*corporate|not.*bland|doesn't feel like every other|different feel/.test(signalText),
   ].filter(Boolean).length;
 
@@ -3791,15 +4106,28 @@ function buildFoundationCommunication(args: {
     /serious|no fluff|no personality|just works|get out of the way|feels like.*software|productivity/.test(signalText),
   ].filter(Boolean).length;
 
-  const hasStyleFamilyAmbiguity = editorialSerifSignalCount === 0 && precisionMinimalSignalCount === 0
-    && (isMarketingSurface || /brand|identity|feel|vibe|personality|aesthetic|look.*and.*feel|style/.test(signalText));
-  const leaningEditorial = editorialSerifSignalCount > precisionMinimalSignalCount;
-  const leaningPrecision = precisionMinimalSignalCount > editorialSerifSignalCount;
+  const styleFamilyScores = {
+    "minimal-conversion": minimalConversionSignalCount,
+    "authority-consulting": authorityConsultingSignalCount,
+    "high-ticket-offer": highTicketOfferSignalCount,
+    "direct-response": directResponseSignalCount,
+    "editorial-premium": editorialPremiumSignalCount,
+    "precision-minimal": precisionMinimalSignalCount,
+  } as const;
 
-  const detectedStyleFamily: "editorial-serif" | "precision-minimal" | null =
-    editorialSerifSignalCount >= 2 ? "editorial-serif"
-    : precisionMinimalSignalCount >= 2 ? "precision-minimal"
-    : null;
+  const sortedStyleFamilyScores = Object.entries(styleFamilyScores).sort((a, b) => b[1] - a[1]);
+  const topStyleFamily = sortedStyleFamilyScores[0];
+  const secondStyleFamily = sortedStyleFamilyScores[1];
+
+  const hasStyleFamilyAmbiguity = topStyleFamily?.[1] === 0
+    && (isMarketingSurface || /brand|identity|feel|vibe|personality|aesthetic|look.*and.*feel|style/.test(signalText));
+  const leaningEditorial = editorialPremiumSignalCount > precisionMinimalSignalCount;
+  const leaningPrecision = precisionMinimalSignalCount > editorialPremiumSignalCount;
+
+  const detectedStyleFamily: "minimal-conversion" | "authority-consulting" | "high-ticket-offer" | "direct-response" | "editorial-premium" | "precision-minimal" | null =
+    topStyleFamily && topStyleFamily[1] >= 2 && (!secondStyleFamily || topStyleFamily[1] > secondStyleFamily[1])
+      ? (topStyleFamily[0] as "minimal-conversion" | "authority-consulting" | "high-ticket-offer" | "direct-response" | "editorial-premium" | "precision-minimal")
+      : null;
 
   const surfacePosture = isInternal && isAuthSurface
     ? "serious employee access point"
@@ -3879,14 +4207,38 @@ function buildFoundationCommunication(args: {
   // ── Style-family probe ──────────────────────────────────────────────────────
   // Asked in plain language so users who can't name fonts or visual styles
   // can still route to the right end of the spectrum.
-  //   editorial-serif  →  warm, readable, typographic, print-like
+  //   editorial-premium → warm, readable, typographic, print-like
   //   precision-minimal →  tight, cold, tool-like, zero decoration
   const styleFamilyProbe: { ask: string; why: string; leaningFamilyId: string | null } | null =
-    detectedStyleFamily === "editorial-serif"
+    detectedStyleFamily === "minimal-conversion"
+      ? {
+          ask: "Should this stay stripped back and clarity-first with one dominant CTA, or does it need a more persuasive layout family than that?",
+          why: "Minimal conversion signals are present. Confirming this keeps the page plain, left-aligned, and low-decoration instead of drifting into generic SaaS styling.",
+          leaningFamilyId: "minimal-conversion",
+        }
+      : detectedStyleFamily === "authority-consulting"
+        ? {
+            ask: "Should this feel authority-led and consulting-heavy, with a strong headline and structured proof rail, or is that too formal for the job?",
+            why: "Authority and consulting signals are present. Confirming this routes the system toward contrast panels, restrained proof blocks, and a credibility-first structure.",
+            leaningFamilyId: "authority-consulting",
+          }
+        : detectedStyleFamily === "high-ticket-offer"
+          ? {
+              ask: "Should this feel like a slower, more premium high-ticket offer with more whitespace and fewer sections, or does it need a tighter sales pace than that?",
+              why: "High-ticket signals are present. Confirming this changes spacing rhythm, hierarchy, and proof pacing across the whole surface.",
+              leaningFamilyId: "high-ticket-offer",
+            }
+          : detectedStyleFamily === "direct-response"
+            ? {
+                ask: "Should this behave like direct response with tighter spacing and more repeated CTA pressure, or is that too aggressive for the offer?",
+                why: "Direct-response signals are present. Confirming this routes the system toward compressed rhythm, stronger repetition, and a more aggressive conversion flow.",
+                leaningFamilyId: "direct-response",
+              }
+            : detectedStyleFamily === "editorial-premium"
       ? {
           ask: "Does this need to feel warm and editorial — more like a well-produced publication — or is that the wrong direction?",
-          why: "Editorial signals are present. Confirming this routes the foundation toward serif display type, warm neutrals, and generous spacing instead of a cold tool posture.",
-          leaningFamilyId: "editorial-serif",
+          why: "Editorial premium signals are present. Confirming this routes the foundation toward Fraunces headlines, warm neutrals, and generous spacing instead of a cold tool posture.",
+          leaningFamilyId: "editorial-premium",
         }
       : detectedStyleFamily === "precision-minimal"
         ? {
@@ -3898,7 +4250,7 @@ function buildFoundationCommunication(args: {
           ? {
               ask: "Does this need to feel more like a magazine (warm, readable, typographic) or more like a working tool (tight, precise, zero decoration)?",
               why: "Without a clear style-family signal, the foundation could go in opposite directions. This answer changes type, spacing, color palette, and motion posture — not just visual polish.",
-              leaningFamilyId: leaningEditorial ? "editorial-serif" : leaningPrecision ? "precision-minimal" : null,
+              leaningFamilyId: leaningEditorial ? "editorial-premium" : leaningPrecision ? "precision-minimal" : null,
             }
           : null;
 
@@ -4052,8 +4404,8 @@ function buildContextIntelligence(args: {
     /unclear|confusing|doesn't communicate|does not communicate|ambiguous|lost context/.test(signalText)
       ? "Labels, scope cues, or control choice may be failing to explain what the user is actually doing."
       : "",
-    /dropdown|select|raw select|unstyled select/.test(signalText)
-      ? "The control model is likely wrong for the frequency or importance of the choice."
+    /dropdown|select|raw select|unstyled select|native select|<select/.test(signalText)
+      ? "Native <select> elements are not permitted — replace with custom-select-single (single field), select-field-group (filter bar), or inline-table-select (table cell). The browser-native dropdown breaks visual consistency on every OS."
       : "",
     /icon|iconography/.test(signalText)
       ? "Icons may be carrying too much of the communication load instead of acting as secondary cues."
@@ -4678,6 +5030,35 @@ function buildDiscoveryIntelligence(args: {
   };
 }
 
+function applyFeedbackBoostSorting(items: string[], boosts: BoostTable): string[] {
+  if (Object.keys(boosts).length === 0) return items;
+  return [...items].sort((a, b) => {
+    const aScore = Math.max(0, ...classifyFixIntent(a).map((i) => boosts[i] ?? 0));
+    const bScore = Math.max(0, ...classifyFixIntent(b).map((i) => boosts[i] ?? 0));
+    return bScore - aScore; // descending miss rate — highest-miss categories first
+  });
+}
+
+function buildFeedbackIntelligence(boosts: BoostTable, route: string) {
+  const active = (Object.entries(boosts) as [string, number][])
+    .filter(([, rate]) => rate >= 0.5)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 4)
+    .map(([category, rate]) => ({
+      category,
+      missRate: Math.round(rate * 100) + "%",
+    }));
+
+  return {
+    boostActive: active.length > 0,
+    route,
+    priorityFocus: active,
+    note: active.length > 0
+      ? `Fix-list priority reordered based on ${active.length} historically under-addressed intent categor${active.length > 1 ? "ies" : "y"} on this route.`
+      : `No qualifying feedback history for route "${route}" yet — fix-list order is static. Call /api/agent/feedback after each iteration-verify to build the signal.`,
+  };
+}
+
 function buildWorkflowAuditResponse(args: {
   request: AgentResolutionRequest;
   classification: ReturnType<typeof resolveResolutionClassification>;
@@ -4693,6 +5074,7 @@ function buildWorkflowAuditResponse(args: {
   coherenceRisks: string[];
   buildGuidanceLines: string[];
   missingTruth: string[];
+  feedbackBoosts?: BoostTable;
 }) {
   const packet = buildWorkflowAuditPacket(args.request, args.classification);
   const targetSurface = packet.targetSurface || "the current surface";
@@ -4749,11 +5131,16 @@ function buildWorkflowAuditResponse(args: {
     `Shared controls will keep feeling heavier than the work they govern if the system keeps solving local complaints without re-validating cross-workspace consistency.`,
   ]);
 
-  const whatToFixInThisIteration = buildWorkflowAuditBulletList([
+  const boosts = args.feedbackBoosts ?? {};
+  const combinedFixes = applyFeedbackBoostSorting([
     ...mustChange,
     ...transitionRepairTargets,
     ...interactionRepairTargets,
     ...args.buildGuidanceLines,
+  ], boosts);
+
+  const whatToFixInThisIteration = buildWorkflowAuditBulletList([
+    ...combinedFixes,
   ], 5, [
     `Re-run the current iteration against ${targetSurface} after every structural fix so local improvements do not reintroduce drift elsewhere.`,
   ]);
@@ -4796,11 +5183,468 @@ function buildWorkflowAuditResponse(args: {
     majorPitfallsOrWorkflowFlaws,
     whatToFixInThisIteration,
     whatToDeferUntilLater,
+    scopeBoundary: buildScopeBoundary(args),
+    buildMandate: buildWorkflowMandate(args, whatToFixInThisIteration),
+    feedbackIntelligence: buildFeedbackIntelligence(boosts, args.classification.route || "unknown"),
     promptingOrWorkflowAdjustments,
   };
 }
 
-function buildWorkflowAuditStageResponse(request: AgentResolutionRequest): Record<string, unknown> {
+function buildScopeBoundary(args: {
+  request: AgentResolutionRequest;
+  classification: ReturnType<typeof resolveResolutionClassification>;
+  dominantTaskSurface: string;
+}): string[] {
+  const route = args.classification.route;
+  const primary = args.request.context?.primaryObject || "";
+  const surface = args.dominantTaskSurface;
+
+  const boundaries: string[] = [];
+
+  if (route === "operational-workbench") {
+    boundaries.push(
+      `This surface does not own authentication, onboarding, or account-settings flows — those belong to separate routes.`,
+      `Do not add summary dashboards, analytics panels, or reporting charts unless ${primary || "the primary object"} explicitly requires aggregate state at this level.`,
+      `Navigation structure above the workbench shell is out of scope — do not alter global nav, sidebar hierarchy, or route structure in this pass.`,
+    );
+  } else if (route === "assistant-workspace") {
+    boundaries.push(
+      `This surface does not own billing, account management, or administrative tooling.`,
+      `Do not add persistent analytics, charts, or reporting — the assistant workspace governs conversation and artifact output, not aggregate data.`,
+      `Shell-level chrome changes (global nav, auth flows, route structure) are out of scope.`,
+    );
+  } else if (route === "marketing-surface") {
+    boundaries.push(
+      `This surface does not own authenticated app state, dashboard content, or logged-in UI.`,
+      `Do not add operational tooling, data tables, or admin patterns to a marketing surface.`,
+      `Backend data integration and real-time personalization are deferred until funnel conversion goals are verified.`,
+    );
+  } else {
+    boundaries.push(
+      `Shell-level chrome changes (global nav, auth, route structure) are out of scope for this surface.`,
+      `Do not introduce data sources, object models, or workflow logic that the prompt did not declare — add them only after a new audit pass names them explicitly.`,
+    );
+  }
+
+  if (primary) {
+    boundaries.push(
+      `Do not reframe the primary object as something other than ${primary} — a model change requires a new audit, not an in-pass refactor.`,
+    );
+  }
+
+  return boundaries.filter(Boolean).slice(0, 5);
+}
+
+function buildWorkflowMandate(
+  args: {
+    request: AgentResolutionRequest;
+    missingTruth: string[];
+    operationalTruthIntelligence: Record<string, any>;
+  },
+  whatToFixInThisIteration: string[],
+): string {
+  const shouldAskFirst = Boolean(args.operationalTruthIntelligence?.thresholdAssessment?.shouldAskFirst);
+  if (shouldAskFirst && args.missingTruth[0]) {
+    return `Before building anything, confirm: ${args.missingTruth[0]}. Do not begin implementation until that truth is named.`;
+  }
+
+  const primaryFix = whatToFixInThisIteration[0] || "the structural gaps identified above";
+  const count = whatToFixInThisIteration.length;
+  const objectLabel = args.request.context?.primaryObject
+    ? ` anchored to ${args.request.context.primaryObject}`
+    : "";
+
+  return `Ship exactly the ${count > 1 ? `${count} items` : "item"} in whatToFixInThisIteration${objectLabel}. Honor whatToDeferUntilLater and scopeBoundary as hard stops. Start with: ${primaryFix.replace(/\.$/, "")}.`;
+}
+
+// ---------------------------------------------------------------------------
+// Intent taxonomy for iteration-verify —
+// Each category carries fix-side patterns (what audit items say) and
+// change-side patterns (how agents describe what they shipped).
+// Matching on intent rather than keywords handles paraphrase and
+// vocabulary drift between the audit and the build agent's output.
+// ---------------------------------------------------------------------------
+
+type VerifyIntentCategory =
+  | "remove-duplicates"
+  | "hierarchy"
+  | "state-continuity"
+  | "object-model"
+  | "scope-communication"
+  | "shell-separation"
+  | "copy-language"
+  | "icon-restraint"
+  | "spacing-density"
+  | "motion-polish"
+  | "navigation"
+  | "control-ownership"
+  | "data-integrity"
+  | "async-loading"
+  | "permission-boundary";
+
+type IntentRule = {
+  id: VerifyIntentCategory;
+  fixSignals: RegExp[];    // patterns that appear in audit FIX items for this category
+  changeSignals: RegExp[]; // patterns that appear in agent CHANGE descriptions for this category
+};
+
+type OfferPositioningVariant = {
+  label: string;
+  premise: string;
+  ctaFrame: string;
+  bestFor: string;
+};
+
+const VERIFY_INTENT_RULES: IntentRule[] = [
+  {
+    id: "remove-duplicates",
+    fixSignals: [
+      /duplicate|redundant|same.*control|same.*mode|two.*toggle|two.*tab|multiple.*switch|appear.*twice/i,
+    ],
+    changeSignals: [
+      /remov|delet|eliminat|consolid|merged|combined|replaced.*duplicate|removed.*redundant|removed.*extra|dropped.*second/i,
+    ],
+  },
+  {
+    id: "hierarchy",
+    fixSignals: [
+      /hierarch|primary.*task|dominant.*surface|visual.*emphasis|task.*framing|obvious|main.*job|primary.*action|above.*fold|first.*thing/i,
+    ],
+    changeSignals: [
+      /hierarch|promot|elevat|prioriti|moved.*up|primary.*now|headline|dominant|task.*first|surface.*first|reorder|brought.*forward/i,
+    ],
+  },
+  {
+    id: "state-continuity",
+    fixSignals: [
+      /continuity|blank.*reset|focus.*loss|loading.*state|transition|refresh|tab.*switch|shell.*reload|scroll.*preserv|clunk/i,
+    ],
+    changeSignals: [
+      /continuity|loading|skeleton|spinner|transition|preserve.*focus|prevent.*reset|smooth|persist.*state|optimistic|no.*blank|soft.*load/i,
+    ],
+  },
+  {
+    id: "object-model",
+    fixSignals: [
+      /primary.*object|organizing.*object|client.*lifecycle|event.first|object.*model|framing.*as|model.*drift|downstream/i,
+    ],
+    changeSignals: [
+      /reframe|primary.*object|client.*lifecycle|model.*now|changed.*framing|object.*first|restructur|reorganiz|core.*entity/i,
+    ],
+  },
+  {
+    id: "scope-communication",
+    fixSignals: [
+      /scope.*communication|mode.*name|filter.*label|badge|status.*copy|tab.*label|count.*visible|active.*state.*language|explain.*what.*changes/i,
+    ],
+    changeSignals: [
+      /label|badge|count|status.*text|tab.*name|filter.*name|mode.*name|renamed|updated.*copy|clarif|active.*indicator|scope.*label/i,
+    ],
+  },
+  {
+    id: "shell-separation",
+    fixSignals: [
+      /shell.*role|workspace.*separation|conversation.*region|artifact.*pane|context.*rail|composer.*region|region.*ownership|assistant.*region/i,
+    ],
+    changeSignals: [
+      /separated|split.*region|dedicated.*pane|region.*now|composer.*own|thread.*own|artifact.*own|context.*own|role.*clear|panel.*separated/i,
+    ],
+  },
+  {
+    id: "copy-language",
+    fixSignals: [
+      /copy|label|placeholder.*vocabulary|synthetic.*vocabulary|real.*object.*language|empty.*state|heading|generic.*language|filler.*label/i,
+    ],
+    changeSignals: [
+      /copy|label|renamed|reworded|updated.*text|changed.*heading|empty.*state|button.*text|replaced.*placeholder|real.*language|terminology/i,
+    ],
+  },
+  {
+    id: "icon-restraint",
+    fixSignals: [
+      /icon|decorative.*icon|icon.*cluster|oversized.*icon|icon.*first/i,
+    ],
+    changeSignals: [
+      /icon|removed.*icon|reduced.*icon|icon.*size|icon.*now|no.*icon|icon.*restraint|stripped.*icon/i,
+    ],
+  },
+  {
+    id: "spacing-density",
+    fixSignals: [
+      /card.*grammar|dashboard.*card|heavier.*than.*work|spacing|density|padding|whitespace|compact|card.*everywhere/i,
+    ],
+    changeSignals: [
+      /density|spacing|padding|compact|removed.*card|replaced.*card|tighter|whitespace|row.*instead|table.*instead|list.*instead/i,
+    ],
+  },
+  {
+    id: "motion-polish",
+    fixSignals: [
+      /motion.*polish|animation|decorative.*motion|transition.*polish/i,
+    ],
+    changeSignals: [
+      /animation|motion|transition.*polish|ease|fade|added.*animation|removed.*animation/i,
+    ],
+  },
+  {
+    id: "navigation",
+    fixSignals: [
+      /nav.*structure|global.*nav|sidebar|route.*structure|breadcrumb|wayfinding/i,
+    ],
+    changeSignals: [
+      /nav|sidebar|breadcrumb|route|navigation|menu.*structure|wayfinding/i,
+    ],
+  },
+  {
+    id: "control-ownership",
+    fixSignals: [
+      /control.*ownership|which.*control|button.*vs|dropdown.*vs|action.*hierarchy|primary.*action|secondary.*action|control.*model/i,
+    ],
+    changeSignals: [
+      /moved.*action|changed.*button|dropdown.*now|replaced.*menu|control.*now|primary.*action|consolidated.*action|action.*owner/i,
+    ],
+  },
+  {
+    id: "data-integrity",
+    fixSignals: [
+      /real.*source|data.*source|placeholder|mock.*data|lorem|dummy|declare.*source|synthetic/i,
+    ],
+    changeSignals: [
+      /real.*data|connected|wired|api|data.*source|replaced.*placeholder|removed.*mock|live.*data/i,
+    ],
+  },
+  {
+    id: "async-loading",
+    fixSignals: [
+      /async|loading.*region|per-region.*loading|blank.*during|reset.*during|refresh.*behavior|content.*swap/i,
+    ],
+    changeSignals: [
+      /async|loading|skeleton|per-region|content.*swap|no.*blank|refresh.*now|region.*load|incremental/i,
+    ],
+  },
+  {
+    id: "permission-boundary",
+    fixSignals: [
+      /auth|permission|role.*access|onboarding.*flow|account.*settings|belongs.*to.*separate/i,
+    ],
+    changeSignals: [
+      /moved.*to.*separate|extracted|split.*out|auth.*now|permission|role.*gate|behind.*route/i,
+    ],
+  },
+];
+
+function classifyVerifyIntent(text: string): VerifyIntentCategory[] {
+  const matched: VerifyIntentCategory[] = [];
+  for (const rule of VERIFY_INTENT_RULES) {
+    // Use fix signals + change signals combined — a text can be classified
+    // as belonging to this intent if either vocabulary set fires on it.
+    const allSignals = [...rule.fixSignals, ...rule.changeSignals];
+    if (allSignals.some((rx) => rx.test(text))) {
+      matched.push(rule.id);
+    }
+  }
+  return matched.length > 0 ? matched : ["copy-language"]; // broadest fallback
+}
+
+function classifyFixIntent(text: string): VerifyIntentCategory[] {
+  const matched: VerifyIntentCategory[] = [];
+  for (const rule of VERIFY_INTENT_RULES) {
+    if (rule.fixSignals.some((rx) => rx.test(text))) {
+      matched.push(rule.id);
+    }
+  }
+  return matched.length > 0 ? matched : classifyVerifyIntent(text);
+}
+
+function classifyChangeIntent(text: string): VerifyIntentCategory[] {
+  const matched: VerifyIntentCategory[] = [];
+  for (const rule of VERIFY_INTENT_RULES) {
+    if (rule.changeSignals.some((rx) => rx.test(text))) {
+      matched.push(rule.id);
+    }
+  }
+  return matched.length > 0 ? matched : classifyVerifyIntent(text);
+}
+
+function intentSetsOverlap(a: VerifyIntentCategory[], b: VerifyIntentCategory[]): boolean {
+  const setB = new Set(b);
+  return a.some((intent) => setB.has(intent));
+}
+
+function auditItemIsAddressed(
+  item: string,
+  changes: string[],
+): { addressed: boolean; matchedIntents: VerifyIntentCategory[]; method: "intent" | "keyword-fallback" } {
+  const itemIntents = classifyFixIntent(item);
+  const allChangeIntents = changes.flatMap((c) => classifyChangeIntent(c));
+
+  if (intentSetsOverlap(itemIntents, allChangeIntents)) {
+    const matchedIntents = itemIntents.filter((i) => allChangeIntents.includes(i));
+    return { addressed: true, matchedIntents, method: "intent" };
+  }
+
+  // Keyword fallback: if intent classification produced only the broadest
+  // fallback category on both sides, fall back to significant-word overlap
+  // so very terse change descriptions still get credit.
+  const stopWords = new Set([
+    "the", "a", "an", "and", "or", "for", "of", "in", "on", "at", "to", "is", "are",
+    "that", "this", "with", "from", "by", "do", "not", "be", "it", "as", "so", "but",
+    "what", "which", "any", "all", "each", "per", "its", "than", "into", "after", "before",
+    "make", "keep", "use", "get", "set", "add", "fix", "run", "let", "can", "may", "will",
+  ]);
+  const words = (text: string) =>
+    text.toLowerCase().replace(/[^a-z0-9\s]/g, " ").split(/\s+/)
+      .filter((w) => w.length > 4 && !stopWords.has(w));
+  const itemWords = words(item);
+  const changeWords = new Set(changes.flatMap(words));
+  const hits = itemWords.filter((w) => changeWords.has(w)).length;
+  const threshold = Math.min(2, Math.ceil(itemWords.length * 0.35));
+  if (hits >= threshold) {
+    return { addressed: true, matchedIntents: itemIntents, method: "keyword-fallback" };
+  }
+
+  return { addressed: false, matchedIntents: itemIntents, method: "intent" };
+}
+
+function buildIterationVerifyStageResponse(request: AgentResolutionRequest): Record<string, unknown> {
+  const priorAudit = request.priorAudit || { whatToFixInThisIteration: [], whatToDeferUntilLater: [], scopeBoundary: [], buildMandate: undefined };
+  const shipped = request.shipped || { changes: [], description: undefined };
+
+  const fixList = priorAudit.whatToFixInThisIteration;
+  const deferList = priorAudit.whatToDeferUntilLater;
+  const scopeList = priorAudit.scopeBoundary || [];
+  const changes = shipped.changes;
+
+  if (fixList.length === 0 && changes.length === 0) {
+    return {
+      mode: "iteration-verify",
+      endpoint: "/api/agent",
+      stage: "iteration-verify",
+      verificationStatus: "incomplete",
+      verificationVerdict: "No prior audit items or shipped changes were provided. Call workflow-audit-and-iteration first and pass whatToFixInThisIteration and shipped.changes.",
+      honoredItems: [],
+      missedItems: [],
+      deferredViolations: [],
+      driftSignals: [],
+      nextPassBrief: "Run a workflow-audit-and-iteration pass first to generate a fix list before verifying.",
+      buildMandate: "Call workflow-audit-and-iteration before verifying an iteration.",
+    };
+  }
+
+  const honoredItems: Array<{ item: string; intents: VerifyIntentCategory[]; method: string }> = [];
+  const missedItems: Array<{ item: string; intents: VerifyIntentCategory[] }> = [];
+
+  for (const item of fixList) {
+    const result = auditItemIsAddressed(item, changes);
+    if (result.addressed) {
+      honoredItems.push({ item, intents: result.matchedIntents, method: result.method });
+    } else {
+      missedItems.push({ item, intents: result.matchedIntents });
+    }
+  }
+
+  const deferredViolations: string[] = [];
+  for (const deferItem of deferList) {
+    const result = auditItemIsAddressed(deferItem, changes);
+    if (result.addressed) {
+      deferredViolations.push(deferItem);
+    }
+  }
+
+  for (const scopeItem of scopeList) {
+    const result = auditItemIsAddressed(scopeItem, changes);
+    if (result.addressed) {
+      deferredViolations.push(`[scope violation] ${scopeItem}`);
+    }
+  }
+
+  const driftSignals: string[] = [];
+  const knownProblems = request.context?.knownProblems || [];
+  if (knownProblems.length > 0) {
+    driftSignals.push(...knownProblems.slice(0, 3).map((p) => `New or unresolved signal: ${p}`));
+  }
+  if (deferredViolations.length > 0) {
+    driftSignals.push(`${deferredViolations.length} deferred or out-of-scope item${deferredViolations.length > 1 ? "s" : ""} were shipped — this introduces scope debt that will compound next pass.`);
+  }
+
+  // Detect intent categories that were consistently missed — useful for next-pass emphasis
+  const missedIntentFrequency: Partial<Record<VerifyIntentCategory, number>> = {};
+  for (const { intents } of missedItems) {
+    for (const intent of intents) {
+      missedIntentFrequency[intent] = (missedIntentFrequency[intent] || 0) + 1;
+    }
+  }
+  const persistentWeakSpots = (Object.entries(missedIntentFrequency) as [VerifyIntentCategory, number][])
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([intent]) => intent);
+
+  if (persistentWeakSpots.length > 0) {
+    driftSignals.push(`Persistent weak spots in this pass: ${persistentWeakSpots.join(", ")} — prioritize these in the next fix list.`);
+  }
+
+  // intentMap: shows consuming agents exactly how each item was classified
+  const intentMap = {
+    honored: honoredItems.map(({ item, intents, method }) => ({ item, intents, method })),
+    missed: missedItems.map(({ item, intents }) => ({ item, intents })),
+  };
+
+  let verificationStatus: "pass" | "partial" | "drift-detected" | "scope-violation";
+  if (deferredViolations.some((v) => v.startsWith("[scope violation]"))) {
+    verificationStatus = "scope-violation";
+  } else if (deferredViolations.length > 0) {
+    verificationStatus = "drift-detected";
+  } else if (missedItems.length === 0) {
+    verificationStatus = "pass";
+  } else {
+    verificationStatus = "partial";
+  }
+
+  const honoredCount = honoredItems.length;
+  const totalFix = fixList.length;
+  const violationCount = deferredViolations.length;
+
+  let verificationVerdict: string;
+  if (verificationStatus === "pass") {
+    verificationVerdict = `All ${totalFix} fix items were honored. No deferred or out-of-scope items were shipped. This pass is clean.`;
+  } else if (verificationStatus === "partial") {
+    verificationVerdict = `${honoredCount} of ${totalFix} fix items were addressed. ${missedItems.length} remain and must carry forward to the next pass.`;
+  } else if (verificationStatus === "drift-detected") {
+    verificationVerdict = `${honoredCount} of ${totalFix} fix items were honored, but ${violationCount} deferred item${violationCount > 1 ? "s were" : " was"} shipped — scope debt has been introduced and must be resolved before structural stability is claimed.`;
+  } else {
+    verificationVerdict = `A scope boundary was violated. ${violationCount} item${violationCount > 1 ? "s" : ""} outside the declared surface scope were shipped. Stop and audit the scope before the next pass.`;
+  }
+
+  const remaining = missedItems.map((m) => m.item);
+  const nextPassBrief = remaining.length > 0
+    ? `Next pass must address: ${remaining.slice(0, 3).join("; ")}${remaining.length > 3 ? ` and ${remaining.length - 3} more` : ""}.`
+    : "No items carried forward. Ready for an elevation-audit or the next workflow scope.";
+
+  const nextMandate = remaining.length > 0
+    ? `Ship the ${remaining.length} remaining item${remaining.length > 1 ? "s" : ""} from the prior fix list. Resolve ${deferredViolations.length > 0 ? "scope violations first, then" : ""} the missed items before introducing any new structure.`
+    : deferredViolations.length > 0
+      ? `Resolve the ${deferredViolations.length} scope violation${deferredViolations.length > 1 ? "s" : ""} before proceeding. No new structure until the boundary is clean.`
+      : `This pass is complete. Proceed with elevation-audit or declare the next scope.`;
+
+  return {
+    mode: "iteration-verify",
+    endpoint: "/api/agent",
+    stage: "iteration-verify",
+    verificationStatus,
+    verificationVerdict,
+    verificationMethod: "intent-classification",
+    honoredItems: honoredItems.map((h) => h.item),
+    missedItems: remaining,
+    deferredViolations,
+    driftSignals,
+    persistentWeakSpots,
+    intentMap,
+    nextPassBrief,
+    buildMandate: nextMandate,
+  };
+}
+
+function buildWorkflowAuditStageResponseInner(request: AgentResolutionRequest, feedbackBoosts: BoostTable = {}): Record<string, unknown> {
   const classification = resolveResolutionClassification(request);
   const resolutionSignalText = buildExperienceSignalText(request, classification);
   const designProfile = pickQuestionDesignProfile({
@@ -4955,7 +5799,18 @@ function buildWorkflowAuditStageResponse(request: AgentResolutionRequest): Recor
     coherenceRisks,
     buildGuidanceLines,
     missingTruth,
+    feedbackBoosts,
   });
+}
+
+async function buildWorkflowAuditStageResponseWithBoosts(
+  request: AgentResolutionRequest,
+): Promise<Record<string, unknown>> {
+  const route = request.route ||
+    resolveResolutionClassification(request).route ||
+    "unknown";
+  const feedbackBoosts = await getRouteBoostsSafe(route);
+  return buildWorkflowAuditStageResponseInner(request, feedbackBoosts);
 }
 
 function likelyFailuresByRoute(route: string) {
@@ -5184,9 +6039,13 @@ function buildQuestionResponse(questionRequest: AgentQuestionRequest): Record<st
   // When buildFoundationCommunication detects a confirmed style family (≥2 signal
   // buckets) and the archetype is compatible, swap the design profile to the
   // matching style-family profile so typography/spacing/color posture is correct.
-  const detectedStyleFamilyHint = routedFoundationCommunication?.detectedStyleFamily as "editorial-serif" | "precision-minimal" | null;
+  const detectedStyleFamilyHint = routedFoundationCommunication?.detectedStyleFamily as "minimal-conversion" | "authority-consulting" | "high-ticket-offer" | "direct-response" | "editorial-premium" | "precision-minimal" | null;
   const styleFamilyCompatibleArchetypes: Record<string, string[]> = {
-    "editorial-serif": ["landing-page", "docs-knowledge", "commerce-marketplace", "product-application", "conversion-funnel"],
+    "minimal-conversion": ["landing-page", "conversion-funnel", "product-application"],
+    "authority-consulting": ["landing-page", "conversion-funnel", "product-application"],
+    "high-ticket-offer": ["landing-page", "conversion-funnel"],
+    "direct-response": ["landing-page", "conversion-funnel", "commerce-marketplace"],
+    "editorial-premium": ["landing-page", "docs-knowledge", "commerce-marketplace", "product-application", "conversion-funnel"],
     "precision-minimal": ["developer-tool", "product-application", "landing-page"],
   };
   const canApplyStyleFamilyProfile = Boolean(
@@ -5384,6 +6243,7 @@ function buildQuestionResponse(questionRequest: AgentQuestionRequest): Record<st
 const elevationComponentFreshnessSignals = [
   "card grid", "card-based", "cards everywhere", "kebab", "more options",
   "metric card", "kpi card", "empty state generic", "card mosaic",
+  "select", "dropdown", "native select", "raw select",
 ];
 
 const elevationCopyWeaknessSignals = [
@@ -5490,6 +6350,15 @@ function buildElevationIntelligence(args: {
      signalText.includes("kpi") || signalText.includes("analytic") ||
      signalText.includes("report") || signalText.includes("chart") ||
      signalText.includes("stat") || signalText.includes("usage"));
+  const hasAggregateMetricTable =
+    (signalText.includes("table") || signalText.includes("dashboard")) &&
+    (signalText.includes("count") || signalText.includes("total") || signalText.includes("upcoming")) &&
+    (signalText.includes("state") || signalText.includes("location") || signalText.includes("region") ||
+     signalText.includes("city") || signalText.includes("territory") || signalText.includes("group"));
+  const hasNativeSelectSignal =
+    signalText.includes("select") || signalText.includes("dropdown") ||
+    signalText.includes("native select") || signalText.includes("raw select") ||
+    signalText.includes("<select") || signalText.includes("unstyled select");
 
   const whatIsAlreadyGood = buildWorkflowAuditBulletList([
     args.request.context?.existingSurfaceSignals?.length
@@ -5515,6 +6384,9 @@ function buildElevationIntelligence(args: {
   const genericTraps = buildWorkflowAuditBulletList([
     hasCardDependency
       ? "Card-as-container dependency: borders and card elevation are doing organizational work that type weight and proximity should handle."
+      : "",
+    hasNativeSelectSignal
+      ? "Native <select> element detected: replace immediately with custom-select-single (any form field or status picker), select-field-group (filter bar), or inline-table-select (table cell). Browser-native dropdowns inherit OS chrome and cannot be styled — they break visual consistency on every platform."
       : "",
     hasWeakCopy
       ? "Generic surface labels (dashboard, overview, manage) that could belong to any software product — no product-specific language tied to the actual objects and operations."
@@ -5542,6 +6414,9 @@ function buildElevationIntelligence(args: {
       : "",
     hasAudienceMismatch
       ? "Audience-level mismatch: a manager or territory-level role is being shown granular operational detail that only makes sense inside a specific workflow context. Granular ops data should surface conditionally — when the user is in that workflow — not unconditionally on a high-level screen."
+      : "",
+    hasAggregateMetricTable
+      ? "Aggregate counts as plain integers: location totals and event counts displayed as raw numbers communicate volume but not magnitude or relative weight across rows. An integer 23 is opaque; a proportional bar fill in the same cell is scannable."
       : "",
   ], 3, [
     "All-card layout on a surface where task is recall or review — table or two-panel structure is likely the stronger dominant form.",
@@ -5594,6 +6469,9 @@ function buildElevationIntelligence(args: {
     isMarketing
       ? "Typography-led sections: replace section title + icon + text cards with a large anchor heading and a paragraph. Whitespace and type weight communicate separation better than any card can."
       : "",
+    hasAggregateMetricTable
+      ? "Visual density on count columns: replace integer cells for location totals and event counts with proportional bar fills or spark row indicators sized to the column width. Color encodes magnitude tier — high, mid, low. The table stays the table; the data becomes readable at a glance instead of requiring row-by-row number comparison."
+      : "",
   ], 4, [
     "Density calibration: compress padding on non-hero, non-CTA regions to create visual hierarchy through contrast — dense operational content reads as more capable than loose card grids.",
     "Purposeful empty states: treat the zero-state as a designed surface, not a placeholder. Name the object, explain the absence, and offer the first action. This is where operational tools most often look unfinished.",
@@ -5608,6 +6486,10 @@ function buildElevationIntelligence(args: {
     "5. Color semantics: Audit every use of the primary accent — is it communicating action, or is it decoration? Purge the decoration uses.",
     "6. Polish: Once structure, copy, interaction, data signals, and color are coherent, revisit motion depth, spacing micro-rhythm, and empty-state craft.",
   ];
+
+  if (hasAggregateMetricTable) {
+    elevationSequence.splice(4, 0, "4a. Visual density: For count columns in grouped metric tables (location totals, event counts, geographic summaries), replace integer cells with proportional bar fills or spark row indicators. Color encodes magnitude tier — the table stays the table, the eye reads distribution rather than scanning numbers. Execute only after structure, copy, interaction, and data signals are resolved.");
+  }
 
   const elevationMaxim = isMarketing
     ? "Great marketing surfaces are typographic first — the hierarchy of words earns attention before the first icon, card, or color is applied."
@@ -5973,9 +6855,1792 @@ const funnelTrustSignalMap: Record<string, string[]> = {
 const funnelComponentSuggestionMap: Record<string, string[]> = {
   "frictionless": ["marketing-hero-shell", "hero-cta-buttons", "sign-in-form-clean", "testimonial-card", "review-card", "trial-banner"],
   "light-touch": ["marketing-hero-shell", "hero-cta-buttons", "feature-comparison-table", "testimonial-card", "stepper-onboarding-flow", "usage-based-pricing", "welcome-checklist"],
-  "structured": ["marketing-hero-shell", "three-tier-pricing", "feature-comparison-table", "testimonial-card", "multi-step-wizard", "dark-pricing-card", "plan-upgrade-cta", "feature-highlight-tooltip"],
-  "high-commitment": ["marketing-hero-shell", "multi-step-wizard", "review-card", "feature-highlight-tooltip", "creator-storefront-profile", "upgrade-modal-pattern"],
+  "structured": ["marketing-hero-shell", "three-tier-pricing", "feature-comparison-table", "testimonial-card", "case-study-proof-stack", "multi-step-wizard", "dark-pricing-card", "plan-upgrade-cta", "feature-highlight-tooltip"],
+  "high-commitment": ["high-ticket-vsl-booking-page", "case-study-proof-stack", "sales-qualification-application", "pre-call-context-vsl", "call-booking-confirmation-brief", "webinar-registration-call-funnel", "advertorial-application-bridge", "dm-to-call-conversation-brief", "review-card", "feature-highlight-tooltip"],
 };
+
+function dedupeOrderedStrings(values: string[]): string[] {
+  return Array.from(new Set(values.filter(Boolean)));
+}
+
+function deriveFunnelPattern(args: {
+  frictionProfile: string;
+  signalText: string;
+  conversionMechanism: string;
+  businessType?: string;
+}): string {
+  const signalText = args.signalText.toLowerCase();
+  const businessType = (args.businessType || "").toLowerCase();
+  const wantsVsl = /\bvsl\b|video sales letter|watch.*video|sales video/.test(signalText);
+  const wantsCalendar = /calendar|book.?a.?call|strategy session|discovery call|appointment|book service|schedule service|schedule an appointment|book now/.test(signalText);
+  const wantsApplication = args.conversionMechanism === "application-submit"
+    || /application|qualif|qualify|survey|quiz/.test(signalText);
+  const wantsPreCall = /pre.?call|before the (sales|strategy|discovery) call|indoctrin|show.?up|prep|appointment confirmation|confirm attendance/.test(signalText);
+  const wantsWebinar = /webinar|workshop|training|masterclass|event/.test(signalText);
+  const wantsAdvertorial = /advertorial|long.?form|story.*page|letter|sales letter|editorial/.test(signalText);
+  const wantsDmConversation = /dm|direct message|instagram|facebook message|messenger|inbox|voice note|chat/.test(signalText);
+  const wantsCaseStudy = /case.?study|customer story|success story|proof-led/.test(signalText);
+  const wantsPurchase = args.conversionMechanism === "direct-purchase"
+    || /checkout|buy now|purchase|cart|order now|complete order|pay now/.test(signalText);
+  const wantsLocalServiceBooking = /local service|home service|detailing|lawn care|cleaning|roofing|plumbing|hvac|landscaping|quote request|book service|schedule service|schedule an appointment|book now/.test(signalText)
+    || businessType === "local service";
+
+  if (wantsPurchase) return "direct-purchase";
+  if (wantsWebinar && (wantsCalendar || /attendee|attendees|registration|register|seat|show up|follow.?up/.test(signalText))) {
+    return "webinar-to-call";
+  }
+  if (wantsAdvertorial && (wantsApplication || /apply|application|qualif|screen/.test(signalText))) {
+    return "advertorial-to-application";
+  }
+  if (wantsDmConversation && (wantsCalendar || /book|call|strategy session|diagnos|conversation/.test(signalText))) {
+    return "dm-to-call";
+  }
+  if (wantsPreCall) return "pre-call-conditioning";
+  if (wantsVsl && wantsApplication) return "vsl-to-application-to-calendar";
+  if (wantsVsl && wantsCalendar) return "vsl-to-calendar";
+  if (wantsLocalServiceBooking && wantsCalendar) return "direct-booking";
+  if ((wantsCalendar || /demo/.test(signalText)) && wantsCaseStudy) return "case-study-to-demo";
+  if (args.frictionProfile === "high-commitment" && wantsApplication) return "application-first";
+  if (args.frictionProfile === "structured" && wantsCalendar) return "case-study-to-demo";
+  if (args.frictionProfile === "light-touch") return "trial-first";
+  return "lead-capture";
+}
+
+function buildFunnelScenarioComponentSuggestions(args: {
+  frictionProfile: string;
+  signalText: string;
+  businessType?: string;
+  conversionMechanism: string;
+  trafficTemperature: string;
+  funnelPattern?: string;
+}): string[] {
+  const baseSuggestions = funnelComponentSuggestionMap[args.frictionProfile] || funnelComponentSuggestionMap["frictionless"];
+  const signalText = args.signalText.toLowerCase();
+  const businessType = (args.businessType || "").toLowerCase();
+
+  const isHighTicketSignal = args.frictionProfile === "high-commitment"
+    || /\bvsl\b|video sales letter|high.?ticket|book.?a.?call|strategy session|discovery call|setter|closer|sales call/.test(signalText);
+  if (!isHighTicketSignal) {
+    return baseSuggestions;
+  }
+
+  const overlays: string[] = [];
+  const wantsVsl = /\bvsl\b|video sales letter|watch.*video|sales video/.test(signalText) || args.trafficTemperature === "cold";
+  const wantsCalendar = /calendar|book.?a.?call|strategy session|discovery call|appointment|book service|schedule service|schedule an appointment|book now/.test(signalText);
+  const wantsApplication = args.conversionMechanism === "application-submit"
+    || /application|qualif|qualify|survey|quiz/.test(signalText);
+  const wantsPreCall = /pre.?call|before the (sales|strategy|discovery) call|indoctrin|show.?up|prep|appointment confirmation|confirm attendance/.test(signalText);
+  const wantsWebinar = args.funnelPattern === "webinar-to-call" || /webinar|workshop|training|masterclass|event/.test(signalText);
+  const wantsAdvertorial = args.funnelPattern === "advertorial-to-application" || /advertorial|long.?form|story.*page|letter|sales letter|editorial/.test(signalText);
+  const wantsDmConversation = args.funnelPattern === "dm-to-call" || /dm|direct message|instagram|facebook message|messenger|inbox|voice note|chat/.test(signalText);
+  const wantsDirectPurchase = args.funnelPattern === "direct-purchase" || args.conversionMechanism === "direct-purchase";
+  const wantsDirectBooking = args.funnelPattern === "direct-booking" || (businessType === "local service" && wantsCalendar);
+
+  if (/agency|coaching|consulting|info product|offer/.test(businessType)) {
+    overlays.push("case-study-proof-stack");
+  }
+  if (wantsWebinar) {
+    overlays.push("webinar-registration-call-funnel", "case-study-proof-stack");
+  }
+  if (wantsAdvertorial) {
+    overlays.push("advertorial-application-bridge", "case-study-proof-stack", "sales-qualification-application");
+  }
+  if (wantsDmConversation) {
+    overlays.push("dm-to-call-conversation-brief", "call-booking-confirmation-brief");
+  }
+  if (wantsDirectBooking) {
+    overlays.push("call-booking-confirmation-brief", "pre-call-context-vsl");
+  }
+  if (wantsDirectPurchase) {
+    overlays.push("checkout-summary-card");
+  }
+  if (wantsVsl) {
+    overlays.push("high-ticket-vsl-booking-page", "case-study-proof-stack");
+  }
+  if (wantsApplication) {
+    overlays.push("sales-qualification-application");
+  }
+  if (wantsCalendar) {
+    overlays.push("call-booking-confirmation-brief");
+  }
+  if (wantsPreCall || wantsCalendar || wantsApplication) {
+    overlays.push("pre-call-context-vsl");
+  }
+
+  return dedupeOrderedStrings([...overlays, ...baseSuggestions]);
+}
+
+function buildFunnelSequenceBlueprint(args: {
+  funnelPattern: string;
+}): Array<Record<string, unknown>> {
+  if (args.funnelPattern === "webinar-to-call") {
+    return [
+      {
+        phase: "Registration page",
+        objective: "Use the event promise to capture interest without forcing a call too early.",
+        exhibitSlugs: ["webinar-registration-call-funnel"],
+      },
+      {
+        phase: "Teaching and engagement",
+        objective: "Turn the webinar into proof and diagnosis so the call CTA feels like the logical next move.",
+        exhibitSlugs: ["case-study-proof-stack"],
+      },
+      {
+        phase: "Post-event booking",
+        objective: "Offer the strategy call only to the most engaged attendees while intent is still high.",
+        exhibitSlugs: ["webinar-registration-call-funnel", "call-booking-confirmation-brief"],
+      },
+    ];
+  }
+
+  if (args.funnelPattern === "advertorial-to-application") {
+    return [
+      {
+        phase: "Long-form story",
+        objective: "Explain the buyer problem and mechanism with enough narrative depth to earn the application.",
+        exhibitSlugs: ["advertorial-application-bridge"],
+      },
+      {
+        phase: "Qualifier trigger",
+        objective: "Transition from story into a short application while the reader is still engaged.",
+        exhibitSlugs: ["advertorial-application-bridge", "sales-qualification-application"],
+      },
+      {
+        phase: "Accepted-next-step",
+        objective: "Open booking or follow-up only after the application proves fit.",
+        exhibitSlugs: ["call-booking-confirmation-brief"],
+      },
+    ];
+  }
+
+  if (args.funnelPattern === "dm-to-call") {
+    return [
+      {
+        phase: "Direct conversation",
+        objective: "Use DM or chat to identify the active bottleneck in the buyer's own words.",
+        exhibitSlugs: ["dm-to-call-conversation-brief"],
+      },
+      {
+        phase: "One-click call bridge",
+        objective: "Offer booking at the moment the buyer agrees on the problem and next step.",
+        exhibitSlugs: ["dm-to-call-conversation-brief", "call-booking-confirmation-brief"],
+      },
+      {
+        phase: "Confirmation and prep",
+        objective: "Protect show-up with confirmation and a context handoff immediately after booking.",
+        exhibitSlugs: ["call-booking-confirmation-brief", "pre-call-context-vsl"],
+      },
+    ];
+  }
+
+  if (args.funnelPattern === "vsl-to-application-to-calendar") {
+    return [
+      {
+        phase: "Authority VSL",
+        objective: "Earn attention and belief before asking for any commitment.",
+        exhibitSlugs: ["high-ticket-vsl-booking-page", "case-study-proof-stack"],
+      },
+      {
+        phase: "Qualification gate",
+        objective: "Collect only the answers that change the sales motion: fit, urgency, budget, and bottleneck.",
+        exhibitSlugs: ["sales-qualification-application"],
+      },
+      {
+        phase: "Calendar handoff",
+        objective: "Open the booking step immediately after the application is accepted so intent does not cool off.",
+        exhibitSlugs: ["high-ticket-vsl-booking-page", "call-booking-confirmation-brief"],
+      },
+      {
+        phase: "Pre-call conditioning",
+        objective: "Install context before the call so the conversation starts warm and specific.",
+        exhibitSlugs: ["pre-call-context-vsl"],
+      },
+    ];
+  }
+
+  if (args.funnelPattern === "vsl-to-calendar") {
+    return [
+      {
+        phase: "Hook and proof",
+        objective: "Pair the VSL with named outcomes and authority anchors.",
+        exhibitSlugs: ["high-ticket-vsl-booking-page", "case-study-proof-stack"],
+      },
+      {
+        phase: "Immediate booking",
+        objective: "Keep the calendar visible once belief is earned so the next step feels obvious.",
+        exhibitSlugs: ["high-ticket-vsl-booking-page", "call-booking-confirmation-brief"],
+      },
+      {
+        phase: "Show-up protection",
+        objective: "Use the confirmation page and pre-call VSL to protect intent until the meeting starts.",
+        exhibitSlugs: ["call-booking-confirmation-brief", "pre-call-context-vsl"],
+      },
+    ];
+  }
+
+  if (args.funnelPattern === "application-first") {
+    return [
+      {
+        phase: "Proof stack",
+        objective: "Lead with operator credibility and one sharp case study before the form appears.",
+        exhibitSlugs: ["case-study-proof-stack"],
+      },
+      {
+        phase: "Qualification form",
+        objective: "Use the application to screen for fit and give the sales team call context.",
+        exhibitSlugs: ["sales-qualification-application"],
+      },
+      {
+        phase: "Booking and confirmation",
+        objective: "Once qualified, move straight into booking and lock in the next step.",
+        exhibitSlugs: ["call-booking-confirmation-brief", "pre-call-context-vsl"],
+      },
+    ];
+  }
+
+  if (args.funnelPattern === "pre-call-conditioning") {
+    return [
+      {
+        phase: "Booking confirmation",
+        objective: "Confirm the appointment and remove ambiguity about what happens next.",
+        exhibitSlugs: ["call-booking-confirmation-brief"],
+      },
+      {
+        phase: "Context install",
+        objective: "Use a short VSL and checklist to prepare the buyer before the call.",
+        exhibitSlugs: ["pre-call-context-vsl"],
+      },
+    ];
+  }
+
+  if (args.funnelPattern === "case-study-to-demo") {
+    return [
+      {
+        phase: "Proof-led consideration",
+        objective: "Use case-study specificity to earn the demo request.",
+        exhibitSlugs: ["case-study-proof-stack", "feature-comparison-table"],
+      },
+      {
+        phase: "Demo request handoff",
+        objective: "Collect only the fields needed to route and prioritize the lead.",
+        exhibitSlugs: ["multi-step-wizard"],
+      },
+    ];
+  }
+
+  if (args.funnelPattern === "direct-booking") {
+    return [
+      {
+        phase: "Service promise",
+        objective: "Present the service, trust cues, and scheduling path immediately so the buyer can book without extra explanation.",
+        exhibitSlugs: ["call-booking-confirmation-brief"],
+      },
+      {
+        phase: "Booking step",
+        objective: "Move from service fit into calendar selection with minimal friction and clear appointment expectations.",
+        exhibitSlugs: ["call-booking-confirmation-brief"],
+      },
+      {
+        phase: "Confirmation and prep",
+        objective: "Confirm the appointment and protect show-up with a clear next-step and reminder path.",
+        exhibitSlugs: ["call-booking-confirmation-brief", "pre-call-context-vsl"],
+      },
+    ];
+  }
+
+  if (args.funnelPattern === "direct-purchase") {
+    return [
+      {
+        phase: "Offer and reassurance",
+        objective: "Make the product, value, and trust cues clear before the shopper reaches the pay step.",
+        exhibitSlugs: ["checkout-summary-card"],
+      },
+      {
+        phase: "Checkout path",
+        objective: "Keep the purchase summary and pay action visually obvious so the path to payment stays disciplined.",
+        exhibitSlugs: ["checkout-summary-card"],
+      },
+      {
+        phase: "Purchase confidence",
+        objective: "Use confirmation, support, and next-step clarity to reduce hesitation and post-purchase ambiguity.",
+        exhibitSlugs: ["checkout-summary-card"],
+      },
+    ];
+  }
+
+  return [];
+}
+
+function buildOfferPositioningVariants(args: {
+  businessType?: string;
+  funnelPattern: string;
+  frictionProfile: string;
+}): OfferPositioningVariant[] {
+  const businessType = (args.businessType || "business").toLowerCase();
+
+  if (args.funnelPattern === "webinar-to-call") {
+    return [
+      {
+        label: "Teach then diagnose",
+        premise: "Lead with a workshop promise that explains why the current funnel is leaking before the call is offered.",
+        ctaFrame: "Save your seat for the training",
+        bestFor: `${businessType} offers selling to colder traffic that needs education before speaking to sales.`,
+      },
+      {
+        label: "Mechanism-first event",
+        premise: "Center the event on one specific mechanism buyers can assess live, then invite qualified attendees deeper.",
+        ctaFrame: "Join the live breakdown",
+        bestFor: "Offers where the teaching itself builds authority and intent.",
+      },
+    ];
+  }
+
+  if (args.funnelPattern === "advertorial-to-application") {
+    return [
+      {
+        label: "Story to self-diagnosis",
+        premise: "Use a long-form story that mirrors the buyer's current failure mode and lets them recognize themselves before the ask appears.",
+        ctaFrame: "Apply for the breakdown",
+        bestFor: "Premium offers that lose too much context in short-form page structures.",
+      },
+      {
+        label: "Editorial proof stack",
+        premise: "Blend case study, operator narrative, and mechanism explanation so the application feels earned instead of abrupt.",
+        ctaFrame: "See if you qualify",
+        bestFor: "Buyers who need more proof depth than a VSL or hero page can carry.",
+      },
+    ];
+  }
+
+  if (args.funnelPattern === "dm-to-call") {
+    return [
+      {
+        label: "Conversation-led booking",
+        premise: "Keep the tone conversational and use the call as the continuation of the DM, not a hard sales jump.",
+        ctaFrame: "Pick a time to map it out",
+        bestFor: "Warm social, inbox, or community traffic already mid-conversation.",
+      },
+      {
+        label: "Diagnose then book",
+        premise: "Use the DM thread to identify the bottleneck first, then offer the call as the shortest path to a decision.",
+        ctaFrame: "Book the strategy call",
+        bestFor: "Founder-led inbound where trust is already partially established.",
+      },
+    ];
+  }
+
+  if (args.funnelPattern === "vsl-to-application-to-calendar" || args.funnelPattern === "vsl-to-calendar") {
+    return [
+      {
+        label: "Authority-led breakdown",
+        premise: "Use the VSL to establish operator authority and one clear mechanism before the call or application appears.",
+        ctaFrame: "Watch the breakdown, then book",
+        bestFor: "High-ticket offers where authority and proof drive the sale more than novelty.",
+      },
+      {
+        label: "Outcome-led proof",
+        premise: "Anchor the page in one measurable transformation so the buyer sees the result before the process.",
+        ctaFrame: "See if your funnel fits",
+        bestFor: "Agency, consulting, and premium service offers selling a concrete business outcome.",
+      },
+    ];
+  }
+
+  if (args.funnelPattern === "direct-booking") {
+    return [
+      {
+        label: "Fast booking clarity",
+        premise: "Lead with the service, local trust, and available appointment path so the next step feels immediate and low-risk.",
+        ctaFrame: "Book your appointment",
+        bestFor: "Local services and operational businesses where speed, trust, and calendar clarity matter more than long-form persuasion.",
+      },
+      {
+        label: "Quote-to-calendar bridge",
+        premise: "Use a short fit explanation and local reassurance so the booking step feels like the obvious continuation of the service promise.",
+        ctaFrame: "Choose a time",
+        bestFor: "Businesses like detailing, lawn care, cleaning, and home services that need direct booking without heavy screening.",
+      },
+    ];
+  }
+
+  if (args.funnelPattern === "direct-purchase") {
+    return [
+      {
+        label: "Checkout confidence",
+        premise: "Keep the page tightly focused on product value, order summary, and payment reassurance so the buyer can finish the purchase without wandering.",
+        ctaFrame: "Complete your order",
+        bestFor: "Commerce and direct-purchase paths where trust and summary clarity matter more than long-form persuasion.",
+      },
+      {
+        label: "Product-to-pay path",
+        premise: "Use concise proof and trust cues to move the shopper from product interest into payment with minimal distraction.",
+        ctaFrame: "Start checkout",
+        bestFor: "Buy-now offers that need a clean path from offer evaluation into checkout.",
+      },
+    ];
+  }
+
+  if (args.frictionProfile === "high-commitment") {
+    return [
+      {
+        label: "Selective premium offer",
+        premise: "Use selectivity, proof, and named process to raise perceived seriousness before the CTA.",
+        ctaFrame: "Apply now",
+        bestFor: "High-ticket applications and discovery-call funnels.",
+      },
+    ];
+  }
+
+  return [
+    {
+      label: "Direct response offer",
+      premise: "Lead with the clearest transformation and use the CTA to finish that sentence.",
+      ctaFrame: "Get started",
+      bestFor: `${businessType} funnels where the promise is simple and the commitment threshold is lower.`,
+    },
+  ];
+}
+
+function inferFunnelLayoutFamily(request: AgentResolutionRequest): string {
+  const signalText = [
+    getPrimaryPrompt(request) || "",
+    request.constraints?.visualPosture || "",
+    ...(getLayoutNeeds(request) || []),
+  ].join(" ").toLowerCase();
+
+  if (/editorial-premium|editorial premium|magazine|story-led|serif/.test(signalText)) return "editorial-premium";
+  if (/direct-response|direct response|aggressive|high contrast|response-first|response-oriented|repeated cta|response cta|urgent|high-clarity sequence/.test(signalText)) return "direct-response";
+  if (/authority-consulting|authority consulting|operator|consulting|diagnostic/.test(signalText)) return "authority-consulting";
+  if (/minimal-conversion|minimal conversion|conversion-first|restrained|tight|one cta/.test(signalText)) return "minimal-conversion";
+  if (/high-ticket-offer|high ticket|premium|selective/.test(signalText)) return "high-ticket-offer";
+  return "authority-consulting";
+}
+
+function resolveFunnelLayoutFamily(args: {
+  request: AgentResolutionRequest;
+  funnelPattern: string;
+  conversionMechanism: string;
+  trafficTemperature: string;
+  frictionProfile: string;
+}): string {
+  const inferredFamily = inferFunnelLayoutFamily(args.request);
+
+  if (args.funnelPattern === "advertorial-to-application") return "editorial-premium";
+  if (args.funnelPattern === "dm-to-call") return "authority-consulting";
+  if (args.funnelPattern === "webinar-to-call") return "direct-response";
+  if (args.funnelPattern === "pre-call-conditioning") return "minimal-conversion";
+  if (args.funnelPattern === "case-study-to-demo") return "authority-consulting";
+  if (args.funnelPattern === "direct-purchase") return "direct-response";
+  if (args.funnelPattern === "direct-booking") return "minimal-conversion";
+  if (args.funnelPattern === "trial-first" || args.funnelPattern === "lead-capture") return "minimal-conversion";
+
+  if (args.conversionMechanism === "application-submit" && args.trafficTemperature === "cold") {
+    return "high-ticket-offer";
+  }
+
+  if (args.frictionProfile === "structured" && inferredFamily === "high-ticket-offer") {
+    return "authority-consulting";
+  }
+
+  return inferredFamily;
+}
+
+function resolveConversionFamily(funnelPattern: string): string {
+  if (funnelPattern === "direct-purchase") return "purchase";
+  if (funnelPattern === "direct-booking") return "booking";
+  if (funnelPattern === "webinar-to-call") return "webinar";
+  if (funnelPattern === "advertorial-to-application") return "advertorial";
+  if (funnelPattern === "dm-to-call") return "conversation";
+  if (funnelPattern === "vsl-to-application-to-calendar" || funnelPattern === "vsl-to-calendar") return "vsl";
+  if (funnelPattern === "application-first") return "qualification";
+  if (funnelPattern === "pre-call-conditioning") return "pre-call";
+  if (funnelPattern === "case-study-to-demo") return "diagnostic-proof";
+  if (funnelPattern === "trial-first") return "trial";
+  return "lead-capture";
+}
+
+function pickFunnelDesignDirection(args: {
+  layoutFamily: string;
+  funnelPattern: string;
+  frictionProfile: string;
+  conversionMechanism: string;
+  trafficTemperature: string;
+}): { id: string; name: string; vibe: string; rationale: string; visualRules: string[] } {
+  const patternSpecificRules: Record<string, { rationale: string; rules: string[] }> = {
+    "webinar-to-call": {
+      rationale: "The page should sell the teaching event first, then earn the follow-up call through clarity, proof, and registration momentum.",
+      rules: [
+        "Make the event promise, time block, and registration action obvious in the first screen.",
+        "Use agenda and speaker proof to deepen commitment before any deeper qualification message appears.",
+        "Keep post-registration next steps visible so the call feels earned through engagement, not forced upfront.",
+      ],
+    },
+    "advertorial-to-application": {
+      rationale: "The page should read like a persuasive editorial so the application feels earned by narrative conviction rather than inserted as a generic CTA.",
+      rules: [
+        "Use a story-led masthead and longer reading rhythm before the application zone appears.",
+        "Let proof feel embedded in the narrative instead of stacked like a dashboard.",
+        "Transition into the application with a clear fit threshold so the ask feels selective, not abrupt.",
+      ],
+    },
+    "dm-to-call": {
+      rationale: "The page should preserve conversational continuity so moving from DM to calendar feels like the same thread continuing in a sharper format.",
+      rules: [
+        "Keep the top of the page compact and diagnosis-led, as if it is summarizing the live conversation.",
+        "Use short proof blocks and clear call expectations instead of long-form persuasion modules.",
+        "Make the booking area feel like a natural handoff from chat, not a restart into a hard sales page.",
+      ],
+    },
+    "vsl-to-application-to-calendar": {
+      rationale: "The page should establish authority through the VSL, then make qualification feel like the necessary bridge into booking.",
+      rules: [
+        "Keep the VSL and qualification cue visible above the fold so the selective path is clear immediately.",
+        "Use proof to justify the screening step, not just the outcome promise.",
+        "Treat the application and calendar handoff as one continuous sequence instead of two separate asks.",
+      ],
+    },
+    "vsl-to-calendar": {
+      rationale: "The page should use the VSL and proof stack to make immediate booking feel obvious without adding needless qualification friction.",
+      rules: [
+        "Keep the VSL adjacent to the main promise and primary booking path.",
+        "Use proof bands to increase conviction before the calendar block repeats.",
+        "Avoid side narratives that delay the first serious booking moment.",
+      ],
+    },
+    "application-first": {
+      rationale: "The page should feel selective and process-led so the application reads as a quality filter, not a conversion tax.",
+      rules: [
+        "Make fit, disqualification, and what happens after approval visible before the form begins.",
+        "Use proof that specifically reinforces why qualified buyers get better calls or outcomes.",
+        "Keep the form area clean and finite so the qualifier feels worth completing.",
+      ],
+    },
+    "pre-call-conditioning": {
+      rationale: "The page should feel operational and calming because its job is to improve show-up and prep quality, not resell the offer.",
+      rules: [
+        "Lead with appointment confirmation and one clear prep action rather than new persuasion modules.",
+        "Use concise proof and checklist logic so the page feels useful instead of promotional.",
+        "Make the prep completion path impossible to miss and strip out any decorative detours.",
+      ],
+    },
+    "case-study-to-demo": {
+      rationale: "The page should use proof depth and workflow specificity to make the demo feel diagnostic and worth stakeholder time.",
+      rules: [
+        "Lead with one concrete business outcome before describing the product.",
+        "Use a detailed case study and agenda structure to justify the demo request.",
+        "Keep the demo form adjacent to the case evidence so the ask feels earned by specificity.",
+      ],
+    },
+    "trial-first": {
+      rationale: "The page should feel fast, clear, and low-friction so the trial looks easier than further evaluation.",
+      rules: [
+        "Make the first-win path obvious before discussing broader product detail.",
+        "Use quick proof and setup simplicity to reduce hesitation.",
+        "Keep the signup action visible and field count visually restrained.",
+      ],
+    },
+    "lead-capture": {
+      rationale: "The page should make the value exchange immediate and trustworthy so the opt-in feels proportionate to the promised asset.",
+      rules: [
+        "Lead with the asset promise and its immediate payoff before any secondary explanation.",
+        "Keep proof compact and adjacent to the form so trust supports the opt-in directly.",
+        "Treat the form as the shortest path to the asset, with minimal friction and clear delivery language.",
+      ],
+    },
+    "direct-booking": {
+      rationale: "The page should make booking feel immediate, trustworthy, and local-business practical instead of overbuilt or salesy.",
+      rules: [
+        "Lead with the service promise, service radius, and visible scheduling path above the fold.",
+        "Keep trust cues operational: arrival windows, guarantees, dispatch expectations, and appointment readiness.",
+        "Treat the booking zone as the product, not as the footer of a long marketing page.",
+      ],
+    },
+    "direct-purchase": {
+      rationale: "The page should make buying feel disciplined and trustworthy so the customer can move from product interest into payment without distraction.",
+      rules: [
+        "Lead with product clarity, order confidence, and a visible pay path instead of decorative merchandising effects.",
+        "Keep reassurance adjacent to cart summary, shipping method, payment method, and purchase action.",
+        "Flatten the visual rhythm as the buyer approaches checkout so the path to payment stays obvious.",
+      ],
+    },
+  };
+  const patternOverride = patternSpecificRules[args.funnelPattern];
+
+  const makeDirection = (
+    id: string,
+    name: string,
+    vibe: string,
+    rationale: string,
+    visualRules: string[],
+  ) => ({
+    id,
+    name,
+    vibe,
+    rationale: patternOverride?.rationale || rationale,
+    visualRules: patternOverride?.rules || visualRules,
+  });
+
+  if (args.funnelPattern === "webinar-to-call") {
+    return makeDirection(
+      "event-momentum",
+      "Event Momentum",
+      "live-session momentum with schedule clarity, checkpoints, and registration urgency.",
+      "The funnel needs registration energy, agenda clarity, and an obvious sense of what the visitor gets by showing up live.",
+      [
+        "Build the first screen around the event promise, time commitment, and registration action instead of a generic hero stack.",
+        "Use agenda pacing, speaker authority, and event-specific proof to create momentum between sections.",
+        "Let CTA zones feel like event checkpoints rather than evergreen sales-page repeats.",
+      ],
+    );
+  }
+
+  if (args.funnelPattern === "advertorial-to-application") {
+    return makeDirection(
+      "narrative-authority",
+      "Narrative Authority",
+      "magazine-grade storytelling with restraint, atmosphere, and belief-building.",
+      "The funnel needs long-form editorial pacing so the application emerges from conviction rather than from generic CTA pressure.",
+      [
+        "Lead with a masthead, dek, and opening tension instead of a performance-marketing hero.",
+        "Use quieter proof integration, pull-quote rhythm, and longer reading sections before the first hard ask appears.",
+        "Keep the application zone visually cleaner and more selective than the surrounding narrative bands.",
+      ],
+    );
+  }
+
+  if (args.funnelPattern === "dm-to-call") {
+    return makeDirection(
+      "conversational-handoff",
+      "Conversational Handoff",
+      "operator-led handoff energy that feels like the same thread, not a new campaign.",
+      "The funnel should feel like a live sales thread getting sharper, not like the buyer got dropped into a different brand surface.",
+      [
+        "Use compact sections, short paragraphs, and diagnosis-led framing that feels close to chat cadence.",
+        "Prefer proof snippets, operator notes, and call expectations over long persuasive blocks.",
+        "Make the booking area feel like a handoff module from the conversation, not a restart into a broad hero section.",
+      ],
+    );
+  }
+
+  if (args.funnelPattern === "vsl-to-application-to-calendar") {
+    return makeDirection(
+      "selective-authority",
+      "Selective Authority",
+      "boardroom credibility with a sharp headline, disciplined proof, and selective gatekeeping.",
+      "The funnel should feel premium and controlled so the qualification step reads as a privilege filter rather than friction for its own sake.",
+      [
+        "Keep the VSL, qualification cue, and selective framing visible in the same visual field near the top of the page.",
+        "Use high-signal proof and mechanism depth instead of dense testimonial grids or repeated CTA cards.",
+        "Separate application and post-approval booking states clearly so the scroll path feels curated rather than crowded.",
+      ],
+    );
+  }
+
+  if (args.funnelPattern === "vsl-to-calendar") {
+    return makeDirection(
+      "proof-to-booking",
+      "Proof-to-Booking",
+      "slower, quieter persuasion that makes the booking feel earned by proof.",
+      "The funnel should make immediate booking feel like the logical end of the proof sequence without adding unnecessary gates.",
+      [
+        "Anchor the page around the VSL, proof stack, and booking path rather than around decorative section wrappers.",
+        "Use tighter alternation between evidence and action so the calendar never feels too far away.",
+        "Treat secondary sections as conviction support, not as excuses to add more visual motifs.",
+      ],
+    );
+  }
+
+  if (args.funnelPattern === "application-first") {
+    return makeDirection(
+      "qualified-intake",
+      "Qualified Intake",
+      "calm, serious, gatekeeping energy where qualification is part of the value.",
+      "The funnel should feel procedural and selective so the form reads as a serious intake step, not as a bloated lead form.",
+      [
+        "Front-load fit, disqualification, and next-step clarity before the application fields appear.",
+        "Use modular proof and process notes that reinforce why screening protects buyer quality.",
+        "Keep the application shell finite, calm, and visibly structured.",
+      ],
+    );
+  }
+
+  if (args.funnelPattern === "pre-call-conditioning") {
+    return makeDirection(
+      "operational-reassurance",
+      "Operational Reassurance",
+      "practical confirmation and next-step clarity with zero drama.",
+      "The funnel should feel more like a clear prep brief than a sales page, because its job is to improve follow-through and readiness.",
+      [
+        "Lead with confirmation state, prep checklist, and time expectations before any proof or persuasion language.",
+        "Use simple utility blocks, clear dividers, and calm hierarchy instead of promotional hero treatments.",
+        "Make the prep action and show-up expectations the dominant visual system throughout the page.",
+      ],
+    );
+  }
+
+  if (args.funnelPattern === "case-study-to-demo") {
+    return makeDirection(
+      "diagnostic-proof",
+      "Diagnostic Proof",
+      "analytical, evidence-led, and built like a case to be understood before the CTA.",
+      "The funnel should feel analytical and evidence-led so the demo request reads as a serious working session.",
+      [
+        "Use one primary case narrative supported by metrics, workflow specifics, and evaluation context.",
+        "Keep layouts structured and boardroom-clear rather than cinematic or hype-driven.",
+        "Place the demo ask adjacent to specific evidence so the CTA inherits credibility from the proof nearby.",
+      ],
+    );
+  }
+
+  if (args.funnelPattern === "direct-booking") {
+    return makeDirection(
+      "service-booking-clarity",
+      "Service Booking Clarity",
+      "clear, plain, and service-first with trust, speed, and no wasted chrome.",
+      "The funnel should feel like a trustworthy local-service booking path where speed and scheduling clarity matter more than extended persuasion.",
+      [
+        "Use a compact hero with service promise, service radius, and the booking step visible immediately.",
+        "Keep trust cues practical: arrival windows, service expectations, guarantees, and response timing.",
+        "Treat the scheduling module as the main action surface, not as a late-stage CTA block.",
+      ],
+    );
+  }
+
+  if (args.funnelPattern === "direct-purchase") {
+    return makeDirection(
+      "checkout-confidence",
+      "Checkout Confidence",
+      "product-and-checkout clarity with trust cues and a tighter path to pay.",
+      "The funnel should feel like a disciplined commerce path where purchase confidence, order summary, and payment clarity do the conversion work.",
+      [
+        "Use a purchase-first structure with cart summary, trust cues, and payment action kept physically close together.",
+        "Keep reassurance tied to delivery, support, returns, shipping, or guarantees instead of generic promo language.",
+        "Flatten the checkout zone so the eye lands on summary and pay action before any secondary content.",
+      ],
+    );
+  }
+
+  if (args.funnelPattern === "trial-first") {
+    return makeDirection(
+      "fast-adoption",
+      "Fast Adoption",
+      "clear, plain, and activation-first with almost no decorative excuses.",
+      "The funnel should make starting feel easier than continuing to compare options, with very little ceremony between interest and product use.",
+      [
+        "Use compressed sections, setup clarity, and first-win framing before broader product storytelling.",
+        "Keep proof short, concrete, and supportive of activation speed rather than brand aura.",
+        "Hold the signup path open across the scroll without turning the page into a CTA echo chamber.",
+      ],
+    );
+  }
+
+  if (args.funnelPattern === "lead-capture") {
+    return makeDirection(
+      "value-exchange",
+      "Value Exchange",
+      "clear, plain, and conversion-first with almost no decorative excuses.",
+      "The funnel should make the asset feel concrete and immediately useful so the email ask looks proportionate and fair.",
+      [
+        "Use a compact asset-first hero with a direct opt-in path and minimal competing interface chrome.",
+        "Keep proof, delivery notes, and trust cues physically close to the form or CTA.",
+        "Strip out extra sections that dilute the value exchange or delay the first serious opt-in moment.",
+      ],
+    );
+  }
+
+  if (args.layoutFamily === "direct-response") {
+    return makeDirection(
+      args.trafficTemperature === "cold" ? "high-contrast-performance" : "fast-conversion-rhythm",
+      args.trafficTemperature === "cold" ? "High Contrast Performance" : "Fast Conversion Rhythm",
+      "compressed, aggressive, and built to keep the ask in motion.",
+      "The funnel needs fast scanning, harder CTA pacing, and obvious contrast between persuasion and action zones.",
+      [
+        "Use strong section separation so the CTA moments feel unmistakable.",
+        "Keep the dominant promise and action block visible before any deeper explanation.",
+        "Use repetition in section framing, not decorative variation, to increase momentum.",
+      ],
+    );
+  }
+
+  if (args.layoutFamily === "editorial-premium" || args.layoutFamily === "high-ticket-offer") {
+    return makeDirection(
+      args.conversionMechanism === "application-submit" ? "selective-premium" : "measured-premium",
+      args.conversionMechanism === "application-submit" ? "Selective Premium" : "Measured Premium",
+      "slower, quieter, more expensive-feeling persuasion with fewer but stronger moves.",
+      "The funnel needs to feel selective, calm, and expensive so belief builds before the booking ask lands.",
+      [
+        "Use generous spacing and strong type hierarchy to create authority without shouting.",
+        "Let proof and mechanism carry the page, not aggressive visual noise.",
+        "Make the booking area feel like a considered next step, not a hard sell interruption.",
+      ],
+    );
+  }
+
+  return makeDirection(
+    args.frictionProfile === "structured" ? "structured-authority" : "authority-minimal",
+    args.frictionProfile === "structured" ? "Structured Authority" : "Authority Minimal",
+    "boardroom credibility with a sharp headline and disciplined proof.",
+    "The page should feel clear, sharp, and trustworthy so the visitor can assess fit quickly and move into booking without ambiguity.",
+    [
+      "Use disciplined hierarchy with one dominant message per section.",
+      "Strip out decorative filler so authority comes from specificity and structure.",
+      "Keep proof adjacent to claims so trust compounds as the page descends.",
+    ],
+  );
+}
+
+function buildFunnelPageSections(args: {
+  funnelPattern: string;
+  conversionMechanism: string;
+  trafficTemperature: string;
+  businessType?: string;
+}): Array<Record<string, unknown>> {
+  const businessType = args.businessType || "offer";
+  const primaryAction = args.conversionMechanism === "application-submit"
+    ? "Start the application"
+    : args.conversionMechanism === "demo-request"
+    ? "Request the demo"
+    : args.conversionMechanism === "trial-signup"
+    ? "Start the trial"
+    : args.conversionMechanism === "direct-purchase"
+    ? "Start checkout"
+    : args.conversionMechanism === "passive-engagement"
+    ? "Reply to continue"
+    : args.conversionMechanism === "email-capture"
+    ? "Get the guide"
+    : "Book the appointment";
+  const bookingAction = args.conversionMechanism === "application-submit"
+    ? "Book after approval"
+    : "Book the appointment";
+
+  const sectionSetByPattern: Record<string, Array<Record<string, unknown>>> = {
+    "webinar-to-call": [
+      {
+        label: "Attention",
+        purpose: "Stop cold visitors with a sharp training promise and position the webinar as the fastest path to clarity before any call is mentioned.",
+        sequenceIntent: "Attention is controlled by making the event feel concrete, timely, and worth reserving immediately.",
+        layoutType: "Registration marquee with an agenda ribbon up top, promise-led copy, and a signup card anchored alongside the event details.",
+        visualHierarchy: {
+          dominant: "Specific training promise and event title.",
+          supporting: "Who it is for, timing, and a visible registration CTA.",
+        },
+        contentBlocks: ["Training headline", "Subhead", "Agenda ribbon", "Date/time block", "Speaker credibility line", "Registration CTA"],
+        interaction: ["Reserve seat"],
+      },
+      {
+        label: "Belief builder",
+        purpose: `Explain why the current ${businessType} funnel under-converts and why a live breakdown creates more trust than a direct pitch.` ,
+        sequenceIntent: "This section earns attention long enough for the visitor to accept that the training will actually resolve a live problem.",
+        layoutType: "Full-width narrative band with one core thesis and supporting belief shifts.",
+        visualHierarchy: {
+          dominant: "Main reason the training matters.",
+          supporting: "Three short belief shifts about diagnosis, timing, and fit.",
+        },
+        contentBlocks: ["Problem thesis", "Why-now explanation", "Belief-shift rows", "Soft registration bridge"],
+        interaction: ["Scroll toward proof"],
+      },
+      {
+        label: "Proof",
+        purpose: "Use speaker proof, attendee outcomes, and specific results to prove the training is worth time and trust.",
+        sequenceIntent: "Proof removes the fear that the webinar is generic or shallow before the agenda appears.",
+        layoutType: "Proof-led strip with one featured result and supporting credibility rows.",
+        visualHierarchy: {
+          dominant: "Named outcome or attendee result.",
+          supporting: "Speaker credentials, company context, and supporting metrics.",
+        },
+        contentBlocks: ["Featured result", "Speaker proof", "Attendee outcomes", "Context notes"],
+        interaction: ["Scroll through proof"],
+      },
+      {
+        label: "Mechanism explanation",
+        purpose: "Show what the training covers, how it diagnoses the funnel, and why the post-event call is reserved for the right attendees only.",
+        sequenceIntent: "The mechanism section makes the registration step feel practical, not aspirational.",
+        layoutType: "Two-column agenda and mechanism breakdown with topic flow on one side and buyer takeaways on the other.",
+        visualHierarchy: {
+          dominant: "Session agenda and diagnostic path.",
+          supporting: "Takeaways, attendee fit, and how the follow-up call is earned.",
+        },
+        contentBlocks: ["Agenda overview", "Diagnostic topics", "Expected takeaways", "Call qualification note"],
+        interaction: ["Scan agenda"],
+      },
+      {
+        label: "Offer + CTA",
+        purpose: "Present registration as the lowest-friction way into the funnel while clarifying that the booked call comes after engagement, not before it.",
+        sequenceIntent: "This is the main action zone where trust converts into event registration.",
+        layoutType: "Event checkout stage with schedule chips, reminder options, and the registration panel as the dominant action module.",
+        visualHierarchy: {
+          dominant: "Registration CTA and event value.",
+          supporting: "What happens after registering, reminders, and follow-up eligibility.",
+        },
+        contentBlocks: ["Registration form or CTA", "Schedule chips", "What happens after sign-up", "Reminder expectation", "Qualified-next-step note"],
+        interaction: ["Reserve seat", "Choose reminder preference"],
+      },
+      {
+        label: "Reinforcement / objection handling",
+        purpose: "Resolve the final doubts around time, relevance, and whether this is just another generic webinar.",
+        sequenceIntent: "This section protects conversion for interested visitors who only need reassurance before they register.",
+        layoutType: "Stacked objection strip with concise answers and a repeated registration action.",
+        visualHierarchy: {
+          dominant: "Time and relevance objections.",
+          supporting: "Expectations, replay note, and repeated registration CTA.",
+        },
+        contentBlocks: ["Objection rows", "Expectation reset", "Replay or attendance note", "Repeated registration CTA"],
+        interaction: ["Expand answers", "Reserve seat"],
+      },
+    ],
+    "advertorial-to-application": [
+      {
+        label: "Attention",
+        purpose: "Open with a story-led hook that mirrors the buyer's current failure mode and makes the page feel like insight, not a landing page.",
+        sequenceIntent: "Attention is controlled by curiosity and self-recognition rather than blunt promotion.",
+        layoutType: "Editorial hero with narrative headline, dek, and soft application bridge.",
+        visualHierarchy: {
+          dominant: "Narrative headline and opening tension.",
+          supporting: "Context line, operator byline, and soft apply cue.",
+        },
+        contentBlocks: ["Narrative headline", "Opening dek", "Byline or authority line", "Soft application bridge"],
+        interaction: ["Scroll into story"],
+      },
+      {
+        label: "Belief builder",
+        purpose: `Use a story arc to reframe why the current ${businessType} buying path breaks trust before the buyer reaches conviction.` ,
+        sequenceIntent: "This section turns passive reading into active agreement by making the old approach look obviously flawed.",
+        layoutType: "Long-form narrative section with sectional pull quotes and belief-shift checkpoints.",
+        visualHierarchy: {
+          dominant: "Core narrative thesis.",
+          supporting: "Story beats, pull quotes, and belief pivots.",
+        },
+        contentBlocks: ["Narrative thesis", "Story beats", "Belief-shift callouts", "Bridge sentence toward proof"],
+        interaction: ["Scroll story progression"],
+      },
+      {
+        label: "Proof",
+        purpose: "Validate the narrative with specific outcomes, case snapshots, and evidence that the mechanism works in the real world.",
+        sequenceIntent: "Proof converts story into credibility before the mechanism asks for deeper agreement.",
+        layoutType: "Editorial proof stack with featured case narrative and supporting stat rows.",
+        visualHierarchy: {
+          dominant: "Named transformation story.",
+          supporting: "Metric rows, contextual proof, and selective credibility notes.",
+        },
+        contentBlocks: ["Featured case story", "Outcome metrics", "Context notes", "Proof bridge"],
+        interaction: ["Scroll case stack"],
+      },
+      {
+        label: "Mechanism explanation",
+        purpose: "Break down the underlying mechanism so the application feels like the rational next step, not a sudden ask after a long read.",
+        sequenceIntent: "This section resolves the gap between persuasion and action by naming the exact model behind the results.",
+        layoutType: "Two-column editorial explainer with mechanism thesis and step-by-step breakdown.",
+        visualHierarchy: {
+          dominant: "Mechanism thesis.",
+          supporting: "Process steps, why it works, and what gets evaluated in the application.",
+        },
+        contentBlocks: ["Mechanism statement", "Step sequence", "Why-it-works rows", "Application qualification note"],
+        interaction: ["Scroll mechanism"],
+      },
+      {
+        label: "Offer + CTA",
+        purpose: "Transition from editorial persuasion into a selective application zone that feels earned by the reading experience.",
+        sequenceIntent: "This is where conviction cashes out into a serious next step without breaking the page tone.",
+        layoutType: "Inline editorial application dock that interrupts the reading rhythm with a selective intake card and fit framing.",
+        visualHierarchy: {
+          dominant: "Application trigger and fit framing.",
+          supporting: "Who should apply, what happens next, and approval-to-booking clarity.",
+        },
+        contentBlocks: ["Fit framing", "Selective intake card", "Application CTA", "Next-step timeline", "Approval-to-booking note"],
+        interaction: ["Start the application", "Review fit criteria"],
+      },
+      {
+        label: "Reinforcement / objection handling",
+        purpose: "Answer the final hesitation points around eligibility, time, and whether the application is worth starting now.",
+        sequenceIntent: "This section protects the reader who is persuaded but still needs permission to act.",
+        layoutType: "Full-width FAQ strip with one repeated application action.",
+        visualHierarchy: {
+          dominant: "Fit and timing objections.",
+          supporting: "Application expectations, response time, and repeated CTA.",
+        },
+        contentBlocks: ["Objection rows", "Fit clarifier", "Response-time note", "Repeated application CTA"],
+        interaction: ["Expand answers", "Start the application"],
+      },
+    ],
+    "dm-to-call": [
+      {
+        label: "Attention",
+        purpose: "Mirror the live conversation context so the buyer feels like this page continues the DM instead of restarting the pitch.",
+        sequenceIntent: "Attention is controlled by familiarity, continuity, and one clear next step.",
+        layoutType: "Chat-thread handoff hero with DM recap bubbles above a compact booking bridge card.",
+        visualHierarchy: {
+          dominant: "Current bottleneck summary.",
+          supporting: "Why the call matters now and a visible booking bridge.",
+        },
+        contentBlocks: ["Conversation recap", "DM recap bubbles", "Problem statement", "Why now note", "Booking bridge CTA"],
+        interaction: [bookingAction],
+      },
+      {
+        label: "Belief builder",
+        purpose: "Show the buyer that the problem surfaced in the DM is specific, solvable, and worth taking off text and into a call.",
+        sequenceIntent: "This section turns a warm conversation into conviction without over-selling.",
+        layoutType: "Stacked diagnosis section with one main thesis and short supporting points.",
+        visualHierarchy: {
+          dominant: "Diagnosis thesis.",
+          supporting: "Observed symptoms, common bottlenecks, and the cost of staying in DM mode.",
+        },
+        contentBlocks: ["Diagnosis headline", "Observed symptoms", "Common bottlenecks", "Bridge to proof"],
+        interaction: ["Scroll diagnosis"],
+      },
+      {
+        label: "Proof",
+        purpose: "Use compact proof that feels conversational and real, proving the call is worth scheduling now.",
+        sequenceIntent: "Proof here should confirm instinct, not force a new belief system.",
+        layoutType: "Compact proof ledger with one featured example and short result rows.",
+        visualHierarchy: {
+          dominant: "Most relevant proof example.",
+          supporting: "Short result rows and trust anchors.",
+        },
+        contentBlocks: ["Featured proof note", "Outcome rows", "Trust anchors", "Transition to call purpose"],
+        interaction: ["Scan proof"],
+      },
+      {
+        label: "Mechanism explanation",
+        purpose: "Explain what happens on the call, what gets diagnosed, and why the session is the shortest path to a decision.",
+        sequenceIntent: "This removes uncertainty about the meeting and keeps the jump from chat to calendar feeling natural.",
+        layoutType: "Two-column call breakdown with session flow on one side and decision outcomes on the other.",
+        visualHierarchy: {
+          dominant: "Call structure.",
+          supporting: "What gets covered, what gets decided, and what happens after.",
+        },
+        contentBlocks: ["Call agenda", "Decision checkpoints", "Expected outcomes", "Next-step note"],
+        interaction: ["Scan call agenda"],
+      },
+      {
+        label: "Offer + CTA",
+        purpose: "Make the calendar step feel like the continuation of a conversation that already has momentum.",
+        sequenceIntent: "This is the main action zone where warm intent is converted before it cools off.",
+        layoutType: "Conversation handoff card with a short call brief, expectation bullets, and a slide-over calendar trigger.",
+        visualHierarchy: {
+          dominant: "Booking CTA and next-step clarity.",
+          supporting: "What the buyer should bring, timing, and post-booking expectation.",
+        },
+        contentBlocks: ["Call promise", "Short call brief", "Calendar or booking trigger", "What to bring", "What happens after booking"],
+        interaction: [bookingAction, "Calendar selection"],
+      },
+      {
+        label: "Reinforcement / objection handling",
+        purpose: "Handle last-minute hesitation around time, pressure, and whether the call is actually useful.",
+        sequenceIntent: "This section lowers the final barrier without changing the conversational tone.",
+        layoutType: "Compact objection strip with short answers and one repeated booking action.",
+        visualHierarchy: {
+          dominant: "Time and pressure objections.",
+          supporting: "Reassurance, fit note, and repeated booking CTA.",
+        },
+        contentBlocks: ["Objection rows", "Pressure reset", "Fit clarification", "Repeated booking CTA"],
+        interaction: ["Expand answers", bookingAction],
+      },
+    ],
+    "vsl-to-application-to-calendar": [
+      {
+        label: "Attention",
+        purpose: "Capture high-intent visitors with a strong promise, an immediate VSL entry point, and a clear explanation that fit is screened before booking.",
+        sequenceIntent: "This controls attention by making the VSL and the selective next step visible immediately.",
+        layoutType: "Cinematic VSL stage with the player centered, a qualification gate card pinned beside it, and access-tier cues framing the screen.",
+        visualHierarchy: {
+          dominant: "Outcome-led headline and VSL stage.",
+          supporting: "Authority anchors, access-tier cues, qualification gate card, and application CTA.",
+        },
+        contentBlocks: ["Headline", "Subhead", "Authority line", "Access-tier cues", "VSL stage", "Qualification gate card", "Application CTA"],
+        interaction: ["Play video", "Start the application"],
+      },
+      {
+        label: "Belief builder",
+        purpose: `Reframe why the current ${businessType} funnel leaks trust and why qualification is required before the calendar opens.` ,
+        sequenceIntent: "This section converts interest into acceptance of the screening step before deeper proof arrives.",
+        layoutType: "Founder argument stage with one dominant mechanism claim and a gated-access rationale running beside it.",
+        visualHierarchy: {
+          dominant: "Core funnel diagnosis and mechanism claim.",
+          supporting: "Belief shifts about trust, fit, gated access, and qualification.",
+        },
+        contentBlocks: ["Belief-shift headline", "Mechanism thesis", "Gated-access rationale", "Qualification rationale", "Soft CTA bridge"],
+        interaction: ["Scroll toward proof"],
+      },
+      {
+        label: "Proof",
+        purpose: "Use named outcomes and fit-specific results to prove the VSL-to-application path works for the right buyers.",
+        sequenceIntent: "Proof makes the qualifier feel selective and justified rather than annoying.",
+        layoutType: "Accepted-buyer results rail with one featured transformation, access criteria notes, and support rows tied only to approved buyers.",
+        visualHierarchy: {
+          dominant: "Named buyer result.",
+          supporting: "Context rows, access criteria notes, and selective-fit proof.",
+        },
+        contentBlocks: ["Featured case result", "Accepted-buyer proof", "Access criteria note", "Metrics band", "Transition note"],
+        interaction: ["Scroll through proof"],
+      },
+      {
+        label: "Mechanism explanation",
+        purpose: "Show how the VSL, application, and booking handoff work together so the visitor understands the exact progression.",
+        sequenceIntent: "This section removes uncertainty about how the funnel moves from video to screening to calendar.",
+        layoutType: "Access ladder explainer that stages VSL watch, approval gate, and booking unlock as three explicit gates.",
+        visualHierarchy: {
+          dominant: "Three-gate access ladder.",
+          supporting: "Why each gate exists, what unlocks next, and what happens after approval.",
+        },
+        contentBlocks: ["VSL gate", "Application gate", "Booking unlock gate", "Approval standard", "Process timing note"],
+        interaction: ["Scroll process"],
+      },
+      {
+        label: "Offer + CTA",
+        purpose: "Present the application as the next serious step while clarifying that booking unlocks immediately after fit is confirmed.",
+        sequenceIntent: "This is the main action zone where persuasion becomes qualified commitment.",
+        layoutType: "Access gate dock with fit checklist, approval standard, and a locked-until-approved booking rail.",
+        visualHierarchy: {
+          dominant: "Application CTA and locked booking state.",
+          supporting: "Fit checklist, approval standard, and booking-after-approval note.",
+        },
+        contentBlocks: ["Offer framing", "Fit checklist", "Approval standard", "Application trigger", "Locked booking rail", "Booking-after-approval note"],
+        interaction: ["Start the application", bookingAction],
+      },
+      {
+        label: "Reinforcement / objection handling",
+        purpose: "Resolve final hesitation around qualification, timing, and what happens after the form is submitted.",
+        sequenceIntent: "This lowers friction after the visitor has already accepted the need for screening.",
+        layoutType: "Approval FAQ band with qualification answers, review timing, and a repeated application gate.",
+        visualHierarchy: {
+          dominant: "Approval and qualification objections.",
+          supporting: "Response-time note, review standards, process reassurance, and repeated application CTA.",
+        },
+        contentBlocks: ["Objection rows", "Response timeline", "Review standards", "Process reassurance", "Repeated application CTA"],
+        interaction: ["Expand answers", "Start the application"],
+      },
+    ],
+    "vsl-to-calendar": [
+      {
+        label: "Attention",
+        purpose: "Capture high-intent visitors with one sharp promise, immediate authority, and a visible booking path above the fold.",
+        sequenceIntent: "This is where attention gets controlled and the visitor decides whether the page is serious enough to keep reading.",
+        layoutType: "Centered promise stack with the VSL player up front and a floating booking rail offset beside it.",
+        visualHierarchy: {
+          dominant: "Outcome-led headline and VSL entry point.",
+          supporting: "Authority anchors, selective availability cue, and a visible primary booking action.",
+        },
+        contentBlocks: ["Headline", "Subhead", "Founder or operator credibility line", "VSL entry", "Primary booking CTA"],
+        interaction: ["Play video", bookingAction],
+      },
+      {
+        label: "Belief builder",
+        purpose: `Reframe why the current ${businessType} funnel leaks intent so the visitor believes a call is worth taking.`,
+        sequenceIntent: "This section converts curiosity into agreement before hard proof appears.",
+        layoutType: "Full-width stacked narrative band with one dominant thesis followed by structured belief shifts.",
+        visualHierarchy: {
+          dominant: "Single mechanism statement.",
+          supporting: "Three short belief shifts that explain why the old approach underperforms.",
+        },
+        contentBlocks: ["Belief-shift headline", "Mechanism thesis", "Three explanatory rows", "Soft CTA bridge"],
+        interaction: ["Scroll progression toward proof"],
+      },
+      {
+        label: "Proof",
+        purpose: "Make the authority claim defensible with named outcomes, measured lifts, and specific buyer contexts.",
+        sequenceIntent: "This is the trust checkpoint before the mechanism and offer sections ask for deeper commitment.",
+        layoutType: "Full-width proof strip with metric-led rows and one featured case narrative.",
+        visualHierarchy: {
+          dominant: "Named case outcome.",
+          supporting: "Supporting result rows and contextual proof notes.",
+        },
+        contentBlocks: ["Featured case result", "Metrics band", "Context notes", "Proof-to-mechanism transition"],
+        interaction: ["Scroll through proof sequence"],
+      },
+      {
+        label: "Mechanism explanation",
+        purpose: "Show exactly how the funnel turns cold or skeptical interest into booked appointments so the offer feels concrete.",
+        sequenceIntent: "This section justifies the booking action with a simple causal model instead of hype.",
+        layoutType: "Two-column explanation with current-state leak on one side and corrected sequence on the other.",
+        visualHierarchy: {
+          dominant: "Step-by-step funnel mechanism.",
+          supporting: "Current-state failure points and why the new flow fixes them.",
+        },
+        contentBlocks: ["Sequence overview", "Leak diagnosis", "Corrected path", "Implementation emphasis"],
+        interaction: ["Scroll comparison"],
+      },
+      {
+        label: "Offer + CTA",
+        purpose: "Present the booking step as the natural continuation of the proof and mechanism, not a separate sales jump.",
+        sequenceIntent: "This is the main action zone where the page cashes in the authority and belief built above.",
+        layoutType: "Booking rail anchored to a proof summary stack with an inline calendar trigger and fit notes.",
+        visualHierarchy: {
+          dominant: "Offer promise and next-step clarity.",
+          supporting: "Embedded calendar or booking trigger, fit bullets, and what happens next.",
+        },
+        contentBlocks: ["Offer framing", "Proof summary stack", "Best-fit criteria", "Calendar or booking trigger", "What happens after booking"],
+        interaction: [bookingAction, "Calendar selection"],
+      },
+      {
+        label: "Reinforcement / objection handling",
+        purpose: "Resolve the final reasons a qualified visitor hesitates after seeing the booking step.",
+        sequenceIntent: "This lowers friction for the people already near action instead of introducing new persuasion angles.",
+        layoutType: "Full-width objection strip with stacked answers and a repeated booking action at the end.",
+        visualHierarchy: {
+          dominant: "Objection headlines tied directly to the appointment decision.",
+          supporting: "Short answers, risk reversal, and a final repeated CTA.",
+        },
+        contentBlocks: ["Objection rows", "Expectation reset", "Risk reducer", "Repeated booking CTA"],
+        interaction: ["Expand objection answers", bookingAction],
+      },
+    ],
+    "application-first": [
+      {
+        label: "Attention",
+        purpose: "Frame the page as a serious qualification path so the right visitor leans in instead of browsing passively.",
+        sequenceIntent: "The page controls attention by making the next step feel selective from the first screen.",
+        layoutType: "Gatekeeper manifesto hero with a disqualification headline, fit scorecard, and intake summary stacked like an operator brief.",
+        visualHierarchy: {
+          dominant: "Disqualification headline and fit scorecard.",
+          supporting: "Who this is for, why qualification matters, intake summary, and the first CTA into the form.",
+        },
+        contentBlocks: ["Headline", "Disqualification statement", "Fit scorecard", "Intake summary", "Application-start CTA"],
+        interaction: ["Begin qualification"],
+      },
+      {
+        label: "Belief builder",
+        purpose: "Explain why the application exists and how it improves the call instead of adding unnecessary friction.",
+        sequenceIntent: "This turns the qualifier into a trust signal rather than a barrier.",
+        layoutType: "Operator memo section with one lead argument, evaluator notes, and a process breakdown underneath.",
+        visualHierarchy: {
+          dominant: "Reason for qualification.",
+          supporting: "Evaluator notes and how the application improves the sales conversation for both sides.",
+        },
+        contentBlocks: ["Qualification thesis", "Evaluator notes", "Process explanation", "Buyer benefit framing"],
+        interaction: ["Scroll into proof"],
+      },
+      {
+        label: "Proof",
+        purpose: "Show that qualified buyers get better outcomes, better calls, or faster decisions.",
+        sequenceIntent: "Proof here makes the visitor more willing to complete the qualifier and keep moving.",
+        layoutType: "Evaluation ledger with measured outcomes, accepted-buyer snapshots, and reject-fit contrasts.",
+        visualHierarchy: {
+          dominant: "Measured result tied to qualification.",
+          supporting: "Supporting evidence rows, accepted-buyer snapshots, and reject-fit contrasts.",
+        },
+        contentBlocks: ["Primary proof statement", "Outcome rows", "Accepted-buyer examples", "Reject-fit contrasts"],
+        interaction: ["Scroll proof ledger"],
+      },
+      {
+        label: "Mechanism explanation",
+        purpose: "Break down the qualification logic so the visitor understands what gets reviewed and why.",
+        sequenceIntent: "This reduces uncertainty before the form and keeps completion friction low.",
+        layoutType: "Operator review workflow with intake, review, approval, and booking handoff shown like an internal checklist.",
+        visualHierarchy: {
+          dominant: "Operator review workflow.",
+          supporting: "Review criteria, response time, escalation notes, and handoff to calendar.",
+        },
+        contentBlocks: ["Intake step", "Review criteria", "Escalation notes", "Timing expectation", "Booking handoff note"],
+        interaction: ["Scroll process path"],
+      },
+      {
+        label: "Offer + CTA",
+        purpose: "Place the form or qualifier trigger in a clean action zone with exact next-step clarity.",
+        sequenceIntent: "This is where friction is reduced by making the application feel finite and worthwhile.",
+        layoutType: "Qualification worksheet with the intake form staged first, scoring cues in the middle, and booking eligibility summarized at the end.",
+        visualHierarchy: {
+          dominant: "Primary intake form and scoring cues.",
+          supporting: "Short field expectations, response timeline, and booking eligibility explanation.",
+        },
+        contentBlocks: ["Application start", "Expected fields", "Scoring cues", "Acceptance criteria", "Booking eligibility summary", "Booking next-step note"],
+        interaction: [bookingAction, "Form start"],
+      },
+      {
+        label: "Reinforcement / objection handling",
+        purpose: "Answer the last questions about time, fit, and what happens after submission.",
+        sequenceIntent: "This protects the conversion after the visitor has already accepted the qualifier logic.",
+        layoutType: "Qualification objections ledger with operator answers and one final intake trigger after the last objection.",
+        visualHierarchy: {
+          dominant: "Common qualification objections.",
+          supporting: "Process reassurance, evaluator clarity, and final application CTA.",
+        },
+        contentBlocks: ["Objection rows", "Process reassurance", "Evaluator clarity", "Final CTA"],
+        interaction: ["Expand answers", "Submit application"],
+      },
+    ],
+    "pre-call-conditioning": [
+      {
+        label: "Attention",
+        purpose: "Reconfirm the appointment and frame the page as the short prep path that makes the upcoming call more useful.",
+        sequenceIntent: "Attention is controlled by reminding the buyer that the appointment is real and that one small prep step improves it.",
+        layoutType: "Confirmation hero with booking recap on the left and prep action on the right.",
+        visualHierarchy: {
+          dominant: "Appointment confirmation and prep directive.",
+          supporting: "Call timing, host context, and visible prep CTA.",
+        },
+        contentBlocks: ["Confirmation headline", "Appointment recap", "Why prep matters", "Prep CTA"],
+        interaction: ["Watch prep video", "Confirm attendance"],
+      },
+      {
+        label: "Belief builder",
+        purpose: "Explain why a prepared buyer gets a sharper, more valuable call than someone who arrives cold.",
+        sequenceIntent: "This section creates buy-in for the prep action without overwhelming the buyer after they have already booked.",
+        layoutType: "Short explanatory band with one main thesis and two to three supporting points.",
+        visualHierarchy: {
+          dominant: "Why prep improves the call.",
+          supporting: "Expected outcomes and how prep protects call quality.",
+        },
+        contentBlocks: ["Prep thesis", "Expected outcomes", "How to use the prep material"],
+        interaction: ["Scroll into proof"],
+      },
+      {
+        label: "Proof",
+        purpose: "Use concise outcomes and social proof to show that prepared calls convert faster and feel more specific.",
+        sequenceIntent: "Proof keeps the prep step from feeling like busywork.",
+        layoutType: "Compact proof strip with one featured result and two to three supporting notes.",
+        visualHierarchy: {
+          dominant: "Prepared-call outcome.",
+          supporting: "Supporting notes and trust anchors.",
+        },
+        contentBlocks: ["Featured proof", "Supporting outcomes", "Trust anchors"],
+        interaction: ["Scan proof"],
+      },
+      {
+        label: "Mechanism explanation",
+        purpose: "Show what to watch, what to prepare, and how that information will shape the actual meeting.",
+        sequenceIntent: "This section removes ambiguity and makes the prep action finite and clear.",
+        layoutType: "Two-column prep breakdown with tasks on one side and call impact on the other.",
+        visualHierarchy: {
+          dominant: "Prep checklist.",
+          supporting: "Why each step matters and how it changes the call.",
+        },
+        contentBlocks: ["Prep checklist", "Short VSL or explainer", "What to bring", "Call impact note"],
+        interaction: ["Play prep video", "Review checklist"],
+      },
+      {
+        label: "Offer + CTA",
+        purpose: "Focus the page on one prep action that locks in show-up and improves the meeting quality.",
+        sequenceIntent: "This is the main action zone, but the action is preparation rather than a new sale.",
+        layoutType: "Checklist completion bar with prep actions, attendance confirmation, and the deadline grouped in one utility strip.",
+        visualHierarchy: {
+          dominant: "Prep completion CTA.",
+          supporting: "Deadline, confirmation steps, and what happens next.",
+        },
+        contentBlocks: ["Prep action", "Completion steps", "Attendance confirmation", "Deadline note", "Next-step reminder"],
+        interaction: ["Watch prep video", "Confirm attendance"],
+      },
+      {
+        label: "Reinforcement / objection handling",
+        purpose: "Answer the final concerns about time, what to expect, and whether the prep is actually necessary.",
+        sequenceIntent: "This section keeps no-show risk down by removing excuses before the meeting date.",
+        layoutType: "Compact FAQ strip with a repeated prep completion action.",
+        visualHierarchy: {
+          dominant: "Time and expectation objections.",
+          supporting: "Reassurance and repeated prep CTA.",
+        },
+        contentBlocks: ["Objection rows", "Expectation reset", "Repeated prep CTA"],
+        interaction: ["Expand answers", "Confirm attendance"],
+      },
+    ],
+    "case-study-to-demo": [
+      {
+        label: "Attention",
+        purpose: "Lead with a concrete business result and frame the demo as a diagnostic walkthrough, not a generic product tour.",
+        sequenceIntent: "Attention is controlled by outcome specificity and immediate fit clarity.",
+        layoutType: "Results-led hero with a featured case outcome upfront and a compact demo brief card beside it.",
+        visualHierarchy: {
+          dominant: "Outcome headline and demo promise.",
+          supporting: "Buyer fit, trust signals, and visible demo CTA.",
+        },
+        contentBlocks: ["Outcome headline", "Featured case outcome", "Subhead", "Fit cue", "Trust anchors", "Demo CTA"],
+        interaction: ["Request the demo"],
+      },
+      {
+        label: "Belief builder",
+        purpose: `Reframe why the current ${businessType} workflow stalls and why a guided demo is the fastest way to see the new path.` ,
+        sequenceIntent: "This section builds the case for seeing the product in context instead of reading a feature list.",
+        layoutType: "Narrative diagnosis section with one dominant thesis and supporting problem rows.",
+        visualHierarchy: {
+          dominant: "Workflow diagnosis.",
+          supporting: "Symptoms, consequences, and why the demo matters.",
+        },
+        contentBlocks: ["Diagnosis thesis", "Problem rows", "Why-demo note", "Bridge to proof"],
+        interaction: ["Scroll into proof"],
+      },
+      {
+        label: "Proof",
+        purpose: "Use one detailed case study and supporting evidence to prove the result is credible before the demo ask lands.",
+        sequenceIntent: "Proof earns the right to ask for a meeting on a considered purchase.",
+        layoutType: "Case-study-led proof section with one featured narrative and supporting metrics.",
+        visualHierarchy: {
+          dominant: "Featured case study.",
+          supporting: "Metric rows, implementation context, and supporting logos.",
+        },
+        contentBlocks: ["Case study headline", "Outcome metrics", "Implementation context", "Supporting trust marks"],
+        interaction: ["Read case study"],
+      },
+      {
+        label: "Mechanism explanation",
+        purpose: "Explain exactly what the demo will cover, which workflow problems it will diagnose, and how fit is determined.",
+        sequenceIntent: "This removes uncertainty so the demo request feels worth the calendar commitment.",
+        layoutType: "Two-column demo breakdown with workflow map on one side and meeting outcomes on the other.",
+        visualHierarchy: {
+          dominant: "Demo agenda.",
+          supporting: "Workflow checkpoints, stakeholder outcomes, and post-demo next steps.",
+        },
+        contentBlocks: ["Demo agenda", "Workflow checkpoints", "Expected outcomes", "Next-step note"],
+        interaction: ["Scan agenda"],
+      },
+      {
+        label: "Offer + CTA",
+        purpose: "Present the demo request as the natural continuation of the case study and diagnosis rather than a generic form fill.",
+        sequenceIntent: "This is the action zone where considered interest converts into a live evaluation.",
+        layoutType: "Diagnostic request panel with required fields beside a condensed case-study recap.",
+        visualHierarchy: {
+          dominant: "Demo request CTA.",
+          supporting: "Required fields, response expectations, and what happens after submission.",
+        },
+        contentBlocks: ["Offer framing", "Condensed case-study recap", "Demo request form", "Field expectations", "Post-submit timeline"],
+        interaction: ["Request the demo", "Submit form"],
+      },
+      {
+        label: "Reinforcement / objection handling",
+        purpose: "Handle last concerns about time, stakeholders, and whether the demo will be relevant enough to justify booking it.",
+        sequenceIntent: "This reduces the final hesitation on a structured, higher-consideration ask.",
+        layoutType: "FAQ strip with stakeholder answers and repeated demo CTA.",
+        visualHierarchy: {
+          dominant: "Relevance and time objections.",
+          supporting: "Meeting expectations and repeated demo action.",
+        },
+        contentBlocks: ["Objection rows", "Stakeholder note", "Expectation reset", "Repeated demo CTA"],
+        interaction: ["Expand answers", "Request the demo"],
+      },
+    ],
+    "trial-first": [
+      {
+        label: "Attention",
+        purpose: "Lead with one immediate product outcome and make starting the trial feel faster than continuing to research alternatives.",
+        sequenceIntent: "Attention is controlled by speed, clarity, and a visible low-friction start path.",
+        layoutType: "Product launchpad hero with a quick-start value stack and an activation card docked beside it.",
+        visualHierarchy: {
+          dominant: "Outcome-led headline.",
+          supporting: "Fast-start reassurance, trust marks, and visible trial CTA.",
+        },
+        contentBlocks: ["Headline", "Subhead", "Quick-start value stack", "Fast-start note", "Trust row", "Trial CTA"],
+        interaction: ["Start the trial"],
+      },
+      {
+        label: "Belief builder",
+        purpose: `Explain why the current ${businessType} workflow is slower or messier than it needs to be and how the trial proves value quickly.` ,
+        sequenceIntent: "This section makes the trial feel like a smart test, not extra setup.",
+        layoutType: "Short explanatory band with one dominant product thesis and supporting rows.",
+        visualHierarchy: {
+          dominant: "Value thesis.",
+          supporting: "Why-now logic, setup simplicity, and expected payoff.",
+        },
+        contentBlocks: ["Value thesis", "Workflow pain points", "Why-now rows", "Bridge to proof"],
+        interaction: ["Scroll toward proof"],
+      },
+      {
+        label: "Proof",
+        purpose: "Use product outcomes, customer signals, and quick wins to prove the trial is worth starting now.",
+        sequenceIntent: "Proof lowers the fear of wasted setup time.",
+        layoutType: "Outcome-led proof strip with one featured testimonial and supporting result rows.",
+        visualHierarchy: {
+          dominant: "Quick-win result.",
+          supporting: "Supporting outcomes, ratings, and logos.",
+        },
+        contentBlocks: ["Featured testimonial", "Outcome rows", "Logos or ratings", "Proof bridge"],
+        interaction: ["Scan proof"],
+      },
+      {
+        label: "Mechanism explanation",
+        purpose: "Show how the product works, what the first-session value looks like, and how the user gets to a win during the trial window.",
+        sequenceIntent: "This removes uncertainty and makes the product feel easy to evaluate.",
+        layoutType: "Two-column walkthrough with workflow on one side and first-win path on the other.",
+        visualHierarchy: {
+          dominant: "First-win path.",
+          supporting: "Setup steps, product mechanics, and evaluation checkpoints.",
+        },
+        contentBlocks: ["Setup steps", "First-win path", "Key workflow moments", "Trial window note"],
+        interaction: ["Scan walkthrough"],
+      },
+      {
+        label: "Offer + CTA",
+        purpose: "Make the trial start feel like a reversible, obvious next step with minimal setup anxiety.",
+        sequenceIntent: "This is the main action zone where the user commits to trying the product.",
+        layoutType: "Activation dock with the sign-up form, first-win checklist, and immediate next-step note grouped together.",
+        visualHierarchy: {
+          dominant: "Trial CTA.",
+          supporting: "Field simplicity, free/paid clarity, and next-step expectation.",
+        },
+        contentBlocks: ["Trial framing", "Sign-up form", "First-win checklist", "Field count note", "Next-step expectation"],
+        interaction: ["Start the trial", "Create account"],
+      },
+      {
+        label: "Reinforcement / objection handling",
+        purpose: "Answer the final concerns about setup time, commitment, and whether the trial is worth starting today.",
+        sequenceIntent: "This section protects conversion at the final low-friction decision point.",
+        layoutType: "Compact FAQ strip with repeated trial CTA.",
+        visualHierarchy: {
+          dominant: "Setup and commitment objections.",
+          supporting: "Reassurance and repeated trial action.",
+        },
+        contentBlocks: ["Objection rows", "Setup reassurance", "Commitment note", "Repeated trial CTA"],
+        interaction: ["Expand answers", "Start the trial"],
+      },
+    ],
+    "direct-booking": [
+      {
+        label: "Attention",
+        purpose: "Lead with the service promise, local trust, and visible appointment path so the buyer can act without extra decoding.",
+        sequenceIntent: "Attention is controlled by clarity, service fit, and immediate scheduling confidence.",
+        layoutType: "Service booking hero with a compact service summary, service-radius note, and a visible dispatch schedule card docked beside the promise.",
+        visualHierarchy: {
+          dominant: "Service promise and appointment CTA.",
+          supporting: "Service radius, arrival window, and local trust cues.",
+        },
+        contentBlocks: ["Headline", "Service summary", "Service radius", "Arrival window", "Trust cues", "Booking CTA"],
+        interaction: ["Book the appointment"],
+      },
+      {
+        label: "Belief builder",
+        purpose: `Explain why this ${businessType} service is fast, reliable, and worth booking now instead of delaying or shopping around further.`,
+        sequenceIntent: "This section turns interest into confidence without introducing long-form sales drag.",
+        layoutType: "Short reassurance band with one clear service claim, dispatch expectations, and supporting reliability rows.",
+        visualHierarchy: {
+          dominant: "Primary service claim.",
+          supporting: "Speed, reliability, dispatch, and expectation-setting rows.",
+        },
+        contentBlocks: ["Service claim", "Reliability rows", "Dispatch note", "Why-now note"],
+        interaction: ["Scroll into proof"],
+      },
+      {
+        label: "Proof",
+        purpose: "Use concise local trust signals to prove the appointment is worth booking now.",
+        sequenceIntent: "Proof reduces hesitation without turning the page into a case-study essay.",
+        layoutType: "Compact local-proof strip with ratings, short testimonials, service guarantees, and crew trust cues.",
+        visualHierarchy: {
+          dominant: "Rating or guarantee signal.",
+          supporting: "Short testimonial rows, crew trust cues, and trust notes.",
+        },
+        contentBlocks: ["Rating signal", "Guarantee note", "Crew trust cues", "Short testimonials", "Trust bridge"],
+        interaction: ["Scan proof"],
+      },
+      {
+        label: "Mechanism explanation",
+        purpose: "Show what happens after booking, what the appointment covers, and how the service is delivered.",
+        sequenceIntent: "This removes ambiguity so the booking step feels simple and concrete.",
+        layoutType: "Two-column service walkthrough with booking steps on one side and arrival-window expectations on the other.",
+        visualHierarchy: {
+          dominant: "Booking-to-service path.",
+          supporting: "Arrival-window expectations, access notes, and service notes.",
+        },
+        contentBlocks: ["Booking steps", "Arrival window", "Access notes", "Service notes", "Timing note"],
+        interaction: ["Scan service steps"],
+      },
+      {
+        label: "Offer + CTA",
+        purpose: "Keep the appointment selection and next-step clarity in one disciplined action zone.",
+        sequenceIntent: "This is where interest converts into a real booking without detours.",
+        layoutType: "Appointment selection panel with schedule choices, service summary, dispatch note, and confirmation note grouped in one booking dock.",
+        visualHierarchy: {
+          dominant: "Booking CTA and appointment options.",
+          supporting: "Service summary, dispatch note, and what happens after booking.",
+        },
+        contentBlocks: ["Appointment options", "Service summary", "Dispatch note", "Booking CTA", "Confirmation note"],
+        interaction: ["Book the appointment", "Choose a time"],
+      },
+      {
+        label: "Reinforcement / objection handling",
+        purpose: "Answer final concerns about timing, service area, and what happens after the appointment is scheduled.",
+        sequenceIntent: "This reduces last-minute hesitation at the booking threshold.",
+        layoutType: "Compact booking FAQ strip with a repeated appointment action.",
+        visualHierarchy: {
+          dominant: "Timing and service-fit objections.",
+          supporting: "Reassurance and repeated booking action.",
+        },
+        contentBlocks: ["Objection rows", "Service-fit note", "Arrival-window reassurance", "Repeated booking CTA"],
+        interaction: ["Expand answers", "Book the appointment"],
+      },
+    ],
+    "direct-purchase": [
+      {
+        label: "Attention",
+        purpose: "Lead with the product, price confidence, and checkout path so the buyer can move toward payment without hunting for the next step.",
+        sequenceIntent: "Attention is controlled by product clarity and a visible purchase path.",
+        layoutType: "Product-to-checkout hero with product value on the left and a cart summary card anchored beside it.",
+        visualHierarchy: {
+          dominant: "Product promise and pay action.",
+          supporting: "Price, trust cues, and cart summary.",
+        },
+        contentBlocks: ["Product headline", "Price summary", "Trust cues", "Cart summary", "Checkout CTA"],
+        interaction: ["Start checkout"],
+      },
+      {
+        label: "Belief builder",
+        purpose: `Explain why this ${businessType} offer is worth purchasing now and why the checkout path is straightforward.`,
+        sequenceIntent: "This section turns interest into purchase confidence without bloating the path.",
+        layoutType: "Short conversion band with one product claim, shipping reassurance, and supporting value rows.",
+        visualHierarchy: {
+          dominant: "Primary product claim.",
+          supporting: "Shipping, support, delivery, and value reassurance rows.",
+        },
+        contentBlocks: ["Product claim", "Value rows", "Shipping note", "Support note"],
+        interaction: ["Scroll into proof"],
+      },
+      {
+        label: "Proof",
+        purpose: "Use concise proof to justify the purchase without derailing the checkout path.",
+        sequenceIntent: "Proof lowers payment hesitation while keeping momentum toward the buy action.",
+        layoutType: "Compact commerce proof strip with buyer outcomes, trust marks, guarantee cues, and returns reassurance.",
+        visualHierarchy: {
+          dominant: "Guarantee or trust signal.",
+          supporting: "Buyer outcomes, returns reassurance, and support notes.",
+        },
+        contentBlocks: ["Guarantee cue", "Outcome snippets", "Trust marks", "Returns reassurance", "Proof bridge"],
+        interaction: ["Scan proof"],
+      },
+      {
+        label: "Mechanism explanation",
+        purpose: "Show what is included, how fulfillment works, and what the customer should expect after purchase.",
+        sequenceIntent: "This removes uncertainty so payment feels safe and well-scoped.",
+        layoutType: "Two-column purchase explainer with included items on one side and fulfillment expectations on the other.",
+        visualHierarchy: {
+          dominant: "Included value and fulfillment path.",
+          supporting: "Delivery timing, shipping method, and support expectations.",
+        },
+        contentBlocks: ["Included items", "Fulfillment path", "Shipping method", "Delivery timing", "Support expectations"],
+        interaction: ["Review purchase details"],
+      },
+      {
+        label: "Offer + CTA",
+        purpose: "Keep the order summary, payment action, and reassurance in one tightly grouped action zone.",
+        sequenceIntent: "This is the main conversion zone where the buyer moves into payment.",
+        layoutType: "Checkout conversion dock with cart summary, payment method rail, and pay action grouped as one disciplined purchase rail.",
+        visualHierarchy: {
+          dominant: "Pay action and order total.",
+          supporting: "Cart summary, payment method, trust cues, and post-purchase expectation.",
+        },
+        contentBlocks: ["Cart summary", "Payment method rail", "Trust badges", "Pay CTA", "Post-purchase note"],
+        interaction: ["Start checkout", "Complete your order"],
+      },
+      {
+        label: "Reinforcement / objection handling",
+        purpose: "Answer final concerns about payment safety, delivery, and support before the customer finishes checkout.",
+        sequenceIntent: "This reduces last-minute drop-off near the pay action.",
+        layoutType: "Compact checkout FAQ strip with a repeated payment action.",
+        visualHierarchy: {
+          dominant: "Payment and delivery objections.",
+          supporting: "Support reassurance and repeated purchase action.",
+        },
+        contentBlocks: ["Objection rows", "Payment reassurance", "Shipping reassurance", "Repeated purchase CTA"],
+        interaction: ["Expand answers", "Complete your order"],
+      },
+    ],
+    "lead-capture": [
+      {
+        label: "Attention",
+        purpose: "Lead with one immediate value promise and make the opt-in feel worth the interruption even for colder traffic.",
+        sequenceIntent: "Attention is controlled by a clear value exchange and minimal friction.",
+        layoutType: "Asset-cover hero with the resource preview beside a lean inline opt-in card.",
+        visualHierarchy: {
+          dominant: "Lead magnet headline.",
+          supporting: "Who it is for, why it matters now, and visible opt-in CTA.",
+        },
+        contentBlocks: ["Headline", "Subhead", "Resource preview", "Audience cue", "Value bullets", "Opt-in CTA"],
+        interaction: [primaryAction],
+      },
+      {
+        label: "Belief builder",
+        purpose: `Explain why this ${businessType} resource solves an immediate problem better than generic advice or more browsing.` ,
+        sequenceIntent: "This section upgrades curiosity into enough belief to trade an email for the asset.",
+        layoutType: "Short explanatory band with one thesis and supporting value rows.",
+        visualHierarchy: {
+          dominant: "Core value thesis.",
+          supporting: "Problem framing, immediate relevance, and what the resource unlocks.",
+        },
+        contentBlocks: ["Value thesis", "Problem framing", "What they get", "Bridge to proof"],
+        interaction: ["Scroll into proof"],
+      },
+      {
+        label: "Proof",
+        purpose: "Use credibility markers, usage signals, or short testimonials to make the opt-in feel safe and worthwhile.",
+        sequenceIntent: "Proof reduces skepticism before the form appears as the main ask.",
+        layoutType: "Compact proof strip with one featured trust signal and supporting notes.",
+        visualHierarchy: {
+          dominant: "Primary trust signal.",
+          supporting: "Usage count, short testimonials, and credibility notes.",
+        },
+        contentBlocks: ["Primary trust signal", "Usage or result note", "Short testimonials", "Trust bridge"],
+        interaction: ["Scan proof"],
+      },
+      {
+        label: "Mechanism explanation",
+        purpose: "Show what is inside the resource, how to use it, and why it produces a useful win quickly after opt-in.",
+        sequenceIntent: "This section clarifies the value exchange so the email ask feels proportionate.",
+        layoutType: "Two-column asset breakdown with contents on one side and use cases on the other.",
+        visualHierarchy: {
+          dominant: "What's inside the resource.",
+          supporting: "How to use it, who it helps most, and time-to-value.",
+        },
+        contentBlocks: ["Contents overview", "Use cases", "Who it's for", "Time-to-value note"],
+        interaction: ["Scan contents"],
+      },
+      {
+        label: "Offer + CTA",
+        purpose: "Present the opt-in form as the shortest path to immediate value with the fewest possible fields.",
+        sequenceIntent: "This is the main action zone where interest converts into contact capture.",
+        layoutType: "Inline opt-in band with the delivery promise, privacy cue, and short capture form grouped in one strip.",
+        visualHierarchy: {
+          dominant: "Opt-in CTA.",
+          supporting: "Field simplicity, delivery promise, and privacy reassurance.",
+        },
+        contentBlocks: ["Offer summary", "Opt-in form", "Delivery promise", "Privacy cue", "Privacy note"],
+        interaction: [primaryAction, "Submit email"],
+      },
+      {
+        label: "Reinforcement / objection handling",
+        purpose: "Answer the last questions about spam, usefulness, and whether the resource is worth handing over an email for.",
+        sequenceIntent: "This section reduces the final skepticism at the exact moment of the opt-in ask.",
+        layoutType: "Compact FAQ strip with one repeated opt-in action.",
+        visualHierarchy: {
+          dominant: "Spam and value objections.",
+          supporting: "Delivery reassurance and repeated opt-in CTA.",
+        },
+        contentBlocks: ["Objection rows", "Delivery reassurance", "Privacy reassurance", "Repeated opt-in CTA"],
+        interaction: ["Expand answers", primaryAction],
+      },
+    ],
+  };
+
+  const fallbackSections = sectionSetByPattern["vsl-to-calendar"];
+  return sectionSetByPattern[args.funnelPattern] || fallbackSections;
+}
+
+function buildFunnelConversionLogic(args: {
+  pageSections: Array<Record<string, unknown>>;
+  conversionMechanism: string;
+  trafficTemperature: string;
+  funnelPattern: string;
+}): Record<string, unknown> {
+  const actionTrigger = args.conversionMechanism === "application-submit"
+    ? "The user is pushed to act when the page makes qualification feel like the shortest path to a better call."
+    : args.conversionMechanism === "demo-request"
+    ? "The user is pushed to act when the case study and workflow diagnosis make the demo feel like the fastest way to confirm fit."
+    : args.conversionMechanism === "trial-signup"
+    ? "The user is pushed to act when the product feels easy to start, quick to evaluate, and lower risk than waiting."
+    : args.conversionMechanism === "direct-purchase"
+    ? "The user is pushed to act when proof and offer clarity make checkout feel lower risk than postponing the decision."
+    : args.conversionMechanism === "passive-engagement"
+    ? "The user is pushed to act when the next conversation step feels more specific and useful than letting the thread die."
+    : args.conversionMechanism === "email-capture"
+    ? "The user is pushed to act when the value exchange feels immediate and the opt-in asks for the minimum possible commitment."
+    : "The user is pushed to act when proof and mechanism have removed enough uncertainty for the booking step to feel obvious.";
+
+  const frictionReduction = args.funnelPattern === "pre-call-conditioning"
+    ? "Friction is reduced by narrowing the page to one prep action, one expectation set, and one confirmation path so the buyer does not have to re-decide the original appointment."
+    : args.funnelPattern === "dm-to-call"
+    ? "Friction is reduced by preserving the conversational tone and presenting the call as a continuation of an already-active thread instead of a new sales jump."
+    : "Friction is reduced by delaying form complexity, pricing nuance, and secondary information until after the visitor has enough trust to keep moving.";
+
+  return {
+    whyThisStructureConverts: "The page escalates commitment in the right order: attention first, belief second, proof third, explanation fourth, action fifth, and objection handling only after the ask is visible.",
+    attentionControl: `Attention is controlled at the top of the page with a single dominant promise and a visible path into action for ${args.trafficTemperature} traffic.`,
+    actionPressure: actionTrigger,
+    frictionReduction,
+  };
+}
 
 function deriveFunnelFrictionProfile(args: {
   audienceWarmth?: string;
@@ -5984,17 +8649,24 @@ function deriveFunnelFrictionProfile(args: {
   businessProfile?: { businessType?: string; productCategory?: string };
   signalText: string;
 }): string {
+  const signalText = args.signalText.toLowerCase();
+  const explicitHighCommitmentSignal = /apply|application|book.?a.?call|strategy session|discovery call|video sales letter|\bvsl\b|high.?ticket|sales call|closer|setter/.test(signalText);
+
+  if (args.pricePoint === "enterprise") return "high-commitment";
+  if (args.pricePoint === "high" && (args.commitmentRequired === "application" || explicitHighCommitmentSignal)) {
+    return "high-commitment";
+  }
+  if (explicitHighCommitmentSignal) return "high-commitment";
+
   const businessType = (args.businessProfile?.businessType || "").toLowerCase();
   for (const [key, profile] of Object.entries(funnelBusinessTypeMap)) {
     if (businessType.includes(key)) return profile;
   }
-  if (args.pricePoint === "enterprise") return "high-commitment";
   if (args.pricePoint === "high" && args.commitmentRequired === "application") return "high-commitment";
   const matrixKey = `${args.audienceWarmth || "cold"}:${args.commitmentRequired || "email"}`;
   if (funnelFrictionMatrix[matrixKey]) return funnelFrictionMatrix[matrixKey];
-  if (/apply|application|book.?a.?call|high.?ticket|coaching|consulting|agency/i.test(args.signalText)) return "high-commitment";
-  if (/demo request|pricing|compare|case.?study/i.test(args.signalText)) return "structured";
-  if (/signup|sign.?up|get.?started|try.?free|free.?trial/i.test(args.signalText)) return "light-touch";
+  if (/demo request|pricing|compare|case.?study/i.test(signalText)) return "structured";
+  if (/signup|sign.?up|get.?started|try.?free|free.?trial/i.test(signalText)) return "light-touch";
   return "frictionless";
 }
 
@@ -6053,15 +8725,48 @@ function buildFunnelIntelligence(args: {
      /retarget|returning|already know|newsletter|warm/i.test(signalText) ? "warm" :
      /high intent|pricing|compare|ready to buy|hot/i.test(signalText) ? "hot" : "cold");
 
+  const explicitMeetingIntent = /calendar|book.?a.?call|strategy session|discovery call|appointment|demo|book service|schedule service|schedule an appointment|book now/.test(signalText);
+  const conversationalIntent = /dm|direct message|instagram|facebook message|messenger|inbox|voice note|chat/.test(signalText);
+
   const conversionMechanism =
     funnelCtx.commitmentRequired === "email" ? "email-capture" :
     funnelCtx.commitmentRequired === "trial" ? "trial-signup" :
     funnelCtx.commitmentRequired === "purchase" ? "direct-purchase" :
     funnelCtx.commitmentRequired === "application" ? "application-submit" :
+    funnelCtx.commitmentRequired === "none" && conversationalIntent ? "passive-engagement" :
+    funnelCtx.commitmentRequired === "none" && explicitMeetingIntent ? "demo-request" :
     funnelCtx.commitmentRequired === "none" ? "passive-engagement" :
     frictionProfile === "high-commitment" ? "application-submit" :
     frictionProfile === "structured" ? "demo-request" :
     frictionProfile === "light-touch" ? "trial-signup" : "email-capture";
+
+  const funnelPattern = deriveFunnelPattern({
+    frictionProfile,
+    signalText,
+    conversionMechanism,
+    businessType: funnelCtx.businessProfile?.businessType,
+  });
+  const conversionFamily = resolveConversionFamily(funnelPattern);
+  const layoutFamily = resolveFunnelLayoutFamily({
+    request: args.request,
+    funnelPattern,
+    conversionMechanism,
+    trafficTemperature,
+    frictionProfile,
+  });
+  const designDirection = pickFunnelDesignDirection({
+    layoutFamily,
+    funnelPattern,
+    frictionProfile,
+    conversionMechanism,
+    trafficTemperature,
+  });
+  const pageSections = buildFunnelPageSections({
+    funnelPattern,
+    conversionMechanism,
+    trafficTemperature,
+    businessType: businessProfile.businessType,
+  });
 
   const businessTypeSuffix = businessProfile.businessType
     ? ` for ${businessProfile.businessType}`
@@ -6078,6 +8783,8 @@ function buildFunnelIntelligence(args: {
 
   return {
     funnelType: funnelTypeLabels[frictionProfile] || `conversion funnel (${frictionProfile})`,
+    funnelPattern,
+    conversionFamily,
     frictionProfile,
     trafficTemperature,
     conversionMechanism,
@@ -6088,7 +8795,33 @@ function buildFunnelIntelligence(args: {
     progressionAnchors: funnelProgressionAnchorMap[frictionProfile] || funnelProgressionAnchorMap["frictionless"],
     trustSignalPlacement: funnelTrustSignalMap[frictionProfile] || funnelTrustSignalMap["frictionless"],
     timingMap: buildFunnelTimingMap(frictionProfile),
-    componentSuggestions: funnelComponentSuggestionMap[frictionProfile] || funnelComponentSuggestionMap["frictionless"],
+    designDirection,
+    pageFlow: pageSections.map((section, index) => ({
+      section: `Section ${index + 1}`,
+      label: section.label,
+      purpose: section.purpose,
+      sequenceIntent: section.sequenceIntent,
+    })),
+    layoutBlueprint: pageSections.map((section, index) => ({
+      section: `Section ${index + 1}`,
+      label: section.label,
+      layoutType: section.layoutType,
+      visualHierarchy: section.visualHierarchy,
+      contentBlocks: section.contentBlocks,
+      interaction: section.interaction,
+    })),
+    sequenceBlueprint: pageSections.map((section, index) => `Section ${index + 1}: ${section.label} — ${section.purpose}`),
+    offerPositioningVariants: buildOfferPositioningVariants({
+      businessType: businessProfile.businessType,
+      funnelPattern,
+      frictionProfile,
+    }),
+    conversionLogic: buildFunnelConversionLogic({
+      pageSections,
+      conversionMechanism,
+      trafficTemperature,
+      funnelPattern,
+    }),
   };
 }
 
@@ -6170,13 +8903,16 @@ function buildFunnelStrategyStageResponse(request: AgentResolutionRequest): Reco
 
 function buildResolutionResponse(request: AgentResolutionRequest): Record<string, unknown> {
   if (request.stage === "workflow-audit-and-iteration") {
-    return buildWorkflowAuditStageResponse(request);
+    return buildWorkflowAuditStageResponseInner(request);
   }
   if (request.stage === "elevation-audit") {
     return buildElevationAuditStageResponse(request);
   }
   if (request.stage === "funnel-strategy") {
     return buildFunnelStrategyStageResponse(request);
+  }
+  if (request.stage === "iteration-verify") {
+    return buildIterationVerifyStageResponse(request);
   }
 
   const classification = resolveResolutionClassification(request);
@@ -6576,9 +9312,13 @@ function buildResolutionResponse(request: AgentResolutionRequest): Record<string
   });
 
   // ── Style-family profile override (resolution path) ──────────────────────
-  const resolutionDetectedStyleFamily = foundationCommunication?.detectedStyleFamily as "editorial-serif" | "precision-minimal" | null;
+  const resolutionDetectedStyleFamily = foundationCommunication?.detectedStyleFamily as "minimal-conversion" | "authority-consulting" | "high-ticket-offer" | "direct-response" | "editorial-premium" | "precision-minimal" | null;
   const resolutionStyleFamilyCompatibleArchetypes: Record<string, string[]> = {
-    "editorial-serif": ["landing-page", "docs-knowledge", "commerce-marketplace", "product-application", "conversion-funnel"],
+    "minimal-conversion": ["landing-page", "conversion-funnel", "product-application"],
+    "authority-consulting": ["landing-page", "conversion-funnel", "product-application"],
+    "high-ticket-offer": ["landing-page", "conversion-funnel"],
+    "direct-response": ["landing-page", "conversion-funnel", "commerce-marketplace"],
+    "editorial-premium": ["landing-page", "docs-knowledge", "commerce-marketplace", "product-application", "conversion-funnel"],
     "precision-minimal": ["developer-tool", "product-application", "landing-page"],
   };
   const canApplyResolutionStyleFamily = Boolean(
@@ -7745,10 +10485,38 @@ export async function getAgentResolutionResponse(request: AgentResolutionRequest
     }
   }
 
-  let response = buildResolutionResponse(workingRequest) as Record<string, any>;
+  let response: Record<string, any>;
+
+  // Workflow audit gets the feedback-boosted async path
+  if (workingRequest.stage === "workflow-audit-and-iteration") {
+    response = await buildWorkflowAuditStageResponseWithBoosts(workingRequest);
+  } else {
+    response = buildResolutionResponse(workingRequest) as Record<string, any>;
+  }
+
+  // Auto-record feedback when an iteration-verify response is returned
+  if (response.mode === "iteration-verify" && response.intentMap) {
+    const verifyRoute = workingRequest.route ||
+      workingRequest.priorAudit?.buildMandate?.slice(0, 60) || // just a hint
+      "unknown";
+    const resolvedRoute = (() => {
+      try {
+        return resolveResolutionClassification(workingRequest).route || verifyRoute;
+      } catch {
+        return verifyRoute;
+      }
+    })();
+    bulkRecordFromVerifyResponse({
+      route: resolvedRoute,
+      verificationStatus: (response.verificationStatus as string) || "unknown",
+      intentMap: response.intentMap as any,
+    }).catch(() => { /* silent — never block the response */ });
+  }
+
   const isStageResponse = response.mode === "workflow-audit-and-iteration" ||
     response.mode === "elevation-audit" ||
-    response.mode === "funnel-strategy";
+    response.mode === "funnel-strategy" ||
+    response.mode === "iteration-verify";
 
   if (!isStageResponse) {
     response.aiReasoningStatus = "not_requested";

@@ -1,7 +1,7 @@
 {
   "_meta": {
     "name": "EXHIBIT Design Foundations",
-    "version": "1.0.0",
+    "version": "1.1.1",
     "description": "The complete design rulebook for AI-assisted UI work. Fetch this file at the start of any UI task to guarantee visual consistency, correct typography, and professional output.",
     "usage": "Pass this file as context before asking an AI to build any dashboard, form, layout, or component. It defines what 'correct' looks and feels like.",
     "githubUrl": "https://raw.githubusercontent.com/gkstrmtm/exhibit/main/design-foundations.json",
@@ -16,11 +16,11 @@
   },
 
   "typography": {
-    "_rule": "Never mix font families except as specified. Never use system-ui or Arial for product UI. Body text is always Inter. Display/headings use Space Grotesk. Code/data uses JetBrains Mono.",
+    "_rule": "Never mix font families except as specified. Never use system-ui or Arial for product UI. Body text is always Inter. Display/headings use Space Grotesk unless the chosen layout family explicitly allows Fraunces for editorial premium headlines. Code/data uses JetBrains Mono.",
     "fonts": {
       "display": {
         "family": "Space Grotesk",
-        "usage": "Page titles, hero headlines, section headings, card titles, dashboard H1/H2",
+        "usage": "Default page titles, hero headlines, section headings, card titles, dashboard H1/H2",
         "fallback": "system-ui, sans-serif"
       },
       "body": {
@@ -32,8 +32,19 @@
         "family": "JetBrains Mono",
         "usage": "Code snippets, slugs, IDs, numeric data in tables, timestamps, API responses",
         "fallback": "monospace"
+      },
+      "editorialDisplay": {
+        "family": "Fraunces",
+        "usage": "Editorial / premium marketing headlines only",
+        "fallback": "Georgia, serif"
       }
     },
+    "routingRules": [
+      "Default display font is Space Grotesk.",
+      "Fraunces is allowed only for the Editorial / Premium Layout and only for major headlines or section anchors.",
+      "Never switch headline fonts randomly inside one surface.",
+      "Never use serif display on operational, SaaS, or utility-first layouts."
+    ],
     "scale": {
       "xs":   { "px": 11, "tailwind": "text-xs",   "usage": "Table column headers (uppercase), captions, badge labels, timestamps" },
       "sm":   { "px": 13, "tailwind": "text-sm",   "usage": "Body text, nav links, table rows, form labels, secondary info" },
@@ -166,10 +177,215 @@
       "2xl": { "px": 16, "tailwind": "rounded-2xl", "usage": "Mobile cards, hero cards, prominent features" },
       "full":{ "px": 9999,"tailwind": "rounded-full","usage": "Pills, avatars, toggle buttons, status dots" }
     },
+    "previewSafety": {
+      "rule": "Scaled previews expose structural mistakes early. Default to one column until there is genuinely enough width for a split layout.",
+      "rules": [
+        "In gallery, iframe, or scaled preview contexts, default to one column until the layout has genuinely ample width.",
+        "Do not introduce a page-level sidebar and then immediately split the main content into more narrow rails unless the viewport is extremely wide.",
+        "If a surface already has one dominant sidebar or booking rail, inner supporting content should usually stack instead of creating a second or third narrow column.",
+        "Text-heavy blocks, checklists, proof notes, and agenda lists should stay single-column until there is obvious room for multi-column presentation.",
+        "If a component looks acceptable only at its full desktop width, it is not structurally solved yet."
+      ]
+    },
+    "conversationBubbles": {
+      "rule": "Conversation surfaces must preserve readable message widths in preview and full-page mode.",
+      "rules": [
+        "Never align chat bubbles with margin offsets alone.",
+        "Use an explicit row wrapper with left or right justification for each message.",
+        "Message bubbles should use a stable width rule such as w-full plus a bounded max-w-*; do not let them shrink to ultra-narrow fit-content columns.",
+        "Conversation surfaces must preserve readable line length in preview as well as full-page mode."
+      ]
+    },
     "antiPatterns": [
       "Never mix border-radius sizes within a single card or component",
       "Never create sidebars wider than 320px without a specific need",
-      "Never place content directly against viewport edges — always use page padding"
+      "Never place content directly against viewport edges — always use page padding",
+      "Never activate multiple nested side rails at medium preview widths.",
+      "Never use margin-offset chat cards as a substitute for real left/right message rows."
+    ]
+  },
+
+  "layoutFamilies": {
+    "selectionRule": "Choose one layout family intentionally before section composition. Do not default to a generic SaaS hybrid when the persuasion model is clear.",
+    "families": [
+      {
+        "id": "minimal-conversion",
+        "label": "Minimal Conversion Layout",
+        "useFor": ["high-clarity funnels", "simple lead capture", "low-friction conversion asks"],
+        "characteristics": ["plain background", "left-aligned text", "single CTA", "almost no decoration"],
+        "typography": {
+          "display": "Space Grotesk",
+          "body": "Inter",
+          "serifAllowed": false
+        },
+        "spacing": "comfortable but sparse",
+        "rules": [
+          "Default to one column before adding side rails.",
+          "Keep proof short and subordinate.",
+          "Avoid gradients, ornamental cards, or icon clusters."
+        ]
+      },
+      {
+        "id": "authority-consulting",
+        "label": "Authority / Consulting Layout",
+        "useFor": ["consulting offers", "premium service authority pages", "credibility-led conversion surfaces"],
+        "characteristics": ["strong headline", "dark and light contrast panel", "structured proof blocks", "restrained typography"],
+        "typography": {
+          "display": "Space Grotesk",
+          "body": "Inter",
+          "serifAllowed": false
+        },
+        "spacing": "measured and structured",
+        "rules": [
+          "Let the contrast panel create authority, not decorative effects.",
+          "Use proof in disciplined blocks rather than testimonial clutter.",
+          "Avoid startup-style gradient marketing chrome."
+        ]
+      },
+      {
+        "id": "high-ticket-offer",
+        "label": "High-Ticket Offer Layout",
+        "useFor": ["premium offer pages", "high-consideration call booking", "founder-led sales narratives"],
+        "characteristics": ["more whitespace", "slower pacing", "fewer sections", "stronger typography hierarchy"],
+        "typography": {
+          "display": "Space Grotesk",
+          "body": "Inter",
+          "serifAllowed": false
+        },
+        "spacing": "spacious with long section rhythm",
+        "rules": [
+          "Reduce section count before adding more cards.",
+          "Let the headline and sequence do the persuasion work.",
+          "Keep the CTA obvious without turning the page into direct-response spam."
+        ]
+      },
+      {
+        "id": "direct-response",
+        "label": "Direct Response Layout",
+        "useFor": ["hard offer pages", "performance-driven funnels", "response-first promotions"],
+        "characteristics": ["tighter spacing", "more repeated CTA presence", "more aggressive flow"],
+        "typography": {
+          "display": "Space Grotesk",
+          "body": "Inter",
+          "serifAllowed": false
+        },
+        "spacing": "tight and urgent",
+        "rules": [
+          "Compress vertical rhythm on purpose.",
+          "Repeat the CTA because the structure earns it, not because the page is under-designed.",
+          "Keep proof and urgency active throughout the scroll path."
+        ]
+      },
+      {
+        "id": "editorial-premium",
+        "label": "Editorial / Premium Layout",
+        "useFor": ["premium storytelling surfaces", "advertorials", "brand-forward editorial conversion pages"],
+        "characteristics": ["serif headline", "more spacing", "less UI chrome", "magazine feeling"],
+        "typography": {
+          "display": "Fraunces",
+          "body": "Inter",
+          "serifAllowed": true
+        },
+        "spacing": "generous with long reading rhythm",
+        "rules": [
+          "Use Fraunces for major headlines only when the page is clearly editorial/premium.",
+          "Strip UI chrome before adding more decorative sections.",
+          "Build atmosphere with pacing, typography, and composition rather than dashboard modules."
+        ]
+      },
+      {
+        "id": "event-driven",
+        "label": "Event-Driven Layout",
+        "useFor": ["webinars", "live workshops", "registration funnels that need momentum and schedule clarity"],
+        "characteristics": ["registration-first hero", "agenda-led pacing", "timebox visibility", "event checkpoint CTAs"],
+        "typography": {
+          "display": "Archivo",
+          "body": "Inter",
+          "serifAllowed": false
+        },
+        "spacing": "tight at the top, then structured around agenda rhythm",
+        "rules": [
+          "Put the promise, time commitment, and registration action in the first screen.",
+          "Use agenda rhythm and speaker proof before adding deeper qualification language.",
+          "Treat repeated CTA moments as event checkpoints, not generic conversion strips."
+        ]
+      },
+      {
+        "id": "conversational-sales",
+        "label": "Conversational Sales Layout",
+        "useFor": ["DM-to-call funnels", "warm inbound booking", "chat-led service selling"],
+        "characteristics": ["compact sections", "short paragraphs", "operator-led handoff framing", "conversation-adjacent booking module"],
+        "typography": {
+          "display": "Manrope",
+          "body": "Inter",
+          "serifAllowed": false
+        },
+        "spacing": "compact and handoff-oriented",
+        "rules": [
+          "Preserve conversational continuity instead of restarting with a broad marketing hero.",
+          "Use proof snippets and call expectations over long-form persuasion blocks.",
+          "Keep the booking zone feeling like a handoff, not a new campaign surface.",
+          "Keep message rows readable: use explicit left/right alignment wrappers and bounded bubble widths instead of offsetting narrow cards with margins.",
+          "Do not add secondary side rails inside the conversation area unless the page is wide enough that the thread still reads as a real conversation."
+        ]
+      },
+      {
+        "id": "diagnostic-proof",
+        "label": "Diagnostic Proof Layout",
+        "useFor": ["case-study-to-demo funnels", "B2B diagnostic offers", "proof-heavy consideration pages"],
+        "characteristics": ["analytical headline treatment", "evidence-led proof stack", "boardroom-clear CTA framing", "structured case narrative"],
+        "typography": {
+          "display": "IBM Plex Sans",
+          "body": "IBM Plex Sans",
+          "serifAllowed": false
+        },
+        "spacing": "measured with dense evidence zones",
+        "rules": [
+          "Let one primary case narrative carry the page before adding more proof modules.",
+          "Use metrics, workflow specificity, and evaluation context to earn the CTA.",
+          "Keep layouts structured and explicit rather than cinematic or hype-heavy."
+        ]
+      },
+      {
+        "id": "selective-intake",
+        "label": "Selective Intake Layout",
+        "useFor": ["application-first funnels", "selective enrollment", "qualification before calendar access"],
+        "characteristics": ["qualification-first framing", "fit threshold clarity", "finite intake shell", "process-led pacing"],
+        "typography": {
+          "display": "Sora",
+          "body": "Inter",
+          "serifAllowed": false
+        },
+        "spacing": "spacious with clear procedural checkpoints",
+        "rules": [
+          "Front-load fit criteria and what happens after approval.",
+          "Use proof to justify why the screening step exists.",
+          "Keep the form shell visibly finite and avoid bloated lead-form styling."
+        ]
+      },
+      {
+        "id": "utility-reassurance",
+        "label": "Utility Reassurance Layout",
+        "useFor": ["pre-call conditioning", "confirmation states", "show-rate protection pages"],
+        "characteristics": ["confirmation-led top section", "checklist blocks", "calm hierarchy", "minimal decoration"],
+        "typography": {
+          "display": "Instrument Sans",
+          "body": "Inter",
+          "serifAllowed": false
+        },
+        "spacing": "steady and practical",
+        "rules": [
+          "Lead with confirmation, prep, and next-step clarity before any resell language.",
+          "Prefer utility blocks and dividers over hero cards and promo banners.",
+          "Make the prep path dominant throughout the page."
+        ]
+      }
+    ],
+    "guardrails": [
+      "Do not default to gradient-heavy SaaS layouts when a simpler family would solve the job.",
+      "Do not choose fonts independently from the layout family.",
+      "Make the layout family an explicit decision before section composition begins.",
+      "When in doubt between families, resolve the persuasion model first: clarity, authority, premium pacing, direct response, editorial narrative, event momentum, conversational handoff, diagnostic proof, selective intake, or utility reassurance."
     ]
   },
 

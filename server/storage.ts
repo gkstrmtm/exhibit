@@ -22,6 +22,7 @@ import { eq, ilike, or, sql, and, desc, asc, inArray, count } from "drizzle-orm"
 import { drizzle } from "drizzle-orm/node-postgres";
 import pg from "pg";
 import {
+  clearLocalCatalogCache,
   getLocalCatalogCategories,
   getLocalCatalogExhibitById,
   getLocalCatalogExhibitBySlug,
@@ -29,6 +30,8 @@ import {
   getLocalCatalogExhibitsByCategory,
   searchLocalCatalogExhibits,
 } from "./local-catalog.js";
+
+export { clearLocalCatalogCache };
 
 const pool = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
@@ -79,6 +82,46 @@ async function withCatalogFallback<T>(
     logCatalogFallback(operation, error);
     return await fallback();
   }
+}
+
+function mergeCatalogExhibit(dbExhibit: Exhibit | undefined, localExhibit: Exhibit | undefined): Exhibit | undefined {
+  if (!dbExhibit) {
+    return localExhibit;
+  }
+
+  if (!localExhibit) {
+    return dbExhibit;
+  }
+
+  return {
+    ...dbExhibit,
+    ...localExhibit,
+    id: dbExhibit.id,
+    creatorId: dbExhibit.creatorId,
+    parentExhibitId: dbExhibit.parentExhibitId,
+    viewCount: dbExhibit.viewCount,
+    saveCount: dbExhibit.saveCount,
+    remixCount: dbExhibit.remixCount,
+    status: dbExhibit.status,
+    verified: dbExhibit.verified,
+    accessible: dbExhibit.accessible,
+    createdAt: dbExhibit.createdAt,
+    updatedAt: dbExhibit.updatedAt,
+  };
+}
+
+function mergeCatalogCollection(dbExhibits: Exhibit[]): Exhibit[] {
+  const localBySlug = new Map(getLocalCatalogExhibits().map((entry) => [entry.slug, entry]));
+  const merged = dbExhibits.map((entry) => mergeCatalogExhibit(entry, localBySlug.get(entry.slug)) || entry);
+  const seenSlugs = new Set(merged.map((entry) => entry.slug));
+
+  for (const localEntry of localBySlug.values()) {
+    if (!seenSlugs.has(localEntry.slug)) {
+      merged.push(localEntry);
+    }
+  }
+
+  return merged;
 }
 
 export interface IStorage {
@@ -254,7 +297,10 @@ export class DatabaseStorage implements IStorage {
   async getAllExhibits(): Promise<Exhibit[]> {
     return withCatalogFallback(
       "getAllExhibits",
-      () => db.select().from(exhibits).where(eq(exhibits.status, "published")).orderBy(desc(exhibits.createdAt)),
+      async () => {
+        const results = await db.select().from(exhibits).where(eq(exhibits.status, "published")).orderBy(desc(exhibits.createdAt));
+        return mergeCatalogCollection(results);
+      },
       () => getLocalCatalogExhibits()
     );
   }
@@ -264,7 +310,7 @@ export class DatabaseStorage implements IStorage {
       "getExhibitById",
       async () => {
         const [result] = await db.select().from(exhibits).where(eq(exhibits.id, id));
-        return result;
+        return mergeCatalogExhibit(result, result ? getLocalCatalogExhibitBySlug(result.slug) : undefined);
       },
       () => getLocalCatalogExhibitById(id)
     );
@@ -275,7 +321,7 @@ export class DatabaseStorage implements IStorage {
       "getExhibitBySlug",
       async () => {
         const [result] = await db.select().from(exhibits).where(eq(exhibits.slug, slug));
-        return result;
+        return mergeCatalogExhibit(result, getLocalCatalogExhibitBySlug(slug));
       },
       () => getLocalCatalogExhibitBySlug(slug)
     );
@@ -284,7 +330,10 @@ export class DatabaseStorage implements IStorage {
   async getExhibitsByCategory(category: string): Promise<Exhibit[]> {
     return withCatalogFallback(
       "getExhibitsByCategory",
-      () => db.select().from(exhibits).where(and(ilike(exhibits.category, category), eq(exhibits.status, "published"))).orderBy(desc(exhibits.createdAt)),
+      async () => {
+        const results = await db.select().from(exhibits).where(and(ilike(exhibits.category, category), eq(exhibits.status, "published"))).orderBy(desc(exhibits.createdAt));
+        return mergeCatalogCollection(results).filter((entry) => entry.category.trim().toLowerCase() === category.trim().toLowerCase());
+      },
       () => getLocalCatalogExhibitsByCategory(category)
     );
   }
@@ -292,7 +341,10 @@ export class DatabaseStorage implements IStorage {
   async getExhibitsByCreator(creatorId: number): Promise<Exhibit[]> {
     return withCatalogFallback(
       "getExhibitsByCreator",
-      () => db.select().from(exhibits).where(eq(exhibits.creatorId, creatorId)).orderBy(desc(exhibits.createdAt)),
+      async () => {
+        const results = await db.select().from(exhibits).where(eq(exhibits.creatorId, creatorId)).orderBy(desc(exhibits.createdAt));
+        return mergeCatalogCollection(results).filter((entry) => entry.creatorId === creatorId);
+      },
       () => getLocalCatalogExhibits().filter((entry) => entry.creatorId === creatorId)
     );
   }
@@ -301,17 +353,30 @@ export class DatabaseStorage implements IStorage {
     const pattern = `%${query}%`;
     return withCatalogFallback(
       "searchExhibits",
-      () => db.select().from(exhibits).where(
-        and(
-          eq(exhibits.status, "published"),
-          or(
-            ilike(exhibits.title, pattern),
-            ilike(exhibits.description, pattern),
-            ilike(exhibits.category, pattern),
-            sql`array_to_string(${exhibits.tags}, ',') ILIKE ${pattern}`
+      async () => {
+        const results = await db.select().from(exhibits).where(
+          and(
+            eq(exhibits.status, "published"),
+            or(
+              ilike(exhibits.title, pattern),
+              ilike(exhibits.description, pattern),
+              ilike(exhibits.category, pattern),
+              sql`array_to_string(${exhibits.tags}, ',') ILIKE ${pattern}`
+            )
           )
-        )
-      ).orderBy(desc(exhibits.createdAt)),
+        ).orderBy(desc(exhibits.createdAt));
+
+        const normalizedQuery = query.trim().toLowerCase();
+        return mergeCatalogCollection(results).filter((entry) => {
+          if (!normalizedQuery) {
+            return true;
+          }
+
+          return [entry.title, entry.description, entry.category, ...(entry.tags || [])].some((value) =>
+            value.toLowerCase().includes(normalizedQuery)
+          );
+        });
+      },
       () => searchLocalCatalogExhibits(query)
     );
   }

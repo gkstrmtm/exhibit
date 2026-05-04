@@ -186,9 +186,9 @@ async function verifyAiMergeIncluded() {
           },
           componentMatches: [
             {
-              slug: "artifact-collaboration-shell",
+              slug: "general-assistant-chat-workspace",
               score: 96,
-              fitReason: "Best anchor for durable artifact review.",
+              fitReason: "Best anchor for assistant conversation and routing.",
               usageRole: "application shell",
               deliveryMode: "reference_plus_source",
               implementationPosture: "use_as_shell_anchor",

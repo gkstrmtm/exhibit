@@ -11,11 +11,19 @@ Pass this document as context before any UI task. It defines what **correct** lo
 
 | Role | Family | Use for |
 |------|--------|---------|
-| **Display** | Space Grotesk | Page titles, hero headlines, card headings, H1/H2 |
+| **Display** | Space Grotesk | Default page titles, hero headlines, card headings, H1/H2 |
 | **Body** | Inter | All prose, labels, table content, form text, nav, captions |
 | **Mono** | JetBrains Mono | Code, slugs, IDs, numeric data, timestamps |
+| **Editorial Display** | Fraunces | Editorial / premium marketing layouts only |
 
-**Rule:** Never use system-ui, Arial, or Times New Roman in product UI. Body is always Inter. Display headings use Space Grotesk.
+**Rule:** Never use system-ui, Arial, or Times New Roman in product UI. Body is always Inter. Display headings use Space Grotesk unless the chosen layout family explicitly permits Fraunces for editorial headline use.
+
+### Font Routing Rules
+
+- Default display font is **Space Grotesk**.
+- **Fraunces** is allowed only for the **Editorial / Premium Layout** and only for large headlines or section anchors.
+- Do not randomly switch headline fonts inside one surface.
+- Do not use serif display on operational, SaaS, or utility-first layouts.
 
 ---
 
@@ -127,6 +135,206 @@ Page padding: **24px mobile, 32px tablet, 48px desktop**
 | rounded-full | 9999px | Pills, avatars, toggles |
 
 **Rule:** Never mix border-radius sizes within a single card.
+
+### Preview-Safe Layout Rules
+
+- In gallery, iframe, or scaled preview contexts, default to one column until the layout has genuinely ample width.
+- Do not introduce a page-level sidebar and then immediately split the main content into more narrow rails unless the viewport is extremely wide.
+- If a surface already has one dominant sidebar or booking rail, inner supporting content should usually stack instead of creating a second or third narrow column.
+- Text-heavy blocks, checklists, proof notes, and agenda lists should stay single-column until there is obvious room for multi-column presentation.
+- If a component looks acceptable only at its full desktop width, it is not structurally solved yet.
+
+### Conversation Bubble Rules
+
+- Never align chat bubbles with margin offsets alone.
+- Use an explicit row wrapper with left or right justification for each message.
+- Message bubbles should use a stable width rule such as `w-full` plus a bounded `max-w-*`; do not let them shrink to ultra-narrow fit-content columns.
+- Conversation surfaces must preserve readable line length in preview as well as full-page mode.
+
+## Layout Families
+
+These are the canonical high-level layout modes the system should choose from before composing sections. Pick one family on purpose. Do not drift into a generic hybrid unless the task explicitly demands it.
+
+### 1. Minimal Conversion Layout
+
+- Plain or nearly plain background
+- Left-aligned text block
+- Single primary CTA
+- Almost no decoration
+- Tight visual vocabulary, low chrome, low proof density
+
+Use for:
+- High-clarity funnels
+- Simple lead capture
+- Low-friction conversion asks
+
+Rules:
+- Default to one column before adding side rails
+- Keep proof short and subordinate
+- Avoid gradients, ornamental cards, or icon clusters
+
+### 2. Authority / Consulting Layout
+
+- Strong headline
+- Dark plus light contrast panel split
+- Structured proof blocks
+- Restrained typography and restrained CTA behavior
+
+Use for:
+- Consulting offers
+- Premium service authority pages
+- PureStay-style credibility-led conversion surfaces
+
+Rules:
+- Let the contrast panel create authority, not decorative effects
+- Use proof in disciplined blocks rather than testimonial clutter
+- Avoid startup-style gradient marketing chrome
+
+### 3. High-Ticket Offer Layout
+
+- More whitespace
+- Slower pacing
+- Fewer sections
+- Stronger typography hierarchy
+- Intentional proof placement instead of proof overload
+
+Use for:
+- Premium offer pages
+- High-consideration call booking
+- Founder-led sales narratives
+
+Rules:
+- Reduce section count before adding more cards
+- Let the headline and sequence do the persuasion work
+- Keep the CTA obvious without turning the page into direct-response spam
+
+### 4. Direct Response Layout
+
+- Tighter spacing
+- More repeated CTA presence
+- More aggressive flow
+- Faster proof-to-action pacing
+
+Use for:
+- Hard offer pages
+- Performance-driven funnels
+- Response-first promotions
+
+Rules:
+- Compress vertical rhythm on purpose
+- Repeat the CTA because the structure earns it, not because the page is under-designed
+- Keep proof and urgency active throughout the scroll path
+
+### 5. Editorial / Premium Layout
+
+- Serif headline allowed here
+- More spacing
+- Less UI chrome
+- Feels like a magazine, not SaaS
+
+Use for:
+- Premium storytelling surfaces
+- Advertorials
+- Brand-forward editorial conversion pages
+
+Rules:
+- Use **Fraunces** for major headlines only when the page is clearly editorial/premium
+- Strip UI chrome before adding more decorative sections
+- Build atmosphere with pacing, typography, and composition rather than dashboard modules
+
+### 6. Event-Driven Layout
+
+- Registration-first hero
+- Agenda and timebox treated as core visual material
+- Clear event checkpoints instead of generic repeated CTA slabs
+- Feels like a live training invite, not a SaaS landing page
+
+Use for:
+- Webinars
+- Workshops
+- Registration funnels that need momentum and schedule clarity
+
+Rules:
+- Put the promise, time commitment, and registration action in the first screen
+- Use agenda rhythm and speaker proof before adding deeper qualification language
+- Treat repeated CTA moments as event checkpoints, not generic conversion strips
+
+### 7. Conversational Sales Layout
+
+- Compact sections
+- Short paragraphs
+- Operator-led handoff framing
+- Booking modules that feel attached to the existing conversation
+
+Use for:
+- DM-to-call flows
+- Warm inbound booking
+- Chat-led service selling
+
+Rules:
+- Preserve conversational continuity instead of restarting with a broad marketing hero
+- Use proof snippets and call expectations over long-form persuasion blocks
+- Keep the booking zone feeling like a handoff, not a new campaign surface
+- Keep message rows readable: use explicit left/right alignment wrappers and bounded bubble widths instead of offsetting narrow cards with margins
+- Do not add secondary side rails inside the conversation area unless the page is wide enough that the thread still reads as a real conversation
+
+### 8. Diagnostic Proof Layout
+
+- Analytical headline treatment
+- Evidence-led proof stack
+- Boardroom-clear demo or consultation framing
+- Structured case narrative over decorative social proof
+
+Use for:
+- Case-study-to-demo funnels
+- B2B diagnostic offers
+- Proof-heavy consideration pages
+
+Rules:
+- Let one primary case narrative carry the page before adding more proof modules
+- Use metrics, workflow specificity, and evaluation context to earn the CTA
+- Keep layouts structured and explicit rather than cinematic or hype-heavy
+
+### 9. Selective Intake Layout
+
+- Qualification comes before access
+- Calm but firm process framing
+- Clear fit, disqualification, and next-step logic
+- Intake shell feels finite and serious
+
+Use for:
+- Application-first funnels
+- Selective high-ticket enrollment
+- Qualification before calendar access
+
+Rules:
+- Front-load fit criteria and what happens after approval
+- Use proof to justify why the screening step exists
+- Keep the form shell visibly finite and avoid bloated lead-form styling
+
+### 10. Utility Reassurance Layout
+
+- Confirmation state over persuasion theatrics
+- Checklist and next-step blocks
+- Calm hierarchy with practical emphasis
+- Minimal decorative variation
+
+Use for:
+- Pre-call conditioning
+- Onboarding and confirmation surfaces
+- Show-rate protection pages
+
+Rules:
+- Lead with confirmation, prep, and next-step clarity before any resell language
+- Prefer utility blocks and dividers over hero cards and promo banners
+- Make the prep path dominant throughout the page
+
+### Selection Guardrails
+
+- Do not default to gradient-heavy SaaS layouts when a simpler family would solve the job.
+- Do not choose fonts independently from the layout family.
+- Make the layout family an explicit decision before section composition begins.
+- When in doubt between families, resolve the page's persuasion model first: clarity, authority, premium pacing, direct response, editorial narrative, event momentum, conversational handoff, diagnostic proof, selective intake, or utility reassurance.
 
 ---
 

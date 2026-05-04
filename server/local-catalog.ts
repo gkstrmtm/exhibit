@@ -28,6 +28,12 @@ let cachedExhibits: Exhibit[] | null = null;
 let cachedEntries: LocalCatalogEntry[] | null = null;
 const loggedPreviewFailures = new Set<string>();
 
+export function clearLocalCatalogCache(): void {
+  cachedExhibits = null;
+  cachedEntries = null;
+  loggedPreviewFailures.clear();
+}
+
 type PreviewModule = {
   default?: React.ComponentType;
 };

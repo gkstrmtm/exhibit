@@ -386,6 +386,7 @@ export default function ProfilePage() {
                   <Link key={item.id} href={`/exhibit/${item.slug}`}>
                     <ComponentPreview
                       title={item.title}
+                      category={item.category}
                       description={item.description}
                       code={item.code}
                       htmlPreview={item.htmlPreview}
@@ -419,6 +420,7 @@ export default function ProfilePage() {
                 <Link key={item.id} href={`/exhibit/${item.slug}`}>
                   <ComponentPreview
                     title={item.title}
+                    category={item.category}
                     description={item.description}
                     code={item.code}
                     htmlPreview={item.htmlPreview}

@@ -18,6 +18,7 @@ export default function handler(req: any, res: any) {
         slug: category.toLowerCase().replace(/\s+/g, "-"),
         count: components.length,
         apiUrl: `/api/llm/components?category=${encodeURIComponent(category)}`,
+        funnelApiUrl: category === "Funnels" ? `/api/llm/components?category=Funnels` : null,
         components: components.map((component) => ({
           slug: component.slug,
           title: component.title,

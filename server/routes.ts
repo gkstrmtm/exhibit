@@ -15,6 +15,9 @@ import { buildLlmsText } from "./llms.js";
 import { agentBundleRequestSchema, agentQuestionRequestSchema, agentResolutionRequestSchema, getAgentQuestionResponse, getAgentResolutionResponse, getOperationalWorkbenchBundle } from "./operational-workbench-bundle.js";
 import { buildAgentHandlerHealthPayload, buildPublicHealthPayload } from "./public-api.js";
 import { openapiSpec } from "./openapi-spec.js";
+import { bulkRecordFromVerifyResponse, getRouteFeedbackStats, recordFeedback } from "./feedback-intelligence.js";
+import { getPublicCatalogCategories, getPublicCatalogComponent, getPublicCatalogComponents } from "./public-catalog.js";
+import { clearLocalCatalogCache } from "./storage.js";
 
 function paramStr(val: string | string[] | undefined): string {
   if (Array.isArray(val)) return val[0] || "";
@@ -764,6 +767,69 @@ export async function registerRoutes(
     res.json(buildPublicHealthPayload(req, "/api/agent/health"));
   });
 
+  // ─── Agent Feedback ──────────────────────────────────
+  app.options("/api/agent/feedback", (_req, res) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    res.setHeader("Cache-Control", "no-store");
+    res.sendStatus(204);
+  });
+
+  app.get("/api/agent/feedback", async (req, res) => {
+    res.setHeader("Cache-Control", "no-store");
+    const route = typeof req.query.route === "string" ? req.query.route : "";
+    if (!route) {
+      return res.status(400).json({ error: "route query param is required", example: "/api/agent/feedback?route=operational-workbench" });
+    }
+    const stats = await getRouteFeedbackStats(route);
+    return res.json({ ok: true, ...stats });
+  });
+
+  app.post("/api/agent/feedback", async (req, res) => {
+    res.setHeader("Cache-Control", "no-store");
+    try {
+      const body = req.body as Record<string, unknown>;
+      if (body.intentMap && typeof body.intentMap === "object") {
+        const { z } = await import("zod");
+        const parsed = z.object({
+          route: z.string().min(2).max(120),
+          verificationStatus: z.string().max(60),
+          intentMap: z.object({
+            honored: z.array(z.object({ item: z.string(), intents: z.array(z.string()), method: z.string().optional() })).default([]),
+            missed: z.array(z.object({ item: z.string(), intents: z.array(z.string()) })).default([]),
+          }),
+        }).safeParse(body);
+        if (!parsed.success) return res.status(400).json({ error: "Invalid bulk payload.", issues: parsed.error.issues });
+        await bulkRecordFromVerifyResponse(parsed.data);
+        return res.json({ ok: true, recorded: "bulk", route: parsed.data.route });
+      }
+      if (Array.isArray(body.signals)) {
+        const { z } = await import("zod");
+        const parsed = z.object({
+          route: z.string().min(2).max(120),
+          verificationStatus: z.string().max(60).optional(),
+          signals: z.array(z.object({ intentCategory: z.string().min(2).max(80), wasHonored: z.boolean() })).min(1).max(100),
+        }).safeParse(body);
+        if (!parsed.success) return res.status(400).json({ error: "Invalid signals payload.", issues: parsed.error.issues });
+        await Promise.all(parsed.data.signals.map((s) => recordFeedback({ route: parsed.data.route, intentCategory: s.intentCategory, wasHonored: s.wasHonored, verificationStatus: parsed.data.verificationStatus })));
+        return res.json({ ok: true, recorded: parsed.data.signals.length, route: parsed.data.route });
+      }
+      const { z } = await import("zod");
+      const parsed = z.object({
+        route: z.string().min(2).max(120),
+        intentCategory: z.string().min(2).max(80),
+        wasHonored: z.boolean(),
+        verificationStatus: z.string().max(60).optional(),
+      }).safeParse(body);
+      if (!parsed.success) return res.status(400).json({ error: "Invalid signal payload.", issues: parsed.error.issues });
+      await recordFeedback(parsed.data);
+      return res.json({ ok: true, recorded: 1, route: parsed.data.route });
+    } catch {
+      return res.status(500).json({ error: "Feedback recording failed." });
+    }
+  });
+
   app.post("/api/ai/ui-analysis", async (req, res) => {
     try {
       const parsed = uiAnalysisRequestSchema.safeParse(req.body);
@@ -797,35 +863,18 @@ export async function registerRoutes(
     }
   });
 
-  // All components — supports ?category= and ?q= filtering
+  // All components — supports ?category=, ?q=, and ?tag= filtering
   app.get("/api/llm/components", async (req, res) => {
     try {
-      const { category, q } = req.query;
-      let results;
-      if (q && typeof q === "string") {
-        results = await storage.searchExhibits(q);
-      } else if (category && typeof category === "string") {
-        results = await storage.getExhibitsByCategory(category);
-      } else {
-        results = await storage.getAllExhibits();
-      }
-
-      const payload = results.map(e => ({
-        slug: e.slug,
-        title: e.title,
-        description: e.description,
-        category: e.category,
-        tags: e.tags,
-        techStack: e.techStack,
-        licenseType: e.licenseType,
-        version: e.version,
-        code: e.code,
-      }));
+      const category = typeof req.query.category === "string" ? req.query.category : null;
+      const q = typeof req.query.q === "string" ? req.query.q : null;
+      const tag = typeof req.query.tag === "string" ? req.query.tag : null;
+      const payload = getPublicCatalogComponents({ category, query: q, tag });
 
       res.setHeader("Cache-Control", "public, max-age=300");
       res.json({
         total: payload.length,
-        filter: { category: category || null, q: q || null },
+        filter: { category, q, tag },
         components: payload,
       });
     } catch (err) {
@@ -837,27 +886,13 @@ export async function registerRoutes(
   // Single component by slug — returns full code
   app.get("/api/llm/components/:slug", async (req, res) => {
     try {
-      const exhibit = await storage.getExhibitBySlug(paramStr(req.params.slug));
-      if (!exhibit) {
+      const component = getPublicCatalogComponent(paramStr(req.params.slug));
+      if (!component) {
         return res.status(404).json({ message: "Component not found", hint: "GET /api/llm/components to see all slugs" });
       }
 
       res.setHeader("Cache-Control", "public, max-age=300");
-      res.json({
-        slug: exhibit.slug,
-        title: exhibit.title,
-        description: exhibit.description,
-        category: exhibit.category,
-        tags: exhibit.tags,
-        techStack: exhibit.techStack,
-        licenseType: exhibit.licenseType,
-        version: exhibit.version,
-        verified: exhibit.verified,
-        accessible: exhibit.accessible,
-        productionReady: exhibit.productionReady,
-        code: exhibit.code,
-        htmlPreview: exhibit.htmlPreview,
-      });
+      res.json(component);
     } catch (err) {
       console.error("LLM component detail error:", err);
       res.status(500).json({ message: "Failed to fetch component" });
@@ -867,24 +902,30 @@ export async function registerRoutes(
   // Categories with component counts and slugs
   app.get("/api/llm/categories", async (_req, res) => {
     try {
-      const categories = await storage.getCategories();
-      const allExhibits = await storage.getAllExhibits();
+      const categories = getPublicCatalogCategories();
+      const componentTotal = getPublicCatalogComponents({}).length;
 
       const result = categories.map(cat => {
-        const components = allExhibits.filter(e => e.category === cat);
+        const components = getPublicCatalogComponents({ category: cat });
         return {
           name: cat,
           slug: cat.toLowerCase().replace(/\s+/g, "-"),
           count: components.length,
           apiUrl: `/api/llm/components?category=${encodeURIComponent(cat)}`,
-          components: components.map(e => ({ slug: e.slug, title: e.title, description: e.description, tags: e.tags })),
+          funnelApiUrl: cat === "Funnels" ? `/api/llm/components?category=Funnels` : null,
+          components: components.map((component) => ({
+            slug: component.slug,
+            title: component.title,
+            description: component.description,
+            tags: component.tags,
+          })),
         };
       });
 
       res.setHeader("Cache-Control", "public, max-age=300");
       res.json({
         total: categories.length,
-        componentTotal: allExhibits.length,
+        componentTotal,
         categories: result,
       });
     } catch (err) {
@@ -980,7 +1021,10 @@ export async function registerRoutes(
   app.post("/api/agent", async (req, res) => {
     try {
       res.setHeader("Cache-Control", "public, max-age=300");
-      const isWorkflowAuditRequest = req.body?.stage === "workflow-audit-and-iteration";
+      const isStageRequest = req.body?.stage === "workflow-audit-and-iteration"
+        || req.body?.stage === "elevation-audit"
+        || req.body?.stage === "funnel-strategy"
+        || req.body?.stage === "iteration-verify";
       const isResolutionRequest = typeof req.body?.surfaceType === "string"
         || typeof req.body?.sector === "string"
         || typeof req.body?.route === "string"
@@ -990,7 +1034,8 @@ export async function registerRoutes(
         || typeof req.body?.output === "object"
         || Array.isArray(req.body?.layoutNeeds)
         || Array.isArray(req.body?.workspaceModules)
-        || isWorkflowAuditRequest;
+        || typeof req.body?.funnelContext === "object"
+        || isStageRequest;
 
       if (isResolutionRequest) {
         const parsed = agentResolutionRequestSchema.parse(req.body);
@@ -1018,6 +1063,12 @@ export async function registerRoutes(
       console.error("Adaptive agent bundle error:", err);
       res.status(500).json({ message: "Failed to build adaptive agent bundle" });
     }
+  });
+
+  // ─── Dev: reload component catalog without restarting server ─────────────
+  app.post("/api/dev/reload-catalog", (_req, res) => {
+    clearLocalCatalogCache();
+    res.json({ ok: true, message: "Local catalog cache cleared. Next request will re-read all component files." });
   });
 
   return httpServer;

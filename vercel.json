@@ -32,6 +32,10 @@
       "destination": "/api/exhibit-remixes?slug=:slug"
     },
     {
+      "source": "/api/agent/feedback",
+      "destination": "/api/agent-feedback"
+    },
+    {
       "source": "/api/exhibits/:slug",
       "destination": "/api/exhibit-detail?slug=:slug"
     },

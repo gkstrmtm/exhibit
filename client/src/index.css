@@ -9,6 +9,7 @@
 @theme inline {
   --font-sans: 'Inter', sans-serif;
   --font-display: 'Space Grotesk', sans-serif;
+  --font-editorial: 'Fraunces', serif;
   --font-mono: 'JetBrains Mono', monospace;
 
   --color-background: hsl(var(--background));

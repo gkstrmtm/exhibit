@@ -53,7 +53,8 @@ export default async function handler(req: any, res: any) {
     const body = await readJsonBody(req) as Record<string, unknown>;
     const isStageRequest = body.stage === "workflow-audit-and-iteration"
       || body.stage === "elevation-audit"
-      || body.stage === "funnel-strategy";
+      || body.stage === "funnel-strategy"
+      || body.stage === "iteration-verify";
     const isResolutionRequest = typeof body.surfaceType === "string"
       || typeof body.sector === "string"
       || typeof body.route === "string"

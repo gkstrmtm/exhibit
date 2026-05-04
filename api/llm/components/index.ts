@@ -10,11 +10,12 @@ export default function handler(req: any, res: any) {
   const url = buildRequestUrl(req);
   const category = url.searchParams.get("category");
   const query = url.searchParams.get("q");
-  const components = getPublicCatalogComponents({ category, query });
+  const tag = url.searchParams.get("tag");
+  const components = getPublicCatalogComponents({ category, query, tag });
 
   sendJson(res, 200, {
     total: components.length,
-    filter: { category, q: query },
+    filter: { category, q: query, tag },
     components,
   });
 }

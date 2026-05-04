@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 
 import type { Exhibit } from "../shared/schema.js";
+import { getLocalCatalogEntries } from "./local-catalog.js";
 
 export type PublicCatalogEntry = {
   slug: string;
@@ -56,8 +57,10 @@ function buildFallbackPreview(entry: PublicCatalogEntry): string {
 
 export function getPublicCatalogEntries(): PublicCatalogEntry[] {
   if (!cachedEntries) {
-    const fileContents = readFileSync(catalogPath, "utf8");
-    cachedEntries = JSON.parse(fileContents) as PublicCatalogEntry[];
+    if (existsSync(catalogPath)) {
+      readFileSync(catalogPath, "utf8");
+    }
+    cachedEntries = getLocalCatalogEntries();
   }
 
   return cachedEntries;
@@ -103,7 +106,21 @@ function loadGeneratedRecords(): PublicCatalogRecord[] | null {
 
 function getPublicCatalogRecords(): PublicCatalogRecord[] {
   if (!cachedRecords) {
-    cachedRecords = loadGeneratedRecords() || getPublicCatalogEntries().map(toPublicRecord);
+    const localRecords = getPublicCatalogEntries().map(toPublicRecord);
+    const generatedBySlug = new Map((loadGeneratedRecords() || []).map((entry) => [entry.slug, entry]));
+
+    cachedRecords = localRecords.map((entry) => {
+      const generated = generatedBySlug.get(entry.slug);
+      if (!generated) {
+        return entry;
+      }
+
+      return {
+        ...generated,
+        ...entry,
+        htmlPreview: generated.htmlPreview || entry.htmlPreview,
+      };
+    });
   }
 
   return cachedRecords;
@@ -123,9 +140,10 @@ export function getPublicCatalogCategories(): string[] {
   );
 }
 
-export function filterPublicCatalogExhibits(options: { category?: string | null; query?: string | null }): Exhibit[] {
+export function filterPublicCatalogExhibits(options: { category?: string | null; query?: string | null; tag?: string | null }): Exhibit[] {
   const normalizedCategory = options.category?.trim().toLowerCase() || "";
   const normalizedQuery = options.query?.trim().toLowerCase() || "";
+  const normalizedTag = options.tag?.trim().toLowerCase() || "";
 
   return getPublicCatalogExhibits().filter((entry) => {
     const matchesCategory = !normalizedCategory || entry.category.trim().toLowerCase() === normalizedCategory;
@@ -134,8 +152,9 @@ export function filterPublicCatalogExhibits(options: { category?: string | null;
       [entry.title, entry.description, entry.category, ...(entry.tags || [])].some((value) =>
         value.toLowerCase().includes(normalizedQuery)
       );
+    const matchesTag = !normalizedTag || (entry.tags || []).some((tag) => tag.toLowerCase().includes(normalizedTag));
 
-    return matchesCategory && matchesQuery;
+    return matchesCategory && matchesQuery && matchesTag;
   });
 }
 
@@ -152,17 +171,21 @@ export function getPublicCatalogComponent(slug: string) {
     category: entry.category,
     tags: entry.tags || [],
     code: entry.code,
+    htmlPreview: entry.htmlPreview,
     sourceUrl: entry.sourceUrl,
     techStack: ["react", "typescript", "tailwind"],
     licenseType: "free",
+    version: entry.version,
     productionReady: true,
     verified: false,
+    accessible: entry.accessible,
   };
 }
 
-export function getPublicCatalogComponents(options: { category?: string | null; query?: string | null }) {
+export function getPublicCatalogComponents(options: { category?: string | null; query?: string | null; tag?: string | null }) {
   const normalizedCategory = options.category?.trim().toLowerCase() || "";
   const normalizedQuery = options.query?.trim().toLowerCase() || "";
+  const normalizedTag = options.tag?.trim().toLowerCase() || "";
 
   return getPublicCatalogRecords()
     .filter((entry) => {
@@ -172,8 +195,11 @@ export function getPublicCatalogComponents(options: { category?: string | null; 
         [entry.title, entry.description, entry.category, ...(entry.tags || [])].some((value) =>
           value.toLowerCase().includes(normalizedQuery)
         );
+      const matchesTag = !normalizedTag || (entry.tags || []).some((value) =>
+        value.toLowerCase().includes(normalizedTag)
+      );
 
-      return matchesCategory && matchesQuery;
+      return matchesCategory && matchesQuery && matchesTag;
     })
     .map((entry) => ({
       slug: entry.slug,

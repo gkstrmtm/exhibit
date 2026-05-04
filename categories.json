@@ -29,15 +29,13 @@
   },
   {
     "name": "App Shells",
-    "count": 21,
+    "count": 19,
     "slugs": [
       "analytics-dashboard-shell",
-      "artifact-collaboration-shell",
       "assistant-handoff-review-shell",
       "assistant-triage-queue-shell",
       "chat-messaging-shell",
       "command-palette-shell",
-      "context-aware-assistant-console",
       "dark-vscode-shell",
       "docs-writing-shell",
       "ecommerce-storefront-shell",
@@ -56,35 +54,42 @@
   },
   {
     "name": "Authentication",
-    "count": 6,
+    "count": 8,
     "slugs": [
       "magic-link-flow",
       "magic-link-sent",
       "oauth-button-group",
+      "otp-input",
       "sign-in-form-clean",
+      "social-login-buttons",
       "two-factor-input",
       "two-factor-setup"
     ]
   },
   {
     "name": "Billing",
-    "count": 6,
+    "count": 9,
     "slugs": [
+      "invoice-line-items",
       "invoice-list",
       "invoice-list-pattern",
       "payment-method-card",
       "plan-upgrade-cta",
+      "plan-upgrade-prompt",
       "usage-meter",
+      "usage-meter-bar",
       "usage-meter-pattern"
     ]
   },
   {
     "name": "Buttons",
-    "count": 16,
+    "count": 19,
     "slugs": [
       "60-30-10-button-system",
       "apple-pill-toggle",
       "button-size-spectrum",
+      "copy-to-clipboard-button",
+      "data-export-button",
       "destructive-danger-buttons",
       "ghost-button-collection",
       "gradient-glow-buttons",
@@ -97,37 +102,50 @@
       "segmented-button-controls",
       "social-auth-buttons",
       "soft-tinted-buttons",
-      "split-action-button"
+      "split-action-button",
+      "split-button"
     ]
   },
   {
     "name": "Cards",
-    "count": 6,
+    "count": 13,
     "slugs": [
+      "activity-feed-card",
+      "checklist-card",
       "dark-pricing-card",
+      "file-upload-card",
       "glassmorphism-card",
       "gradient-border-card",
       "image-preview-card",
+      "media-card",
       "notification-card",
+      "profile-card",
+      "project-card",
+      "stat-change-card",
       "testimonial-card"
     ]
   },
   {
     "name": "Commerce",
-    "count": 6,
+    "count": 8,
     "slugs": [
       "cart-line-item",
       "checkout-summary-card",
+      "coupon-code-input",
       "order-confirmation",
       "product-listing-card",
+      "quantity-selector",
       "review-card",
       "upgrade-modal-pattern"
     ]
   },
   {
     "name": "Communication",
-    "count": 6,
+    "count": 9,
     "slugs": [
+      "agent-handoff-thread",
+      "agent-thread-nav",
+      "ai-conversation-thread",
       "chat-message-bubbles",
       "email-composer",
       "inbox-thread-layout",
@@ -138,43 +156,63 @@
   },
   {
     "name": "Dashboard",
-    "count": 6,
+    "count": 11,
     "slugs": [
       "activity-feed-panel",
+      "activity-sparkline-row",
       "dashboard-header-pattern",
+      "dashboard-stat-grid",
       "kpi-stats-row",
       "metric-trend-card",
+      "notification-center-panel",
+      "quick-action-bar",
       "quick-actions-grid",
+      "recent-items-feed",
       "stat-cards-with-trends"
     ]
   },
   {
     "name": "Data Density",
-    "count": 6,
+    "count": 11,
     "slugs": [
       "activity-log-timeline",
+      "compact-card-grid",
       "compact-settings-list",
+      "condensed-stat-row",
+      "data-grid-pinned-column",
       "dense-activity-log",
+      "dense-list-view",
       "export-pattern-ui",
       "filter-bar-chips",
+      "filter-ownership-visible",
       "kpi-grid-tabular"
     ]
   },
   {
     "name": "Data Display",
-    "count": 6,
+    "count": 16,
     "slugs": [
+      "avatar-group",
+      "badge-overflow",
+      "comparison-table",
+      "expandable-text",
+      "keyboard-shortcut-legend",
+      "kv-table",
+      "metric-card-with-trend",
       "minimal-avatar-stack",
       "minimal-stats-grid",
       "modern-table",
+      "progress-bar-labeled",
       "progress-bar-list",
       "stats-grid",
+      "status-badge-set",
+      "timeline-entry-list",
       "vertical-timeline"
     ]
   },
   {
     "name": "Empty States",
-    "count": 7,
+    "count": 10,
     "slugs": [
       "assistant-workspace-empty",
       "empty-state-activity",
@@ -182,32 +220,66 @@
       "empty-state-first-run",
       "empty-state-notifications",
       "empty-state-search",
-      "empty-state-team"
+      "empty-state-search-no-results",
+      "empty-state-team",
+      "not-found-state",
+      "permission-denied-state"
     ]
   },
   {
     "name": "Feedback",
-    "count": 8,
+    "count": 23,
     "slugs": [
+      "confirmation-dialog",
+      "destructive-confirm-with-async",
       "empty-state-illustration",
+      "error-boundary-fallback",
       "error-pages-set",
+      "hover-card-preview",
       "inline-validation-patterns",
+      "loading-timing-ladder",
+      "mutation-timeline-branch",
       "notification-toast-stack",
+      "offline-banner",
       "permission-gated-states",
+      "popover-with-actions",
+      "post-confirm-failure-recovery",
       "retry-pattern-ui",
+      "rich-tooltip",
       "skeleton-loading",
-      "toast-system-variants"
+      "skeleton-threshold-surface",
+      "stale-content-refresh-indicator",
+      "toast-notification-stack",
+      "toast-system-variants",
+      "tooltip-variants",
+      "typed-confirmation"
     ]
   },
   {
     "name": "Foundations",
-    "count": 5,
+    "count": 7,
     "slugs": [
       "anti-pattern-contrast",
       "density-and-layout-guide",
       "design-token-reference",
       "full-reference-dashboard",
+      "icon-library",
+      "type-specimen",
       "typography-system"
+    ]
+  },
+  {
+    "name": "Funnels",
+    "count": 8,
+    "slugs": [
+      "advertorial-application-bridge",
+      "call-booking-confirmation-brief",
+      "case-study-proof-stack",
+      "dm-to-call-conversation-brief",
+      "high-ticket-vsl-booking-page",
+      "pre-call-context-vsl",
+      "sales-qualification-application",
+      "webinar-registration-call-funnel"
     ]
   },
   {
@@ -224,39 +296,82 @@
   },
   {
     "name": "Inputs",
-    "count": 6,
+    "count": 34,
     "slugs": [
+      "address-form",
+      "character-count-textarea",
+      "color-mode-toggle",
+      "color-picker-popover",
+      "combobox-multi-select",
       "command-palette",
+      "conflicting-sort-controls",
+      "custom-select-single",
       "date-range-input",
+      "date-range-picker",
+      "drag-drop-list",
+      "dropdown-vs-segmented-anti-pattern",
+      "duplicate-scope-controls",
       "file-upload-zone",
+      "floating-label-input",
+      "form-field-validation",
+      "inline-edit-field",
+      "inline-table-select",
+      "multi-step-form",
+      "number-stepper",
+      "optimistic-save-button",
+      "password-strength-meter",
+      "rating-stars",
+      "redundant-filter-language",
+      "rich-text-toolbar",
       "search-with-clear",
+      "search-with-suggestions",
+      "segmented-mode-switcher",
+      "select-field-group",
       "swiss-inputs",
-      "tag-input"
+      "tag-input",
+      "tag-input-field",
+      "time-picker",
+      "toggle-switch-with-label"
     ]
   },
   {
     "name": "Layout",
-    "count": 6,
+    "count": 17,
     "slugs": [
+      "accordion",
       "bento-grid",
+      "drawer-overlay",
+      "editable-detail-section",
+      "inline-title-edit",
+      "list-to-detail-stable-viewport",
+      "modal-with-scroll",
+      "page-header",
+      "right-rail-stable-refresh",
       "sidebar-content-layout",
+      "sidebar-nav-collapsible",
       "split-pane-layout",
+      "split-pane-resize",
       "sticky-page-header",
+      "sticky-section-header",
       "tab-content-switcher",
       "typographic-hero"
     ]
   },
   {
     "name": "Loading",
-    "count": 7,
+    "count": 11,
     "slugs": [
       "assistant-workspace-loading",
       "loading-dots-spinner",
       "loading-progress-bar",
       "skeleton-card",
+      "skeleton-loader",
       "skeleton-loading-cards",
       "skeleton-profile-header",
-      "skeleton-table-rows"
+      "skeleton-table-rows",
+      "tab-blocking-vs-nonblocking-comparison",
+      "tab-panel-skeleton-replacement",
+      "tab-stale-content-preserve"
     ]
   },
   {
@@ -273,23 +388,36 @@
   },
   {
     "name": "Navigation",
-    "count": 6,
+    "count": 15,
     "slugs": [
+      "back-forward-nav-buttons",
+      "breadcrumb-with-overflow",
       "breadcrumbs",
       "brutalist-navigation",
+      "command-palette-trigger",
+      "contextual-action-menu",
+      "dropdown-menu-nested",
+      "filter-chips",
       "floating-action-menu",
       "minimal-sidebar",
       "pagination-controls",
+      "scroll-to-top-button",
+      "step-progress-indicator",
+      "tab-nav-with-badge",
       "tab-navigation"
     ]
   },
   {
     "name": "Onboarding",
-    "count": 6,
+    "count": 10,
     "slugs": [
       "connect-tools-screen",
       "feature-highlight-tooltip",
+      "invite-team-members",
       "multi-step-wizard",
+      "onboarding-checklist",
+      "product-tour-tooltip",
+      "role-select-onboarding",
       "stepper-onboarding-flow",
       "trial-banner",
       "welcome-checklist"
@@ -320,12 +448,21 @@
   },
   {
     "name": "Tables",
-    "count": 6,
+    "count": 15,
     "slugs": [
+      "column-visibility-toggle",
       "data-table-with-actions",
+      "editable-data-row",
+      "optimistic-row-update",
+      "sortable-table-columns",
       "table-checkbox-select",
+      "table-empty-search-state",
+      "table-expandable-row",
+      "table-grouping-header",
       "table-pagination",
+      "table-pagination-controls",
       "table-row-actions",
+      "table-row-selection",
       "table-sortable-headers",
       "table-with-status-badges"
     ]
